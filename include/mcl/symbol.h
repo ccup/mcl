@@ -1,0 +1,19 @@
+#ifndef H5B60114C_61E3_4600_971C_356DB8AD102C
+#define H5B60114C_61E3_4600_971C_356DB8AD102C
+
+#define MCL_STRINGIZE_IMPL(s) #s
+#define MCL_STRINGIZE(s) MCL_STRINGIZE_IMPL(s)
+
+#define MCL_JOIN_AGAIN(s1, s2) s1##s2
+#define MCL_JOIN_IMPL(s1, s2) MCL_JOIN_AGAIN(s1, s2)
+#define MCL_JOIN(s1, s2) MCL_JOIN_IMPL(s1, s2)
+
+#ifdef __COUNTER__
+#  define MCL_UNIQUE_ID __COUNTER__
+#else
+#  define MCL_UNIQUE_ID __LINE__
+#endif
+
+#define MCL_UNIQUE_NAME(prefix) MCL_JOIN(prefix, MCL_UNIQUE_ID)
+
+#endif

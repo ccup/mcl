@@ -1,0 +1,7 @@
+build/*
+.settings/*
+.vscode/*
+.DS_Store
+.cproject
+.project
+include/mcl/log_customized_config.h

@@ -8,7 +8,7 @@ MCL_STDC_BEGIN
 
 #define MCL_FOR_EACH(type, i, begin, end)   for(type i = begin; i< end; ++i)
 
-#define MCL_FOR_EACH_INDEX(i, max) FOR_EACH(size_t, i, 0, max)
+#define MCL_FOR_EACH_INDEX(i, max) MCL_FOR_EACH(size_t, i, 0, max)
 
 #define MCL_FOREVER()  while(true)
 

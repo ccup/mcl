@@ -4,6 +4,7 @@
 #include "mcl/stdc.h"
 #include "mcl/fwd_decl.h"
 #include "mcl/container_of.h"
+#include "mcl/list.h"
 
 #define ROLE(role)	__##role
 
@@ -16,6 +17,9 @@ role ROLE(role)
 
 #define USE_ROLE(role)				\
 role* ROLE(role)
+
+#define USE_LIST_ROLE(role)			\
+MCL_LIST_HEAD(role) ROLE(role)
 
 #define ROLE_CAST_TO(role, role_ptr, obj, obj_ptr)\
 obj* obj_ptr = container_of(role_ptr, obj, ROLE(role))

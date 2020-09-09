@@ -2,18 +2,11 @@
 
 target="build"
 
-if [ ! -d $target ]; then
-    mkdir -p $target
-fi
-
-cd $target
-
 echo "*******************************************************************************"
 echo "start to build project ..."
 
-
-cmake -DENABLE_TEST=1 ..
-cmake --build .
+cmake -H. -B$target -DENABLE_TEST=on
+cmake --build $target
 
 if [ $? -ne 0 ]; then
     echo "FAILED!"
@@ -24,15 +17,13 @@ fi
 echo "*******************************************************************************"
 echo "start to run tests..."
 
-./test/test_mcl
+./$target/test/mcl_test
 
 if [ $? -ne 0 ]; then
     echo "FAILED!"
     cd ..
     exit 1
 fi
-
-cd ..
 
 echo "*******************************************************************************"
 echo "SUCCESS!"

@@ -1,29 +1,30 @@
-project(test_mcl)
+set(TEST_TARGET ${PROJECT_NAME}_test)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-invalid-offsetof -g -std=gnu++11")
+include(${PROJECT_SOURCE_DIR}/cmake/CPM.cmake)
+
+CPMAddPackage(
+    NAME cctest
+    GITHUB_REPOSITORY ccup/cctest
+    GIT_TAG master
+)
 
 set (log_output_func_declare "void mcl_color_log(int level , const char* levelstr , const char* file, unsigned int line, const char* fmt, ...)")
 set (log_output_func "mcl_color_log")
 set (log_enabled_levels "MCL_TOTAL_LEVEL")
 
 configure_file (
-    "${CMAKE_HOME_DIRECTORY}/include/mcl/log_customized_config.h.in"
-    "${CMAKE_HOME_DIRECTORY}/include/mcl/log_customized_config.h"
+    "${PROJECT_SOURCE_DIR}/include/mcl/log_customized_config.h.in"
+    "${PROJECT_SOURCE_DIR}/include/mcl/log_customized_config.h"
 )
 
-file(GLOB_RECURSE SOURCES
-*.cpp
-*.cc
-*.c++
-*.c
-*.C)
+file(GLOB_RECURSE SOURCES 
+  "*.c" "*.C" "*.cc" "*.CC" "*.cpp" "*.CPP" "*.c++")
 
-link_directories("/usr/local/lib")
+add_executable(${TEST_TARGET} ${SOURCES})
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+target_include_directories(${TEST_TARGET} PRIVATE  ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_include_directories(${PROJECT_NAME} PRIVATE  ${CMAKE_CURRENT_SOURCE_DIR} "/usr/local/include")
+target_link_libraries(${TEST_TARGET} PRIVATE mcl cctest_main)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE mcl cctest cctest_main)
-
-target_compile_definitions(${PROJECT_NAME} PRIVATE CUSTOMER_LOG)
+set_target_properties(${TEST_TARGET} PROPERTIES CXX_STANDARD 14)
+target_compile_definitions(${TEST_TARGET} PRIVATE CUSTOMER_LOG)

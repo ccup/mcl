@@ -16,21 +16,7 @@ $ sudo make install
 
 ### test
 
-- install [cctest](https://github.com/ccup/cctest);
-
-```sh
-$ git clone git@github.com:ccup/cctest.git
-$ cd cctest
-$ mkdir build
-$ cd build
-$ cmake .. 
-$ make
-$ sudo make install
-```
-
-- compile and test by `build.sh`;
-
 ```sh
 $ cd mcl
-$ ./build.sh
+$ ./test.sh
 ```

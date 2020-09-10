@@ -19,8 +19,6 @@ target_include_directories(${PROJECT_NAME}
 )
 
 if(ENABLE_TEST)
-    include(CTest)
-    enable_testing()
     add_subdirectory(test)
 endif()
 

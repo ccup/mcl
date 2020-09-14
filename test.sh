@@ -5,7 +5,7 @@ target="build"
 echo "*******************************************************************************"
 echo "start to build project ..."
 
-cmake -H. -B$target -DMCL_ENABLE_TEST=on
+cmake -H. -B$target -DENABLE_TEST=on
 cmake --build $target
 
 if [ $? -ne 0 ]; then

@@ -115,7 +115,7 @@ namespace{
 
 }
 
-extern "C" void mcl_color_log( int level
+extern "C" void mcl_customer_log( int level
 		          , const char* levelstr
 				  , const char* file
 				  , unsigned int line

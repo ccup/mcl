@@ -5,7 +5,15 @@
 
 #ifdef CUSTOMER_LOG
 
-#include "mcl/log_customized_config.h"
+#include "mcl/stdc.h"
+
+MCL_STDC_BEGIN
+
+void mcl_customer_log(int level , const char* levelstr , const char* file, unsigned int line, const char* fmt, ...);
+
+MCL_STDC_END
+
+#define MCL_LOG_OUTPUT mcl_customer_log
 
 #else
 
@@ -16,8 +24,8 @@
 
 #define MCL_LOG_OUTPUT MCL_LOG_PRINTF
 
-#define MCL_LOG_LEVELS MCL_NONE_LEVEL
-
 #endif
+
+#define MCL_LOG_LEVELS MCL_TOTAL_LEVEL
 
 #endif

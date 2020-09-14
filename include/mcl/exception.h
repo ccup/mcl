@@ -27,7 +27,7 @@
         }                           			\
     }
 
-#define __TRY                             		\
+#define __TRY__                             	\
     MclStatus __errorcode = NONE_EXCEPTION_CODE;\
     uint32_t  __errorline = NONE_EXCEPTION_LINE;\
     uint32_t __logpara1 = NONE_EXCEPTION_PARA;	\
@@ -43,7 +43,7 @@
         __logpara2 = (uint32_t)(para2);			\
     }
 
-#define __THROW(errcode)                      	\
+#define __THROW__(errcode)                      \
     {                                       	\
         __errorcode = (errcode);            	\
         __EXCEPT_PROC()                       	\
@@ -52,19 +52,19 @@
 #define __THROW_WITH_PARA(errcode, para1, para2)\
     {                                           \
         __SET_EXCEPT_PARA(para1, para2);      	\
-        __THROW(errcode)                        \
+        __THROW__(errcode)                      \
     }
 
 #define __THROW_WITH_PROC(errcode, errorfunc)   \
     {                                           \
         errorfunc;                              \
-        __THROW(errcode)                        \
+        __THROW__(errcode)                      \
     }
 
 #define __THROW_IF(expr, errcode)               \
     {                                           \
         if (expr) {                             \
-            __THROW(errcode)                    \
+            __THROW__(errcode)                  \
         }                                       \
     }
 
@@ -72,7 +72,7 @@
     {                                           \
         if (expr) {                             \
             errorfunc;                          \
-            __THROW(errcode)                    \
+            __THROW__(errcode)                  \
         }                                       \
     }
 
@@ -80,7 +80,7 @@
     {                                           \
         if (expr) {                             \
             __SET_EXCEPT_PARA(para1, para2);  	\
-            __THROW(errcode)                    \
+            __THROW__(errcode)                  \
         }                                       \
     }
 
@@ -96,7 +96,7 @@
     {                                           \
 		__errorcode = (MclStatus)(func);		\
 		if (__MCL_FAILED(__errorcode)) {		\
-            __THROW(errcode)                    \
+            __THROW__(errcode)                  \
         }                                       \
     }
 
@@ -118,7 +118,7 @@
         }                                       \
     }
 
-#define __CATCH                                 \
+#define __CATCH__                               \
     __catch_position:
 
 #endif

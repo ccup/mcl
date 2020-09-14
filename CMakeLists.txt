@@ -18,7 +18,7 @@ target_include_directories(${PROJECT_NAME}
         ${PROJECT_SOURCE_DIR}/include
 )
 
-if(ENABLE_TEST)
+if(MCL_ENABLE_TEST)
     add_subdirectory(test)
 endif()
 

@@ -2,6 +2,12 @@
 
 MCL is a pure header only library to support modern C development.
 
+### assumptions
+
+- Static memory management;
+- Build based on CMake.
+- Linux|Mac platform.
+
 ### download and install
 
 ```sh

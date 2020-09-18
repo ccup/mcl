@@ -5,7 +5,7 @@ include(${PROJECT_SOURCE_DIR}/cmake/CPM.cmake)
 CPMAddPackage(
     NAME cctest
     GITHUB_REPOSITORY ccup/cctest
-    GIT_TAG master
+    GIT_TAG v1.0
 )
 
 file(GLOB_RECURSE SOURCES 

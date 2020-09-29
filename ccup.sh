@@ -142,7 +142,8 @@ function test() {
 
 function install() {
     start_exec "install"
-    make install
+    
+    cmake --install $build
 
     if [ $? -ne 0 ]; then
         failed_exec "install"

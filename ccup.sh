@@ -72,7 +72,7 @@ function help() {
 Usage: ./ccup.sh [OPTIONS]
 
 Options:
-    -e, Prepare environment
+    -e, Setup docker environment
     -u, Update dependent and generate makefile
     -b, Build project
     -t, Execute testing
@@ -85,7 +85,7 @@ EOF
 }
 
 function env() {
-    start_exec "setup environment of"
+    start_exec "setup docker environment of"
 	command_exists docker || {
 		error "docker is not installed"
 		exit 1
@@ -93,7 +93,7 @@ function env() {
     # docker pull $docker_image
     docker run -it -v $project_path:/$project_name --user $(id -u):$(id -g) -w /$project_name $docker_image /bin/bash
     if [ $? -ne 0 ]; then
-        failed_exec "setup environment"
+        failed_exec "setup docker environment"
         exit 1
     fi    
 }

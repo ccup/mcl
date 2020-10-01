@@ -1,7 +1,5 @@
 set(TEST_TARGET ${PROJECT_NAME}_test)
 
-include(${PROJECT_SOURCE_DIR}/cmake/CPM.cmake)
-
 CPMAddPackage(
     NAME cctest
     GITHUB_REPOSITORY ccup/cctest

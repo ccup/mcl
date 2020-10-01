@@ -12,9 +12,9 @@
 	#define MCL_PLACEHOLDER __attribute__ ((weak))
   #define MCL_RAII(function, ...)	__attribute__((cleanup(function)))  __VA_ARGS__
 #else
-  #define MCL_CTOR STATIC_ASSERT("MCL CTOR NOT SUPPORT!")
-	#define MCL_DTOR STATIC_ASSERT("MCL DTOR NOT SUPPORT!")
-	#define MCL_PLACEHOLDER STATIC_ASSERT("MCL PLACEHOLDER NOT SUPPORT!")
+  #define MCL_CTOR                STATIC_ASSERT("MCL CTOR NOT SUPPORT!")
+	#define MCL_DTOR                STATIC_ASSERT("MCL DTOR NOT SUPPORT!")
+	#define MCL_PLACEHOLDER         STATIC_ASSERT("MCL PLACEHOLDER NOT SUPPORT!")
   #define MCL_RAII(function, ...) STATIC_ASSERT("MCL RAII NOT SUPPORT!")
 #endif
 

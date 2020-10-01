@@ -6,6 +6,18 @@
 
 #define MCL_PRIVATE static
 
+#ifdef __GNUC__
+	#define MCL_CTOR __attribute__((constructor))
+	#define MCL_DTOR __attribute__((destructor))
+	#define MCL_PLACEHOLDER __attribute__ ((weak))
+  #define MCL_RAII(function, ...)	__attribute__((cleanup(function)))  __VA_ARGS__
+#else
+  #define MCL_CTOR STATIC_ASSERT("MCL CTOR NOT SUPPORT!")
+	#define MCL_DTOR STATIC_ASSERT("MCL DTOR NOT SUPPORT!")
+	#define MCL_PLACEHOLDER STATIC_ASSERT("MCL PLACEHOLDER NOT SUPPORT!")
+  #define MCL_RAII(function, ...) STATIC_ASSERT("MCL RAII NOT SUPPORT!")
+#endif
+
 #if defined _WIN32 || defined __CYGWIN__
   #ifdef BUILDING_MOD
     #ifdef __GNUC__
@@ -29,26 +41,6 @@
     #define MCL_PUBLIC
     #define MCL_LOCAL
   #endif
-#endif
-
-#ifdef __GNUC__
-	#define MCL_PLACEHOLDER __attribute__ ((weak))
-#else
-	#define MCL_PLACEHOLDER
-#endif
-
-#ifdef __GNUC__
-	#define MCL_RAII(function, ...)	__attribute__((cleanup(function)))  __VA_ARGS__
-#else
-	#define MCL_RAII(function, ...) STATIC_ASSERT("MCL RAII NOT SUPPORT!")
-#endif
-
-#ifdef __GNUC__
-	#define MCL_CTOR __attribute__((constructor))
-	#define MCL_DTOR __attribute__((destructor))
-#else
-	#define MCL_CTOR STATIC_ASSERT("MCL CTOR NOT SUPPORT!")
-	#define MCL_DTOR STATIC_ASSERT("MCL DTOR NOT SUPPORT!")
 #endif
 
 #endif

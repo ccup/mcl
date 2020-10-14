@@ -1,4 +1,4 @@
-#include "roles/robot.h"
+#include "role/robot.h"
 
 void robot_init(Robot* self, uint8_t percent) {
 	self->charge_percent = percent;

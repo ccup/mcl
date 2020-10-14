@@ -1,4 +1,4 @@
-#include "roles/robot_energy.h"
+#include "role/robot_energy.h"
 #include "mcl/keyword.h"
 
 MCL_PRIVATE void robot_energy_consume(Energy* role, uint8_t energy) {

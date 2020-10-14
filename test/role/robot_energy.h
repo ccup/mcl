@@ -1,8 +1,8 @@
 #ifndef H0A114E99_3AA5_4618_8B6A_68471D72F571
 #define H0A114E99_3AA5_4618_8B6A_68471D72F571
 
-#include "roles/energy.h"
-#include "roles/robot.h"
+#include "role/energy.h"
+#include "role/robot.h"
 
 MCL_STDC_BEGIN
 

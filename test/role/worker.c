@@ -1,6 +1,6 @@
-#include "roles/worker.h"
-#include "roles/robot_energy.h"
-#include "roles/human_energy.h"
+#include "role/worker.h"
+#include "role/robot_energy.h"
+#include "role/human_energy.h"
 #include "mcl/allocator.h"
 
 typedef struct WorkerObject {

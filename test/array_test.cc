@@ -164,7 +164,7 @@ FIXTURE(ArrayTest) {
 		ASSERT_FALSE(MCL_ARRAY_IS_FULL(arr));
 	}
 
-	//	TEST("should panic in compiling when array length overflow capacity") {
+	//	TEST("should panic on compile when array length exceeds capacity") {
 	//		int a[10];
 	//		IntArray int_arr;
 	//		MCL_INIT_ARRAY(int_arr, a, 10, 11);

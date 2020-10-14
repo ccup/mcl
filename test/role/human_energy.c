@@ -1,4 +1,4 @@
-#include "roles/human_energy.h"
+#include "role/human_energy.h"
 #include "mcl/keyword.h"
 
 MCL_PRIVATE void human_energy_consume(Energy* role, uint8_t energy) {

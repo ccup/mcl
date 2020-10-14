@@ -2,6 +2,7 @@
 #define H56A53302_359B_4C7B_996F_2B0CFD849CE9
 
 #include "mcl/stdc.h"
+#include "mcl/fwd_decl.h"
 #include "mcl/static_assert.h"
 
 #define MCL_PRIVATE static
@@ -42,5 +43,7 @@
     #define MCL_LOCAL
   #endif
 #endif
+
+#define MCL_INLINE static inline
 
 #endif

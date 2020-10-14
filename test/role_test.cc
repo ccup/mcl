@@ -1,6 +1,6 @@
 #include <cctest/cctest.h>
-#include "roles/worker.h"
-#include "roles/energy.h"
+#include "role/worker.h"
+#include "role/energy.h"
 #include "mcl/log.h"
 
 FIXTURE(HumanTest) {

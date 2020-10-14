@@ -1,4 +1,4 @@
-#include "roles/human.h"
+#include "role/human.h"
 
 void human_init(Human* self, uint8_t energy) {
 	self->is_hungry = false;

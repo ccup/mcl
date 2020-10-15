@@ -7,13 +7,11 @@
 
 MCL_STDC_BEGIN
 
-
 DEF_INTERFACE(Shape) {
 	ShapeInfo (*draw)(const Shape*);
 };
 
 void shape_init(Shape*);
-
 
 MCL_INLINE ShapeInfo shape_draw(Shape *shape) {
 	return shape->ops->draw(shape);

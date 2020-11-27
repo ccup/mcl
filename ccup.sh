@@ -4,8 +4,32 @@
 project_path=$(cd "$(dirname "$0")"; pwd)
 project_name="${project_path##*/}"
 build="build"
-deps_cache="./deps"
-docker_image="magicbowen/ubuntu-cc-dev:v1"
+cpm_cache="./deps"
+doc_gitbook="./docs/gitbook"
+docker_image="magicbowen/ubuntu-cc-dev:v2"
+
+if [ "$(uname)" == "Darwin" ]; then
+    #running on Mac OS
+    docker_cmd=docker
+    docker_src_path="$project_path"
+    docker_work_dir="/$project_name"
+    cmake_generate_type=""
+    cmake_extra_definations=    
+elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ] || [ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]; then
+    #running on Windows
+    docker_cmd="winpty docker"
+    docker_src_path="/$project_path"
+    docker_work_dir="//$project_name"
+    cmake_generate_type='-GMinGW Makefiles'
+    cmake_extra_definations="-DCMAKE_SH=CMAKE_SH-NOTFOUND"    
+elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    #running on Linux
+    docker_cmd=docker
+    docker_src_path="$project_path"
+    docker_work_dir="/$project_name"
+    cmake_generate_type=""
+    cmake_extra_definations=
+fi
 
 # output utils
 command_exists() {
@@ -72,12 +96,13 @@ function help() {
 Usage: ./ccup.sh [OPTIONS]
 
 Options:
-    -e, Setup docker environment
+    -e, Launch project in docker environment
     -u, Update dependent and generate makefile
     -b, Build project
     -t, Execute testing
     -i, Install project
     -r, Run executable
+    -d, Document generation
     -c, Clean the build
     -C, Clean the build and dependent codes
     -h, The usage of ccup
@@ -90,8 +115,8 @@ function env() {
 		error "docker is not installed"
 		exit 1
 	}  
-    # docker pull $docker_image
-    docker run -it -v $project_path:/$project_name --user $(id -u):$(id -g) -w /$project_name $docker_image /bin/bash
+
+    $docker_cmd run -it -v $docker_src_path:/$project_name -w $docker_work_dir $docker_image /bin/bash
     if [ $? -ne 0 ]; then
         failed_exec "setup docker environment"
         exit 1
@@ -105,7 +130,7 @@ function update() {
 		exit 1
 	} 
     export GIT_SSL_NO_VERIFY=1
-    cmake -H. -B$build -DENABLE_TEST=on -DCPM_SOURCE_CACHE=$deps_cache
+    cmake -H. "$cmake_generate_type" -B$build -DPROJECT_NAME=${project_name} -DENABLE_TEST=on -DCPM_SOURCE_CACHE="$cpm_cache" "$cmake_extra_definations"
     if [ $? -ne 0 ]; then
         failed_exec "update"
         exit 1
@@ -131,7 +156,7 @@ function build() {
 
 function test() {
     start_exec "test"
-    ./$build/test/${project_name}_test
+    find ./$build -perm -111 -type f -name "*_test"  -exec {} \;
 
     if [ $? -ne 0 ]; then
         failed_exec "test"
@@ -154,7 +179,23 @@ function install() {
 
 function run() {
     start_exec "run"
-    ./$build/src/${project_name}_service
+    ./$build/entry/${project_name}
+}
+
+function doc() {
+    start_exec "generate documents of gitbook"
+	command_exists gitbook || {
+		error "gitbook is not installed, reference : ./docs/README-gitbook.md"
+		exit 1
+	}      
+    gitbook init $doc_gitbook
+    gitbook build $doc_gitbook
+
+    if [ $? -ne 0 ]; then
+        failed_exec "document generation"
+        exit 1
+    fi
+    success_exec "document generation"
 }
 
 function clean() {
@@ -171,14 +212,14 @@ function clean() {
 function clean_all() {
     start_exec "clean all"
     info "deleting the build targets of ${project_name}"
-    rm -rf build/*
+    rm -rf build
     info "deleting the dependent codes of ${project_name}"
-    rm -rf deps/*
+    rm -rf ${cpm_cache}
     success_exec "clean all"
 }
 
 function parse_args() {
-    while getopts ':eubtircCh' OPTS; do
+    while getopts ':eubtirdcCh' OPTS; do
         case $OPTS in
             e) env ;;
             u) update; ;;
@@ -186,6 +227,7 @@ function parse_args() {
             t) test; ;;
             i) install; ;;
             r) run; ;;
+            d) doc; ;;
             c) clean; ;;
             C) clean_all; ;;
             h) help; ;;

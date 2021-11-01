@@ -55,6 +55,30 @@ MCL_INLINE MclStatus Mcl_TryLockMutex(MCL_MUTEX *mutex) {
     return pthread_mutex_unlock(mutex) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
+typedef struct MclAutoLock {
+    MCL_MUTEX *mutex;
+} MclAutoLock;
+
+MclAutoLock Mcl_AutoLockCreate(MCL_MUTEX *mutex) {
+    Mcl_LockMutex(mutex);
+    MclAutoLock lock = {.mutex = mutex};
+    return lock;
+}
+
+void Mcl_AutoLockDestroy(MclAutoLock *lock) {
+    if (lock && lock->mutex) {
+        (void)Mcl_UnlockMutex(lock->mutex);
+        lock->mutex = NULL;
+    }
+}
+
+bool Mcl_IsAutoLocked(MclAutoLock *lock) {
+    return (lock && lock->mutex);
+}
+
+#define MCL_AUTO_LOCK(MUTEX)           \
+for (MclAutoLock mclLock=Mcl_AutoLockCreate(&MUTEX); Mcl_IsAutoLocked(&mclLock); Mcl_AutoLockDestroy(&mclLock))
+
 MCL_STDC_END
 
 #endif

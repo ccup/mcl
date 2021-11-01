@@ -76,8 +76,8 @@ bool Mcl_IsAutoLocked(MclAutoLock *lock) {
     return (lock && lock->mutex);
 }
 
-#define MCL_AUTO_LOCK(MUTEX)           \
-for (MclAutoLock mclLock=Mcl_AutoLockCreate(&MUTEX); Mcl_IsAutoLocked(&mclLock); Mcl_AutoLockDestroy(&mclLock))
+#define MCL_LOCK_SCOPE(MUTEX)           \
+for (MCL_RAII(Mcl_AutoLockDestroy) MclAutoLock mclLock=Mcl_AutoLockCreate(&MUTEX); Mcl_IsAutoLocked(&mclLock); Mcl_AutoLockDestroy(&mclLock))
 
 MCL_STDC_END
 

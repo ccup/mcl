@@ -15,12 +15,12 @@ namespace
 		int *cleanCount{nullptr};
 	};
 
-	void MCL_AutoClean(Foo *foo) {
+	void mcl_auto_clean(Foo *foo) {
 		if (foo) foo->clean();
 	}
 }
 
-#define MCL_AUTO_CLEAN MCL_RAII(MCL_AutoClean)
+#define MCL_AUTO_CLEAN MCL_RAII(mcl_auto_clean)
 
 FIXTURE(RaiiTest)
 {

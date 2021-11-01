@@ -10,7 +10,7 @@ MCL_STDC_BEGIN
 #define MCL_MEMORY_FORCE_CLEAN
 #endif
 
-MCL_INLINE void* MCL_Malloc(uint32_t size) {
+MCL_INLINE void* mcl_malloc(uint32_t size) {
     void* p = malloc(size);
 #ifdef MCL_MEMORY_FORCE_CLEAN
     memset(p, 0, size);
@@ -18,28 +18,28 @@ MCL_INLINE void* MCL_Malloc(uint32_t size) {
     return p;
 }
 
-MCL_INLINE void MCL_Free(void * p) {
+MCL_INLINE void mcl_free(void * p) {
     if (p) {
         free(p);
     }
 }
 
-MCL_INLINE void MCL_AutoFree(void* pp) {
+MCL_INLINE void mcl_auto_free(void* pp) {
     if (!pp) return;
     void** p_pointer =  (void**)pp;
-    MCL_Free(*p_pointer);
+    mcl_free(*p_pointer);
     (*p_pointer) = NULL;
 }
 
-#define MCL_MALLOC(SIZE)    MCL_Malloc(SIZE)
+#define MCL_MALLOC(SIZE)    mcl_malloc(SIZE)
 
 #define MCL_FREE(PTR)                   \
 do {                                    \
-    MCL_Free(PTR);                      \
+    mcl_free(PTR);                      \
     (PTR) = NULL;                       \
 } while(0)
 
-#define MCL_AUTO_PTR    MCL_RAII(MCL_AutoFree)
+#define MCL_AUTO_PTR    MCL_RAII(mcl_auto_free)
 
 MCL_STDC_END
 

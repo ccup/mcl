@@ -18,9 +18,8 @@ namespace {
 	}
 
 	void doDecrease(Obj& obj) {
-		MCL_LOCK_SCOPE(obj.mutex) {
-			obj.count--;
-		}
+		MCL_AUTO_LOCK(obj.mutex);
+		obj.count--;
 	}
 
 	void* decrease(void *obj) {

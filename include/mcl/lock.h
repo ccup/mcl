@@ -3,6 +3,7 @@
 
 #include "mcl/keyword.h"
 #include "mcl/assertion.h"
+#include "mcl/symbol.h"
 #include <pthread.h>
 
 MCL_STDC_BEGIN
@@ -75,6 +76,8 @@ void Mcl_AutoLockDestroy(MclAutoLock *lock) {
 bool Mcl_IsAutoLocked(MclAutoLock *lock) {
     return (lock && lock->mutex);
 }
+
+#define MCL_AUTO_LOCK(MUTEX) MCL_RAII(Mcl_AutoLockDestroy) MclAutoLock MCL_UNIQUE_NAME(MCL_LOCK) = Mcl_AutoLockCreate(&MUTEX)
 
 #define MCL_LOCK_SCOPE(MUTEX)           \
 for (MCL_RAII(Mcl_AutoLockDestroy) MclAutoLock mclLock=Mcl_AutoLockCreate(&MUTEX); Mcl_IsAutoLocked(&mclLock); Mcl_AutoLockDestroy(&mclLock))

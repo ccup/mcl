@@ -8,79 +8,79 @@
 
 MCL_STDC_BEGIN
 
-#define MCL_MUTEX pthread_mutex_t
-#define MCL_MUTEX_ATTR pthread_mutexattr_t
+typedef pthread_mutex_t MclMutex;
+typedef pthread_mutexattr_t MclMutexAttr;
 
 #define MCL_MUTEX_INITIALIZE(MUTEX) MUTEX=PTHREAD_MUTEX_INITIALIZER
 
-MCL_INLINE MclStatus Mcl_InitMutexAttr(MCL_MUTEX_ATTR *attr) {
+MCL_INLINE MclStatus Mcl_InitMutexAttr(MclMutexAttr *attr) {
     return pthread_mutexattr_init(attr) ? MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus Mcl_DestroyMutexAttr(MCL_MUTEX_ATTR *attr) {
+MCL_INLINE MclStatus Mcl_DestroyMutexAttr(MclMutexAttr *attr) {
     return pthread_mutexattr_destroy(attr) ? MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus Mcl_SetMutexAttrPShared(MCL_MUTEX_ATTR *attr, int pshared) {
+MCL_INLINE MclStatus Mcl_SetMutexAttrPShared(MclMutexAttr *attr, int pshared) {
     return pthread_mutexattr_setpshared(attr, pshared) ? MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus Mcl_SetMutexAttrType(MCL_MUTEX_ATTR *attr, int type) {
+MCL_INLINE MclStatus Mcl_SetMutexAttrType(MclMutexAttr *attr, int type) {
     return pthread_mutexattr_settype(attr, type) ? MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus Mcl_InitMutex(MCL_MUTEX *mutex, const MCL_MUTEX_ATTR *attr) {
+MCL_INLINE MclStatus Mcl_InitMutex(MclMutex *mutex, const MclMutexAttr *attr) {
     return pthread_mutex_init(mutex, attr) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus Mcl_DestroyMutex(MCL_MUTEX *mutex) {
+MCL_INLINE MclStatus Mcl_DestroyMutex(MclMutex *mutex) {
     return pthread_mutex_destroy(mutex) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus Mcl_InitRecursiveMutex(MCL_MUTEX *mutex) {
-    MCL_MUTEX_ATTR attr;
+MCL_INLINE MclStatus Mcl_InitRecursiveMutex(MclMutex *mutex) {
+    MclMutexAttr attr;
     MCL_ASSERT_SUCC_CALL(Mcl_InitMutexAttr(&attr));
     MCL_ASSERT_SUCC_CALL(Mcl_SetMutexAttrType(&attr, PTHREAD_MUTEX_RECURSIVE));
     return pthread_mutex_init(mutex, &attr) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus Mcl_LockMutex(MCL_MUTEX *mutex) {
+MCL_INLINE MclStatus Mcl_LockMutex(MclMutex *mutex) {
     return pthread_mutex_lock(mutex) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus Mcl_UnlockMutex(MCL_MUTEX *mutex) {
+MCL_INLINE MclStatus Mcl_UnlockMutex(MclMutex *mutex) {
     return pthread_mutex_unlock(mutex) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus Mcl_TryLockMutex(MCL_MUTEX *mutex) {
+MCL_INLINE MclStatus Mcl_TryLockMutex(MclMutex *mutex) {
     return pthread_mutex_unlock(mutex) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
 typedef struct MclAutoLock {
-    MCL_MUTEX *mutex;
+    MclMutex *mutex;
 } MclAutoLock;
 
-MclAutoLock Mcl_AutoLockCreate(MCL_MUTEX *mutex) {
+MclAutoLock MclLock_AutoLock(MclMutex *mutex) {
     Mcl_LockMutex(mutex);
     MclAutoLock lock = {.mutex = mutex};
     return lock;
 }
 
-void Mcl_AutoLockDestroy(MclAutoLock *lock) {
+void MclLock_AutoUnlock(MclAutoLock *lock) {
     if (lock && lock->mutex) {
         (void)Mcl_UnlockMutex(lock->mutex);
         lock->mutex = NULL;
     }
 }
 
-bool Mcl_IsAutoLocked(MclAutoLock *lock) {
+bool MclLock_IsLocked(const MclAutoLock *lock) {
     return (lock && lock->mutex);
 }
 
-#define MCL_AUTO_LOCK(MUTEX) MCL_RAII(Mcl_AutoLockDestroy) MclAutoLock MCL_UNIQUE_NAME(MCL_LOCK) = Mcl_AutoLockCreate(&MUTEX)
+#define MCL_AUTO_LOCK(MUTEX) MCL_RAII(MclLock_AutoUnlock) MclAutoLock MCL_UNIQUE_NAME(MCL_LOCK) = MclLock_AutoLock(&MUTEX)
 
-#define MCL_LOCK_SCOPE(MUTEX)           \
-for (MCL_RAII(Mcl_AutoLockDestroy) MclAutoLock mclLock=Mcl_AutoLockCreate(&MUTEX); Mcl_IsAutoLocked(&mclLock); Mcl_AutoLockDestroy(&mclLock))
+#define MCL_SCOPE_LOCK(MUTEX)           \
+for (MCL_RAII(MclLock_AutoUnlock) MclAutoLock mclLock=MclLock_AutoLock(&MUTEX); MclLock_IsLocked(&mclLock); MclLock_AutoUnlock(&mclLock))
 
 MCL_STDC_END
 

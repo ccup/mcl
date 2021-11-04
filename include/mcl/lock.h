@@ -60,20 +60,20 @@ typedef struct MclAutoLock {
     MclMutex *mutex;
 } MclAutoLock;
 
-MclAutoLock MclLock_AutoLock(MclMutex *mutex) {
+MCL_INLINE MclAutoLock MclLock_AutoLock(MclMutex *mutex) {
     Mcl_LockMutex(mutex);
     MclAutoLock lock = {.mutex = mutex};
     return lock;
 }
 
-void MclLock_AutoUnlock(MclAutoLock *lock) {
+MCL_INLINE void MclLock_AutoUnlock(MclAutoLock *lock) {
     if (lock && lock->mutex) {
         (void)Mcl_UnlockMutex(lock->mutex);
         lock->mutex = NULL;
     }
 }
 
-bool MclLock_IsLocked(const MclAutoLock *lock) {
+MCL_INLINE bool MclLock_IsLocked(const MclAutoLock *lock) {
     return (lock && lock->mutex);
 }
 

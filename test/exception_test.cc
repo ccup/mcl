@@ -7,45 +7,45 @@ namespace {
     }
 
     uint32_t demo() {
-        __TRY__ {
-            __THROW_IF((1 > 2), 0x1234);
-            __THROW_IF_FAIL(func_return_status(MCL_SUCCESS));
-            __THROW_IF_FAIL_WITH_PARA(func_return_status(0xFFFFFFFF), 1, 2);
+        MCL_TRY {
+            MCL_THROW_IF((1 > 2), 0x1234);
+            MCL_THROW_IF_FAIL(func_return_status(MCL_SUCCESS));
+            MCL_THROW_IF_FAIL_WITH_PARA(func_return_status(0xFFFFFFFF), 1, 2);
             return MCL_SUCCESS;
         }
-        __CATCH__ {
-            return __EXCEPTION_PARA1 + __EXCEPTION_PARA2;
+        MCL_CATCH {
+            return __MCL_EXCEPTION_PARA1 + __MCL_EXCEPTION_PARA2;
         }
     }
 }
 
 FIXTURE(ExceptionTest) {
     TEST("throw test") {
-        __TRY__ {
-            __THROW__(12345);
-        } __CATCH__ {
-            ASSERT_EQ(__EXCEPTION_CODE, 12345);
+        MCL_TRY {
+            MCL_THROW(12345);
+        } MCL_CATCH {
+            ASSERT_EQ(__MCL_EXCEPTION_CODE, 12345);
         };
     }
     TEST("throw on condition") {
-        __TRY__ {
-            __THROW_IF(false, 12345);
-        } __CATCH__ {
-            ASSERT_EQ(__EXCEPTION_CODE, NONE_EXCEPTION_CODE);
+        MCL_TRY {
+            MCL_THROW_IF(false, 12345);
+        } MCL_CATCH {
+            ASSERT_EQ(__MCL_EXCEPTION_CODE, MCL_NONE_EXCEPTION_CODE);
         };
     }
     TEST("throw if fail") {
-        __TRY__ {
-            __THROW_IF_FAIL(func_return_status(0x1234));
-        } __CATCH__ {
-            ASSERT_EQ(__EXCEPTION_CODE, 0x1234);
+        MCL_TRY {
+            MCL_THROW_IF_FAIL(func_return_status(0x1234));
+        } MCL_CATCH {
+            ASSERT_EQ(__MCL_EXCEPTION_CODE, 0x1234);
         };
     }
     TEST("should not throw if success") {
-        __TRY__ {
-            __THROW_IF_FAIL(func_return_status(MCL_SUCCESS));
-        } __CATCH__ {
-            ASSERT_EQ(__EXCEPTION_CODE, MCL_SUCCESS);
+        MCL_TRY {
+            MCL_THROW_IF_FAIL(func_return_status(MCL_SUCCESS));
+        } MCL_CATCH {
+            ASSERT_EQ(__MCL_EXCEPTION_CODE, MCL_SUCCESS);
         };
     }
     TEST("should return right code in demo function") {

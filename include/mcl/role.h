@@ -22,7 +22,7 @@ role* ROLE(role)
 MCL_LIST_HEAD(role) ROLE(role)
 
 #define ROLE_CAST_TO(role, role_ptr, obj, obj_ptr)\
-obj* obj_ptr = container_of(role_ptr, obj, ROLE(role))
+obj* obj_ptr = Mcl_ContainerOf(role_ptr, obj, ROLE(role))
 
 #define	ROLE_INIT(obj_ptr, role, tbl)\
 obj_ptr->ROLE(role) = tbl

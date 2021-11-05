@@ -1,5 +1,5 @@
 #include "interface/shape.h"
-#include "mcl/log.h"
+#include "mcl/log/log.h"
 
 MCL_PRIVATE ShapeInfo shape_ops_draw(const Shape *shape) {
 	MCL_LOG_ERR("Invoke pure abstract function of Shape");

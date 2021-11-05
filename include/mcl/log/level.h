@@ -1,0 +1,24 @@
+#ifndef H0D703BE0_2693_4283_A146_BA19746F5E60
+#define H0D703BE0_2693_4283_A146_BA19746F5E60
+
+#include "mcl/stdc.h"
+
+MCL_STDC_BEGIN
+
+typedef enum MclLogLevel
+{
+	MCL_LOG_LEVEL_NONE  = 0x0,
+    MCL_LOG_LEVEL_DEBUG = 0x01,
+	MCL_LOG_LEVEL_INFO  = 0x02,
+	MCL_LOG_LEVEL_SUCC  = 0x04,
+	MCL_LOG_LEVEL_WARN  = 0x08,
+	MCL_LOG_LEVEL_ERR   = 0x10,
+	MCL_LOG_LEVEL_FATAL = 0x20,
+	MCL_LOG_LEVEL_TOTAL = 0xFF
+} MclLogLevel;
+
+const char* MclLogLevel_GetColorFmt(MclLogLevel);
+
+MCL_STDC_END
+
+#endif

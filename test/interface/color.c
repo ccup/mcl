@@ -1,5 +1,5 @@
 #include "interface/color.h"
-#include "mcl/log.h"
+#include "mcl/log/log.h"
 
 MCL_PRIVATE FillInfo color_ops_render(const Color *color, size_t area) {
 	MCL_LOG_ERR("Invoke pure abstract function of Color");

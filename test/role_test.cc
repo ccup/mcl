@@ -1,7 +1,7 @@
 #include <cctest/cctest.h>
 #include "role/worker.h"
 #include "role/energy.h"
-#include "mcl/log.h"
+#include "mcl/log/log.h"
 
 FIXTURE(HumanTest) {
 	Worker* worker{nullptr};

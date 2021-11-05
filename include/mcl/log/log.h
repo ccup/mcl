@@ -1,7 +1,7 @@
 #ifndef H38247538_297F_4A80_94D3_8A289788461B
 #define H38247538_297F_4A80_94D3_8A289788461B
 
-#include "mcl/log_config.h"
+#include "mcl/log/config.h"
 
 #define __MCL_LOG_TITLE(level, levelstr, fmt, ...) 		\
 do {													\
@@ -11,21 +11,21 @@ do {													\
 } while(0)
 
 #define MCL_LOG_FATAL(fmt, ...) \
-	__MCL_LOG_TITLE(MCL_FATAL_LEVEL, "FATAL", fmt, ##__VA_ARGS__)
+	__MCL_LOG_TITLE(MCL_LOG_LEVEL_FATAL, "FATAL", fmt, ##__VA_ARGS__)
 
 #define MCL_LOG_ERR(fmt, ...) \
-	__MCL_LOG_TITLE(MCL_ERR_LEVEL  , "ERROR", fmt, ##__VA_ARGS__)
+	__MCL_LOG_TITLE(MCL_LOG_LEVEL_ERR  , "ERROR", fmt, ##__VA_ARGS__)
 
 #define MCL_LOG_WARN(fmt, ...) \
-	__MCL_LOG_TITLE(MCL_WARN_LEVEL , "WARN" , fmt, ##__VA_ARGS__)
+	__MCL_LOG_TITLE(MCL_LOG_LEVEL_WARN , "WARN" , fmt, ##__VA_ARGS__)
 
 #define MCL_LOG_SUCC(fmt, ...) \
-	__MCL_LOG_TITLE(MCL_SUCC_LEVEL , "SUCC" , fmt, ##__VA_ARGS__)
+	__MCL_LOG_TITLE(MCL_LOG_LEVEL_SUCC , "SUCC" , fmt, ##__VA_ARGS__)
 
 #define MCL_LOG_INFO(fmt, ...) \
-	__MCL_LOG_TITLE(MCL_INFO_LEVEL , "INFO" , fmt, ##__VA_ARGS__)
+	__MCL_LOG_TITLE(MCL_LOG_LEVEL_INFO , "INFO" , fmt, ##__VA_ARGS__)
 
 #define MCL_LOG_DBG(fmt, ...) \
-	__MCL_LOG_TITLE(MCL_DEBUG_LEVEL, "DEBUG", fmt, ##__VA_ARGS__)
+	__MCL_LOG_TITLE(MCL_LOG_LEVEL_DEBUG, "DEBUG", fmt, ##__VA_ARGS__)
 
 #endif

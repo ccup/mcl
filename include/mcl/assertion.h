@@ -2,7 +2,7 @@
 #define H5712E60C_DEF5_4A3B_93C1_C074CD80C63C
 
 #include "mcl/status.h"
-#include "mcl/log.h"
+#include "mcl/log/log.h"
 #include <stddef.h>
 #include <stdbool.h>
 

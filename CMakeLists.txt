@@ -13,12 +13,7 @@ option(ENABLE_TEST "Build tests" OFF)
 
 include(${PROJECT_SOURCE_DIR}/cmake/CPM.cmake)
 
-add_library(${PROJECT_NAME} INTERFACE)
-
-target_include_directories(${PROJECT_NAME}
-    INTERFACE
-        ${PROJECT_SOURCE_DIR}/include
-)
+add_subdirectory(src)
 
 if(ENABLE_TEST)
     add_subdirectory(test)

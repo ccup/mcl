@@ -1,9 +1,9 @@
 #include "interface/color_red.h"
-#include "mcl/log.h"
+#include "mcl/log/log.h"
 
 MCL_PRIVATE FillInfo color_red_ops_render(const Color *color, size_t area) {
 	MCL_INTF_CAST_TO(Color, color, ColorRed, self);
-	MCL_LOG_INFO("%s color draw %d area", self->color_name, area);
+	MCL_LOG_INFO("%s color draw %lu area", self->color_name, area);
 	FillInfo info = {RED, area};
 	return info;
 }

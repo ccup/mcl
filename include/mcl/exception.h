@@ -2,7 +2,7 @@
 #define HDD1B8843_1542_4D8A_ACBC_4D9719CA9B96
 
 #include "mcl/status.h"
-#include "mcl/log.h"
+#include "mcl/log/log.h"
 
 #define __MCL_EXCEPTION_CODE   (__errorcode)
 #define __MCL_EXCEPTION_LINE   (__errorline)

@@ -7,7 +7,9 @@
 #define MCL_PRIVATE static
 #define MCL_INLINE  static inline
 
-#include "mcl/assert.h"
+#ifndef MCL_STATIC_ASSERT
+#define MCL_STATIC_ASSERT(exp)  extern void __mcl_static_assert(int arg[(exp) ? 1 : -1])
+#endif
 
 #ifdef __GNUC__
 	#define MCL_CTOR __attribute__((constructor))

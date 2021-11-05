@@ -242,8 +242,4 @@ do {                                                 \
 #define MCL_ASSERT_VALID_PTR_NIL_FINALLY(ptr, action)         \
     __MCL_ASSERT_VALID_PTR_FINALLY(ptr, action, __MCL_NIL_ACTION)
 
-#ifndef MCL_STATIC_ASSERT
-#define MCL_STATIC_ASSERT(exp) extern void __mcl_static_assert(int arg[(exp) ? 1 : -1])
-#endif
-
 #endif

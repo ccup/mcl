@@ -2,6 +2,7 @@
 #define H90B6970A_7AC3_43F4_9432_0647CA0925A0
 
 #include "mcl/keyword.h"
+#include "mcl/typedef.h"
 #include "mcl/assertion.h"
 #include "mcl/symbol.h"
 #include <pthread.h>
@@ -56,9 +57,9 @@ MCL_INLINE MclStatus Mcl_TryLockMutex(MclMutex *mutex) {
     return pthread_mutex_unlock(mutex) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-typedef struct MclAutoLock {
+MCL_TYPE_DEF(MclAutoLock) {
     MclMutex *mutex;
-} MclAutoLock;
+};
 
 MCL_INLINE MclAutoLock MclLock_AutoLock(MclMutex *mutex) {
     Mcl_LockMutex(mutex);
@@ -77,9 +78,9 @@ MCL_INLINE bool MclLock_IsLocked(const MclAutoLock *lock) {
     return (lock && lock->mutex);
 }
 
-#define MCL_AUTO_LOCK(MUTEX) MCL_RAII(MclLock_AutoUnlock) MclAutoLock MCL_UNIQUE_NAME(MCL_LOCK) = MclLock_AutoLock(&MUTEX)
+#define MCL_LOCK_AUTO(MUTEX) MCL_RAII(MclLock_AutoUnlock) MclAutoLock MCL_SYMBOL_UNIQUE(MCL_LOCK) = MclLock_AutoLock(&MUTEX)
 
-#define MCL_SCOPE_LOCK(MUTEX)           \
+#define MCL_LOCK_SCOPE(MUTEX)           \
 for (MCL_RAII(MclLock_AutoUnlock) MclAutoLock mclLock=MclLock_AutoLock(&MUTEX); MclLock_IsLocked(&mclLock); MclLock_AutoUnlock(&mclLock))
 
 MCL_STDC_END

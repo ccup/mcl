@@ -9,32 +9,31 @@ MCL_STDC_BEGIN
 
 typedef uint32_t MclStatus;
 
-#define MCL_SUCC_STATUS(status) (MclStatus) status
-#define MCL_FAIL_STATUS(status) (MclStatus) (status | MCL_RESERVED_FAIL)
-
+#define MCL_STATUS_SUCC(status) (MclStatus) status
+#define MCL_STATUS_FAIL(status) (MclStatus) (status | MCL_RESERVED_FAIL)
 
 /* OK */
-#define MCL_SUCCESS             MCL_SUCC_STATUS(0)
+#define MCL_SUCCESS             MCL_STATUS_SUCC(0)
 
 /* Error Status */
 #define MCL_RESERVED_FAIL       (MclStatus) 0x80000000
-#define MCL_FAILURE             MCL_FAIL_STATUS(1)
-#define MCL_FATAL_BUG           MCL_FAIL_STATUS(2)
-#define MCL_TIMEDOUT            MCL_FAIL_STATUS(3)
-#define MCL_OUT_OF_RANGE        MCL_FAIL_STATUS(4)
-#define MCL_UNIMPLEMENTED       MCL_FAIL_STATUS(5)
+#define MCL_FAILURE             MCL_STATUS_FAIL(1)
+#define MCL_FATAL_BUG           MCL_STATUS_FAIL(2)
+#define MCL_TIMEDOUT            MCL_STATUS_FAIL(3)
+#define MCL_OUT_OF_RANGE        MCL_STATUS_FAIL(4)
+#define MCL_UNIMPLEMENTED       MCL_STATUS_FAIL(5)
 
-static inline bool mcl_status_is_ok(MclStatus status)
+static inline bool MclStatus_IsOK(MclStatus status)
 {
     return (status & MCL_RESERVED_FAIL) == 0;
 }
 
-static inline bool mcl_status_is_fail(MclStatus status)
+static inline bool MclStatus_IsFailed(MclStatus status)
 {
-    return !mcl_status_is_ok(status);
+    return !MclStatus_IsOK(status);
 }
 
-#define __MCL_FAILED(result)   mcl_status_is_fail(result)
+#define MCL_FAILED(result)   MclStatus_IsFailed(result)
 
 MCL_STDC_END
 

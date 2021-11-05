@@ -10,24 +10,24 @@
 #define ARRAY_SIZE(arr) sizeof(arr) / sizeof(arr[0])
 #endif
 
-#define MCL_DECL_ARRAY(elem, name) 							\
+#define MCL_ARRAY_DECL(elem, name) 							\
 typedef struct name{ elem* head; uint32_t capacity; uint32_t length;}name
 
-#define MCL_INIT_ARRAY(arr, ptr, size, length)				\
-STATIC_ASSERT(size >= length);							    \
+#define MCL_ARRAY_INIT(arr, ptr, size, length)				\
+MCL_STATIC_ASSERT(size >= length);							\
 arr = {ptr, size, length}
 
-#define MCL_INIT_ARRAY_LOCAL(arr, elem, size)	            \
+#define MCL_ARRAY_INIT_LOCAL(arr, elem, size)	            \
 elem __##arr[size] = {0};						            \
-MCL_INIT_ARRAY(arr, __##arr, size, 0)
+MCL_ARRAY_INIT(arr, __##arr, size, 0)
 
-#define MCL_INIT_ARRAY_LOCAL_WITH_ELEMS(arr, elem, size, len, ...)\
+#define MCL_ARRAY_INIT_LOCAL_WITH_ELEMS(arr, elem, size, len, ...)\
 elem __##arr[size] = __VA_ARGS__;						    \
-MCL_INIT_ARRAY(arr, __##arr, size, len)
+MCL_ARRAY_INIT(arr, __##arr, size, len)
 
-#define MCL_INIT_ARRAY_BY_ELEMS(arr, elem, ...)  			\
+#define MCL_ARRAY_INIT_BY_ELEMS(arr, elem, ...)  			\
 elem __##arr[] = __VA_ARGS__;								\
-MCL_INIT_ARRAY(arr, __##arr, ARRAY_SIZE(__##arr), ARRAY_SIZE(__##arr))
+MCL_ARRAY_INIT(arr, __##arr, ARRAY_SIZE(__##arr), ARRAY_SIZE(__##arr))
 
 #define MCL_ARRAY_RAW(arr)   	arr.head
 #define MCL_ARRAY_SIZE(arr)  	arr.capacity
@@ -48,7 +48,7 @@ do {															\
 		e = arr.head[i];										\
 	} else {													\
 		e = nullobj;											\
-		MCL_WARN("get item in index %d out of array(%d:%d)", i, arr.capacity, arr.length);\
+		MCL_LOG_WARN("get item in index %d out of array(%d:%d)", i, arr.capacity, arr.length);\
 	}															\
 } while(0)
 
@@ -57,7 +57,7 @@ do {															\
 	if (i < arr.length) {										\
 		arr.head[i] = e;										\
 	} else {													\
-		MCL_WARN("put item in index %d out of array(%d:%d)", i, arr.capacity, arr.length);\
+		MCL_LOG_WARN("put item in index %d out of array(%d:%d)", i, arr.capacity, arr.length);\
 	}															\
 } while(0)
 
@@ -66,7 +66,7 @@ do{																\
 	if(arr.length < arr.capacity) {								\
 		arr.head[arr.length++] = e;							    \
 	} else {													\
-		MCL_WARN("append to full array");						\
+		MCL_LOG_WARN("append to full array");						\
 	}															\
 } while(0)
 
@@ -86,7 +86,7 @@ do {															\
 #define MCL_ARRAY_INSERT(arr, elem, i, e)						\
 do {															\
 	if(MCL_ARRAY_IS_FULL(arr)) {								\
-		MCL_WARN("insert to full array");						\
+		MCL_LOG_WARN("insert to full array");						\
 		break;													\
 	}															\
 	if(i == arr.length) {										\
@@ -96,7 +96,7 @@ do {															\
 		arr.head[i] = e;										\
 		arr.length++;											\
 	} else {													\
-		MCL_WARN("insert item in index %d out of array(%d:%d)", i, arr.capacity, arr.length);\
+		MCL_LOG_WARN("insert item in index %d out of array(%d:%d)", i, arr.capacity, arr.length);\
 	}															\
 } while(0)
 
@@ -108,7 +108,7 @@ do {															\
 		}														\
         arr.length--;											\
 	} else {													\
-		MCL_WARN("remove item in index %d out of array(%d:%d)", i, arr.capacity, arr.length);\
+		MCL_LOG_WARN("remove item in index %d out of array(%d:%d)", i, arr.capacity, arr.length);\
     }															\
 } while(0)
 
@@ -119,7 +119,7 @@ do {															\
 		arr.head[0] = e;							    		\
 		arr.length++;											\
 	} else {													\
-		MCL_WARN("push to full array");						    \
+		MCL_LOG_WARN("push to full array");						    \
 	}															\
 } while(0)
 
@@ -130,7 +130,7 @@ do {															\
 		MCL_ARRAY_MOVE(arr, elem, 0, arr.length, -1);			\
 		arr.length--;											\
 	} else {													\
-		MCL_WARN("pop from empty array");						\
+		MCL_LOG_WARN("pop from empty array");						\
 		e = nullobj;											\
 	}															\
 } while(0)

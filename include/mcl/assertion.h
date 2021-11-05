@@ -16,7 +16,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 #define __MCL_WARNING_NOT_TRUE(exp)         \
-  MCL_WARN("assertion failed: "#exp)
+  MCL_LOG_WARN("assertion failed: "#exp)
 
 
 #define __MCL_EXPECT_TRUE(exp, action)      \
@@ -51,7 +51,7 @@ do {                                        \
 
 ///////////////////////////////////////////////////////////////
 #define  __MCL_NOT_TRUE(exp)                \
-    MCL_ERR("assertion failed: "#exp)
+    MCL_LOG_ERR("assertion failed: "#exp)
 
 #define __MCL_ASSERT_TRUE(exp, action)      \
 do {                                        \
@@ -108,7 +108,7 @@ do {                                        \
 #define __MCL_EXPECT_SUCC_CALL(call, action)\
 do {                                            \
     MclStatus __status = call;                  \
-    if (__MCL_FAILED(__status))                 \
+    if (MCL_FAILED(__status))                   \
     {                                           \
         __MCL_WARNING_CALL(call, __status);     \
         action;                                 \
@@ -132,12 +132,12 @@ do {                                            \
 
 /////////////////////////////////////////////////////////////////////
 #define __MCL_FAIL_CALL(call, status)           \
-  MCL_ERR(#call" = [%X]", status)
+  MCL_LOG_ERR(#call" = [%X]", status)
 
 #define __MCL_ASSERT_SUCC_CALL(call, action)    \
 do {                                            \
     MclStatus __status = call;                  \
-    if (__MCL_FAILED(__status))                 \
+    if (MCL_FAILED(__status))                   \
     {                                           \
         __MCL_FAIL_CALL(call, __status);        \
         action;                                 \
@@ -168,7 +168,7 @@ do {                                            \
 #define __MCL_ASSERT_SUCC_CALL_FINALLY(call, action, returnAction)  \
 do {                                                \
     MclStatus __status = call;                      \
-    if (__MCL_FAILED(__status))                     \
+    if (MCL_FAILED(__status))                       \
     {                                               \
         __MCL_FAIL_CALL(call, __status);            \
         action;                                     \
@@ -187,7 +187,7 @@ do {                                                 \
     {                                                \
         return MCL_SUCCESS;                          \
     }                                                \
-    else if (__MCL_FAILED(__status))                 \
+    else if (MCL_FAILED(__status))                   \
     {                                                \
         __MCL_FAIL_CALL(call, __status);             \
         action;                                      \
@@ -199,7 +199,7 @@ do {                                                 \
 
 //////////////////////////////////////////////////////////////////////////
 #define __MCL_NIL_PTR(ptr)                               \
-    MCL_ERR("assertion failed: unexpected null ptr: "#ptr)
+    MCL_LOG_ERR("assertion failed: unexpected null ptr: "#ptr)
 
 #define __MCL_ASSERT_VALID_PTR(ptr, action)          \
 do {                                                 \

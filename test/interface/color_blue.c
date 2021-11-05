@@ -3,7 +3,7 @@
 
 MCL_PRIVATE FillInfo color_blue_ops_render(const Color *color, size_t area) {
 	MCL_INTF_CAST_TO(Color, color, ColorBlue, self);
-	MCL_INFO("blue color id = %d draw area %d", self->color_id, area);
+	MCL_LOG_INFO("blue color id = %d draw area %d", self->color_id, area);
 	FillInfo info = {BLUE, area};
 	return info;
 }

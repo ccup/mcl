@@ -10,7 +10,7 @@ namespace {
 	void* increase(void *obj) {
 		Obj* object = (Obj*)(obj);
 		for (int i = 0; i < 10000; i++) {
-			MCL_SCOPE_LOCK(object->mutex) {
+			MCL_LOCK_SCOPE(object->mutex) {
 				object->count++;
 			}
 		}
@@ -18,13 +18,13 @@ namespace {
 	}
 
 	void doDecrease(Obj& obj) {
-		MCL_AUTO_LOCK(obj.mutex);
+		MCL_LOCK_AUTO(obj.mutex);
 		obj.count--;
 	}
 
 	void* decrease(void *obj) {
 		Obj* object = (Obj*)(obj);
-		MCL_SCOPE_LOCK(object->mutex) {
+		MCL_LOCK_SCOPE(object->mutex) {
 			for (int i = 0; i < 10000; i++) {
 				doDecrease(*object);
 			}
@@ -34,7 +34,7 @@ namespace {
 
 	void* decreaseInMiddle(void *obj) {
 		Obj* object = (Obj*)(obj);
-		MCL_SCOPE_LOCK(object->mutex) {
+		MCL_LOCK_SCOPE(object->mutex) {
 			for (int i = 0; i < 10000; i++) {
 				if (i >= 5000) return NULL;
 				object->count--;
@@ -59,7 +59,7 @@ FIXTURE(MutexTest)
 		pthread_create(&t1, NULL, increase, &obj);
 		pthread_create(&t2, NULL, decrease, &obj);
 
-		MCL_SCOPE_LOCK(obj.mutex) {
+		MCL_LOCK_SCOPE(obj.mutex) {
 			obj.count += 2;
 		}
 

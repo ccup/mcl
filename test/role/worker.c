@@ -11,7 +11,7 @@ typedef struct WorkerObject {
 	}energy_mem;
 } WorkerObject;
 
-MCL_DEF_ALLOCATOR(WorkerObject, 2);
+MCL_ALLOCATOR_DEF(WorkerObject, 2);
 
 MCL_PRIVATE void worker_init(Worker* self, Energy *role) {
 	self->produce_num = 0;

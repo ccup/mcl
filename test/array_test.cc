@@ -2,12 +2,12 @@
 #include "mcl/array.h"
 
 FIXTURE(ArrayTest) {
-	MCL_DECL_ARRAY(int, IntArray);
+	MCL_ARRAY_DECL(int, IntArray);
 
 	TEST("array initialized") {
 		int a[10] = {0, 1, 2, 3};
 		IntArray arr;
-		MCL_INIT_ARRAY(arr, a, 10, 4);
+		MCL_ARRAY_INIT(arr, a, 10, 4);
 
 		ASSERT_EQ(a,  MCL_ARRAY_RAW(arr));
 		ASSERT_EQ(10, MCL_ARRAY_SIZE(arr));
@@ -18,7 +18,7 @@ FIXTURE(ArrayTest) {
 
 	TEST("array initialized in local") {
 		IntArray arr;
-		MCL_INIT_ARRAY_LOCAL(arr, int, 10);
+		MCL_ARRAY_INIT_LOCAL(arr, int, 10);
 		ASSERT_EQ(10, MCL_ARRAY_SIZE(arr));
 		ASSERT_EQ(0,  MCL_ARRAY_LEN(arr));
 		ASSERT_EQ(0,  MCL_ARRAY_ELEM(arr, 9));
@@ -26,7 +26,7 @@ FIXTURE(ArrayTest) {
 
 	TEST("array initialized in local with elements") {
 		IntArray arr;
-		MCL_INIT_ARRAY_LOCAL_WITH_ELEMS(arr, int, 10, 5, {0, 1, 2, 3, 4});
+		MCL_ARRAY_INIT_LOCAL_WITH_ELEMS(arr, int, 10, 5, {0, 1, 2, 3, 4});
 		ASSERT_EQ(10, MCL_ARRAY_SIZE(arr));
 		ASSERT_EQ(5,  MCL_ARRAY_LEN(arr));
 		ASSERT_EQ(2,  MCL_ARRAY_ELEM(arr, 2));
@@ -34,7 +34,7 @@ FIXTURE(ArrayTest) {
 
 	TEST("append elem in last position") {
 		IntArray arr;
-		MCL_INIT_ARRAY_LOCAL_WITH_ELEMS(arr, int, 10, 5, {0, 1, 2, 3, 4});
+		MCL_ARRAY_INIT_LOCAL_WITH_ELEMS(arr, int, 10, 5, {0, 1, 2, 3, 4});
 		MCL_ARRAY_APPEND(arr, 5);
 		ASSERT_EQ(10, MCL_ARRAY_SIZE(arr));
 		ASSERT_EQ(6,  MCL_ARRAY_LEN(arr));
@@ -43,7 +43,7 @@ FIXTURE(ArrayTest) {
 
 	TEST("insert elem to array") {
 		IntArray arr;
-		MCL_INIT_ARRAY_LOCAL_WITH_ELEMS(arr, int, 10, 5, {0, 1, 2, 3, 4});
+		MCL_ARRAY_INIT_LOCAL_WITH_ELEMS(arr, int, 10, 5, {0, 1, 2, 3, 4});
 		MCL_ARRAY_INSERT(arr, int, 2, 5);
 		ASSERT_EQ(10, MCL_ARRAY_SIZE(arr));
 		ASSERT_EQ(6,  MCL_ARRAY_LEN(arr));
@@ -54,7 +54,7 @@ FIXTURE(ArrayTest) {
 
 	TEST("insert elem to full array") {
 		IntArray arr;
-		MCL_INIT_ARRAY_LOCAL_WITH_ELEMS(arr, int, 5, 5, {0, 1, 2, 3, 4});
+		MCL_ARRAY_INIT_LOCAL_WITH_ELEMS(arr, int, 5, 5, {0, 1, 2, 3, 4});
 		MCL_ARRAY_INSERT(arr, int, 2, 5);
 		ASSERT_EQ(5,  MCL_ARRAY_SIZE(arr));
 		ASSERT_EQ(5,  MCL_ARRAY_LEN(arr));
@@ -69,7 +69,7 @@ FIXTURE(ArrayTest) {
 
 	TEST("insert elem outside of valid range") {
 		IntArray arr;
-		MCL_INIT_ARRAY_LOCAL_WITH_ELEMS(arr, int, 5, 5, {0, 1, 2, 3, 4});
+		MCL_ARRAY_INIT_LOCAL_WITH_ELEMS(arr, int, 5, 5, {0, 1, 2, 3, 4});
 		MCL_ARRAY_INSERT(arr, int, 5, 0xff);
 		ASSERT_EQ(5,  MCL_ARRAY_SIZE(arr));
 		ASSERT_EQ(5,  MCL_ARRAY_LEN(arr));
@@ -79,7 +79,7 @@ FIXTURE(ArrayTest) {
 
 	TEST("remove elem from array") {
 		IntArray arr;
-		MCL_INIT_ARRAY_LOCAL_WITH_ELEMS(arr, int, 10, 5, {0, 1, 2, 3, 4});
+		MCL_ARRAY_INIT_LOCAL_WITH_ELEMS(arr, int, 10, 5, {0, 1, 2, 3, 4});
 		MCL_ARRAY_REMOVE(arr, int, 2);
 		ASSERT_EQ(10, MCL_ARRAY_SIZE(arr));
 		ASSERT_EQ(4,  MCL_ARRAY_LEN(arr));
@@ -93,7 +93,7 @@ FIXTURE(ArrayTest) {
 
 	TEST("remove elem from empty array") {
 		IntArray arr;
-		MCL_INIT_ARRAY_LOCAL_WITH_ELEMS(arr, int, 10, 0, {0});
+		MCL_ARRAY_INIT_LOCAL_WITH_ELEMS(arr, int, 10, 0, {0});
 		MCL_ARRAY_REMOVE(arr, int, 0);
 		ASSERT_EQ(10, MCL_ARRAY_SIZE(arr));
 		ASSERT_EQ(0,  MCL_ARRAY_LEN(arr));
@@ -104,7 +104,7 @@ FIXTURE(ArrayTest) {
 		IntArray arr;
 		int index = 0xff;
 
-		MCL_INIT_ARRAY_LOCAL_WITH_ELEMS(arr, int, 10, 5, {0, 1, 2, 3, 4});
+		MCL_ARRAY_INIT_LOCAL_WITH_ELEMS(arr, int, 10, 5, {0, 1, 2, 3, 4});
 
 		MCL_ARRAY_FIND_INDEX(index, arr, 3);
 		ASSERT_EQ(3, index);
@@ -116,7 +116,7 @@ FIXTURE(ArrayTest) {
 	TEST("array foreach") {
 		IntArray arr;
 		int sum = 0;
-		MCL_INIT_ARRAY_BY_ELEMS(arr, int, {0, 1, 2, 3, 4});
+		MCL_ARRAY_INIT_BY_ELEMS(arr, int, {0, 1, 2, 3, 4});
 		MCL_ARRAY_FOREACH(int*, arr, v) {
 			sum += *v;
 		}
@@ -126,7 +126,7 @@ FIXTURE(ArrayTest) {
 	TEST("use array as stack") {
 		IntArray arr;
 		int v = 0xff;
-		MCL_INIT_ARRAY_LOCAL(arr, int, 3);
+		MCL_ARRAY_INIT_LOCAL(arr, int, 3);
 
 		MCL_ARRAY_POP(arr, int, v, -1);
 		ASSERT_EQ(-1, v);

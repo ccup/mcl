@@ -6,7 +6,7 @@
 
 MCL_STDC_BEGIN
 
-MCL_FWD_DECL(Energy);
+MCL_TYPE_FWD(Energy);
 
 typedef enum WorkerType {
 	HUMAN, ROBOT,

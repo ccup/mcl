@@ -2,14 +2,14 @@
 #define HF595E244_DC76_4DAB_A3AA_4D9FB62983E8
 
 #include "mcl/stdc.h"
-#include "mcl/fwd_decl.h"
+#include "mcl/typedef.h"
 #include "mcl/container_of.h"
 #include "mcl/list.h"
 
 #define MCL_ROLE(role)	__##role
 
 #define MCL_ROLE_DEF(role)  			\
-MCL_FWD_DECL(role);						\
+MCL_TYPE_FWD(role);						\
 struct role
 
 #define MCL_ROLE_IMPL(role)				\
@@ -22,7 +22,7 @@ role* MCL_ROLE(role)
 MCL_LIST_HEAD(role) MCL_ROLE(role)
 
 #define MCL_ROLE_CAST_TO(role, role_ptr, obj, obj_ptr)\
-obj* obj_ptr = Mcl_ContainerOf(role_ptr, obj, MCL_ROLE(role))
+obj* obj_ptr = MCL_CONTAINER_OF(role_ptr, obj, MCL_ROLE(role))
 
 #define	MCL_ROLE_INIT(obj_ptr, role, tbl)\
 obj_ptr->MCL_ROLE(role) = tbl

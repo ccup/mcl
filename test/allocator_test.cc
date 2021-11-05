@@ -7,9 +7,9 @@ namespace {
 		const char* name;
 	} Object;
 
-	MCL_DEF_ALLOCATOR(Object, 2);
+	MCL_ALLOCATOR_DEF(Object, 2);
 
-	MCL_DEF_ALLOCATOR(char, 2);
+	MCL_ALLOCATOR_DEF(char, 2);
 }
 
 FIXTURE(AllocatorTest) {

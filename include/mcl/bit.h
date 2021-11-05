@@ -8,14 +8,14 @@
 (((uint64_t)1 << BIT_NUM) - 1)
 #endif
 
-#ifndef MCL_GET_BITS_VALUE
-#define MCL_GET_BITS_VALUE(target, offset, length)	\
+#ifndef MCL_BITS_GET_VALUE
+#define MCL_BITS_GET_VALUE(target, offset, length)	\
 (((target) >> (offset)) & MCL_BIT_MASK(length))
 #endif
 
-#ifndef MCL_IS_BIT_ON
-#define MCL_IS_BIT_ON(target, offset) 				\
-(MCL_GET_BITS_VALUE(target, offset, 1) > 0)
+#ifndef MCL_BIT_IS_ON
+#define MCL_BIT_IS_ON(target, offset) 				\
+(MCL_BITS_GET_VALUE(target, offset, 1) > 0)
 #endif
 
 #endif

@@ -17,7 +17,7 @@ MCL_STDC_BEGIN
 #define MCL_ALLOCATOR_ELEM(TYPE) 	  TYPE##AllocatorElemType
 #define MCL_ALLOCATOR_HANDLE(TYPE) 	  TYPE##AllocatorHandle
 
-#define MCL_DEF_ALLOCATOR(TYPE, MAX_NUM)						\
+#define MCL_ALLOCATOR_DEF(TYPE, MAX_NUM)						\
 typedef union MCL_ALLOCATOR_ELEM(TYPE){							\
     char obj[sizeof(TYPE)];										\
     union MCL_ALLOCATOR_ELEM(TYPE)* next;					    \
@@ -74,7 +74,7 @@ MCL_PRIVATE void MCL_ALLOCATOR_FREE(TYPE)(void* p) {		    \
     MCL_ALLOCATOR_ELEM(TYPE)* elems = MCL_ALLOCATOR_INST(TYPE)->elems;\
     if (((((char*)p - (char*)elems) % sizeof(MCL_ALLOCATOR_ELEM(TYPE))) != 0)\
        ||(p < (void*)elems) || (p >= (void*)&(elems[MAX_NUM]))){\
-    	MCL_ERR("free invalid pointer(%p)!", p);				\
+    	MCL_LOG_ERR("free invalid pointer(%p)!", p);		    \
 		return;													\
     }															\
     MCL_ALLOCATOR_ELEM(TYPE)* elem = (MCL_ALLOCATOR_ELEM(TYPE)*)p;\

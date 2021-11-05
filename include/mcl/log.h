@@ -10,22 +10,22 @@ do {													\
 	}										\
 } while(0)
 
-#define MCL_FATAL(fmt, ...) \
+#define MCL_LOG_FATAL(fmt, ...) \
 	__MCL_LOG_TITLE(MCL_FATAL_LEVEL, "FATAL", fmt, ##__VA_ARGS__)
 
-#define MCL_ERR(fmt, ...) \
+#define MCL_LOG_ERR(fmt, ...) \
 	__MCL_LOG_TITLE(MCL_ERR_LEVEL  , "ERROR", fmt, ##__VA_ARGS__)
 
-#define MCL_WARN(fmt, ...) \
+#define MCL_LOG_WARN(fmt, ...) \
 	__MCL_LOG_TITLE(MCL_WARN_LEVEL , "WARN" , fmt, ##__VA_ARGS__)
 
-#define MCL_SUCC(fmt, ...) \
+#define MCL_LOG_SUCC(fmt, ...) \
 	__MCL_LOG_TITLE(MCL_SUCC_LEVEL , "SUCC" , fmt, ##__VA_ARGS__)
 
-#define MCL_INFO(fmt, ...) \
+#define MCL_LOG_INFO(fmt, ...) \
 	__MCL_LOG_TITLE(MCL_INFO_LEVEL , "INFO" , fmt, ##__VA_ARGS__)
 
-#define MCL_DBG(fmt, ...) \
+#define MCL_LOG_DBG(fmt, ...) \
 	__MCL_LOG_TITLE(MCL_DEBUG_LEVEL, "DEBUG", fmt, ##__VA_ARGS__)
 
 #endif

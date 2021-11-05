@@ -2,7 +2,7 @@
 #define H56A53302_359B_4C7B_996F_2B0CFD849CE9
 
 #include "mcl/stdc.h"
-#include "mcl/fwd_decl.h"
+#include "mcl/typedef.h"
 #include "mcl/static_assert.h"
 
 #define MCL_PRIVATE static
@@ -14,10 +14,10 @@
 	#define MCL_PLACEHOLDER __attribute__ ((weak))
     #define MCL_RAII(function)	__attribute__((cleanup(function)))
 #else
-    #define MCL_CTOR                STATIC_ASSERT("MCL CTOR NOT SUPPORT!")
-	#define MCL_DTOR                STATIC_ASSERT("MCL DTOR NOT SUPPORT!")
-	#define MCL_PLACEHOLDER         STATIC_ASSERT("MCL PLACEHOLDER NOT SUPPORT!")
-    #define MCL_RAII(function)      STATIC_ASSERT("MCL RAII NOT SUPPORT!")
+    #define MCL_CTOR              MCL_STATIC_ASSERT("MCL CTOR NOT SUPPORTED!")
+	#define MCL_DTOR              MCL_STATIC_ASSERT("MCL DTOR NOT SUPPORTED!")
+	#define MCL_PLACEHOLDER       MCL_STATIC_ASSERT("MCL PLACEHOLDER NOT SUPPORTED!")
+    #define MCL_RAII(function)    MCL_STATIC_ASSERT("MCL RAII NOT SUPPORTED!")
 #endif
 
 #if defined _WIN32 || defined __CYGWIN__

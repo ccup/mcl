@@ -2,12 +2,12 @@
 #define H681BE94E_59CF_492D_A77C_208C71BC5F06
 
 #include "interface/shape.h"
-#include "mcl/fwd_decl.h"
+#include "mcl/typedef.h"
 #include <stddef.h>
 
 MCL_STDC_BEGIN
 
-MCL_FWD_DECL(Color);
+MCL_TYPE_FWD(Color);
 
 typedef struct ShapeRectangle {
 	MCL_INTF_IMPL(Shape);

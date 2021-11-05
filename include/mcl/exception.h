@@ -16,7 +16,7 @@
 #define __MCL_EXCEPT_PROC()                  	\
     {                               			\
         __errorline = __LINE__;     			\
-        MCL_ERR("exception : code = %u, para1 = %u. para2 = %u", __errorcode, __logpara1, __logpara2);\
+        MCL_LOG_ERR("exception : code = %u, para1 = %u. para2 = %u", __errorcode, __logpara1, __logpara2);\
         goto __catch_position;      			\
     }
 
@@ -87,7 +87,7 @@
 #define MCL_THROW_IF_FAIL(func)                 \
     {   										\
 		__errorcode = (MclStatus)(func);		\
-        if (__MCL_FAILED(__errorcode)) {		\
+        if (MCL_FAILED(__errorcode)) {			\
             __MCL_EXCEPT_PROC()                 \
         }                                       \
     }
@@ -95,7 +95,7 @@
 #define MCL_THROW_IF_FAIL_WITH_ERR(func, errcode) \
     {                                           \
 		__errorcode = (MclStatus)(func);		\
-		if (__MCL_FAILED(__errorcode)) {		\
+		if (MCL_FAILED(__errorcode)) {			\
             MCL_THROW(errcode)                  \
         }                                       \
     }
@@ -103,7 +103,7 @@
 #define MCL_THROW_IF_FAIL_WITH_PROC(func, errorfunc)\
     {                                           \
 		__errorcode = (MclStatus)(func);		\
-		if (__MCL_FAILED(__errorcode)) {		\
+		if (MCL_FAILED(__errorcode)) {			\
             errorfunc;                          \
             __MCL_EXCEPT_PROC()                 \
         }                                       \
@@ -112,7 +112,7 @@
 #define MCL_THROW_IF_FAIL_WITH_PARA(func, para1, para2)\
     {                                           \
 		__errorcode = (MclStatus)(func);		\
-		if (__MCL_FAILED(__errorcode)) {		\
+		if (MCL_FAILED(__errorcode)) {			\
             __MCL_SET_EXCEPT_PARA(para1, para2);\
             __MCL_EXCEPT_PROC()                 \
         }                                       \

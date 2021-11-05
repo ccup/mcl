@@ -2,7 +2,7 @@
 #include "mcl/log.h"
 
 MCL_PRIVATE ShapeInfo shape_ops_draw(const Shape *shape) {
-	MCL_ERR("Invoke pure abstract function of Shape");
+	MCL_LOG_ERR("Invoke pure abstract function of Shape");
 	ShapeInfo info = {NONE_SHAPE, NONE_COLOR, 0};
 	return info;
 }

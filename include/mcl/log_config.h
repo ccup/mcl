@@ -3,17 +3,17 @@
 
 #include "mcl/log_levels.h"
 
-#ifdef CUSTOMER_LOG
+#ifdef MCL_CUSTOMER_LOG
 
 #include "mcl/stdc.h"
 
 MCL_STDC_BEGIN
 
-void mcl_customer_log(int level , const char* levelstr , const char* file, unsigned int line, const char* fmt, ...);
+void MclLog_Customer(int level , const char* levelstr , const char* file, unsigned int line, const char* fmt, ...);
 
 MCL_STDC_END
 
-#define MCL_LOG_OUTPUT mcl_customer_log
+#define MCL_LOG_OUTPUT MclLog_Customer
 
 #else
 

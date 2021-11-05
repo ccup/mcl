@@ -16,7 +16,7 @@ target_include_directories(${TEST_TARGET} PRIVATE  ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(${TEST_TARGET} PRIVATE mcl cctest_main)
 
 set_target_properties(${TEST_TARGET} PROPERTIES CXX_STANDARD 14)
-target_compile_definitions(${TEST_TARGET} PRIVATE CUSTOMER_LOG)
+target_compile_definitions(${TEST_TARGET} PRIVATE MCL_CUSTOMER_LOG)
 
 include(CTest)
 enable_testing()

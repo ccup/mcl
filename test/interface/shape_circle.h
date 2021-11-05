@@ -10,8 +10,8 @@ MCL_STDC_BEGIN
 MCL_FWD_DECL(Color);
 
 typedef struct ShapeCircle {
-	IMPL_INTF(Shape);
-	DEPS_INTF(Color);
+	MCL_INTF_IMPL(Shape);
+	MCL_DEPS_INTF(Color);
 	size_t radius;
 }ShapeCircle;
 

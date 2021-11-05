@@ -7,7 +7,7 @@
 
 MCL_STDC_BEGIN
 
-DEF_INTERFACE(Shape) {
+MCL_INTF_DEF(Shape) {
 	ShapeInfo (*draw)(const Shape*);
 };
 

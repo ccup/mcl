@@ -8,8 +8,8 @@ MCL_PRIVATE FillInfo color_ops_render(const Color *color, size_t area) {
 }
 
 void color_init(Color *self) {
-	DEF_INTF_OPS(Color) {
+	MCL_INTF_DEF_OPS(Color) {
 		.fill = color_ops_render,
 	};
-	INIT_SELF_INTF_OPS(Color);
+	MCL_INTF_INIT_SELF_OPS(Color);
 }

@@ -8,7 +8,7 @@
 
 MCL_STDC_BEGIN
 
-DEF_INTERFACE(Color) {
+MCL_INTF_DEF(Color) {
 	FillInfo (*fill)(const Color*, size_t area);
 };
 

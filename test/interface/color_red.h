@@ -6,7 +6,7 @@
 MCL_STDC_BEGIN
 
 typedef struct ColorRed {
-	IMPL_INTF(Color);
+	MCL_INTF_IMPL(Color);
 	const char* color_name;
 }ColorRed;
 

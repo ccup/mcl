@@ -9,8 +9,8 @@ MCL_PRIVATE ShapeInfo shape_ops_draw(const Shape *shape) {
 
 
 void shape_init(Shape *self) {
-	DEF_INTF_OPS(Shape) {
+	MCL_INTF_DEF_OPS(Shape) {
 		.draw = shape_ops_draw,
 	};
-	INIT_SELF_INTF_OPS(Shape);
+	MCL_INTF_INIT_SELF_OPS(Shape);
 }

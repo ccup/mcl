@@ -9,7 +9,7 @@
 #define __MCL_EXCEPTION_PARA1  (__logpara1)
 #define __MCL_EXCEPTION_PARA2  (__logpara2)
 
-#define MCL_NONE_EXCEPTION_CODE 0x7FFFFFCC
+#define MCL_NONE_EXCEPTION_CODE MCL_SUCCESS
 #define MCL_NONE_EXCEPTION_LINE 0xFFFFFFFF
 #define MCL_NONE_EXCEPTION_PARA 0xFFFFFFFF
 
@@ -45,7 +45,7 @@
 
 #define MCL_THROW(errcode)                      \
     {                                       	\
-        __errorcode = (errcode);            	\
+        __errorcode = (MclStatus)(errcode);     \
         __MCL_EXCEPT_PROC()                     \
     }
 

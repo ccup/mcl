@@ -3,10 +3,11 @@
 
 #include "mcl/stdc.h"
 #include "mcl/typedef.h"
-#include "mcl/static_assert.h"
 
 #define MCL_PRIVATE static
 #define MCL_INLINE  static inline
+
+#include "mcl/assert.h"
 
 #ifdef __GNUC__
 	#define MCL_CTOR __attribute__((constructor))

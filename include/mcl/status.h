@@ -2,38 +2,39 @@
 #define HA25033D6_1564_4748_B2C8_4DE2C5A286DE
 
 #include "mcl/stdc.h"
+#include "mcl/keyword.h"
 #include <stdbool.h>
 #include <stdint.h>
 
 MCL_STDC_BEGIN
 
-typedef uint32_t MclStatus;
+typedef enum MclStatus {
+	MCL_SUCCESS = 0,
+	MCL_STATUS_DONE = 1,
 
-#define MCL_STATUS_SUCC(status) (MclStatus) status
-#define MCL_STATUS_FAIL(status) (MclStatus) (status | MCL_RESERVED_FAIL)
+	MCL_FAILURE = 0x80000001,
+	MCL_NULLPTR,
+	MCL_TIMEDOUT,
+	MCL_OUT_OF_RANGE,
+	MCL_UNIMPLEMENTED,
+	MCL_FATAL_BUG,
+} MclStatus;
 
-/* OK */
-#define MCL_SUCCESS             MCL_STATUS_SUCC(0)
 
-/* Error Status */
-#define MCL_RESERVED_FAIL       (MclStatus) 0x80000000
-#define MCL_FAILURE             MCL_STATUS_FAIL(1)
-#define MCL_FATAL_BUG           MCL_STATUS_FAIL(2)
-#define MCL_TIMEDOUT            MCL_STATUS_FAIL(3)
-#define MCL_OUT_OF_RANGE        MCL_STATUS_FAIL(4)
-#define MCL_UNIMPLEMENTED       MCL_STATUS_FAIL(5)
-
-static inline bool MclStatus_IsOK(MclStatus status)
-{
-    return (status & MCL_RESERVED_FAIL) == 0;
+MCL_INLINE bool MclStatus_IsOK(MclStatus status) {
+    return MCL_SUCCESS == status;
 }
 
-static inline bool MclStatus_IsFailed(MclStatus status)
-{
-    return !MclStatus_IsOK(status);
+MCL_INLINE bool MclStatus_IsFailed(MclStatus status) {
+    return status >= MCL_FAILURE;
+}
+
+MCL_INLINE bool MclStatus_IsDone(MclStatus status) {
+	return MCL_STATUS_DONE == status;
 }
 
 #define MCL_FAILED(result)   MclStatus_IsFailed(result)
+#define MCL_DONE(result)     MclStatus_IsDone(result)
 
 MCL_STDC_END
 

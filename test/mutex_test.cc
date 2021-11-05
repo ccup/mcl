@@ -1,5 +1,5 @@
 #include <cctest/cctest.h>
-#include "mcl/lock.h"
+#include "mcl/task/mutex.h"
 
 namespace {
 	struct Obj {

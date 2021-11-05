@@ -10,7 +10,7 @@ namespace {
         MCL_TRY {
             MCL_THROW_IF((1 > 2), 0x1234);
             MCL_THROW_IF_FAIL(func_return_status(MCL_SUCCESS));
-            MCL_THROW_IF_FAIL_WITH_PARA(func_return_status(0xFFFFFFFF), 1, 2);
+            MCL_THROW_IF_FAIL_WITH_PARA(func_return_status((MclStatus)0xFFFFFFFF), 1, 2);
             return MCL_SUCCESS;
         }
         MCL_CATCH {
@@ -36,7 +36,7 @@ FIXTURE(ExceptionTest) {
     }
     TEST("throw if fail") {
         MCL_TRY {
-            MCL_THROW_IF_FAIL(func_return_status(0x1234));
+            MCL_THROW_IF_FAIL(func_return_status((MclStatus)0x1234));
         } MCL_CATCH {
             ASSERT_EQ(__MCL_EXCEPTION_CODE, 0x1234);
         };

@@ -3,7 +3,7 @@
 
 #include "mcl/keyword.h"
 #include "mcl/typedef.h"
-#include "mcl/assertion.h"
+#include "mcl/assert.h"
 #include "mcl/symbol.h"
 #include <pthread.h>
 
@@ -12,7 +12,7 @@ MCL_STDC_BEGIN
 typedef pthread_mutex_t MclMutex;
 typedef pthread_mutexattr_t MclMutexAttr;
 
-#define MCL_MUTEX_INITIALIZE(MUTEX) MUTEX=PTHREAD_MUTEX_INITIALIZER
+#define MCL_MUTEX_INIT(MUTEX) MUTEX=PTHREAD_MUTEX_INITIALIZER
 
 MCL_INLINE MclStatus Mcl_InitMutexAttr(MclMutexAttr *attr) {
     return pthread_mutexattr_init(attr) ? MCL_FAILURE : MCL_SUCCESS;

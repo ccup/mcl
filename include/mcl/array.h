@@ -1,7 +1,7 @@
 #ifndef HFB29BCA2_4A0D_414A_BF4C_97FFFA140FC9
 #define HFB29BCA2_4A0D_414A_BF4C_97FFFA140FC9
 
-#include "mcl/static_assert.h"
+#include "mcl/assert.h"
 #include "mcl/log/log.h"
 #include <stdlib.h>
 #include <stdint.h>

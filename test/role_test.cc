@@ -20,7 +20,7 @@ FIXTURE(HumanTest) {
 	}
 
 	TEST("human could produce until exhausted") {
-		Energy* energy = ROLE_OF(worker, Energy);
+		Energy* energy = MCL_ROLE_OF(worker, Energy);
 		while(!energy->exhausted(energy)) {
 			worker_produce(worker);
 		}
@@ -45,7 +45,7 @@ FIXTURE(RobotTest) {
 	}
 
 	TEST("robot could produce until exhausted") {
-		Energy* energy = ROLE_OF(worker, Energy);
+		Energy* energy = MCL_ROLE_OF(worker, Energy);
 		while(!energy->exhausted(energy)) {
 			worker_produce(worker);
 		}

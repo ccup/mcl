@@ -6,42 +6,42 @@
 #include "mcl/container_of.h"
 #include "mcl/list.h"
 
-#define ROLE(role)	__##role
+#define MCL_ROLE(role)	__##role
 
-#define DEFINE_ROLE(role)  			\
-MCL_FWD_DECL(role);					\
+#define MCL_ROLE_DEF(role)  			\
+MCL_FWD_DECL(role);						\
 struct role
 
-#define IMPL_ROLE(role)				\
-role ROLE(role)
+#define MCL_ROLE_IMPL(role)				\
+role MCL_ROLE(role)
 
-#define USE_ROLE(role)				\
-role* ROLE(role)
+#define MCL_ROLE_USE(role)				\
+role* MCL_ROLE(role)
 
-#define USE_LIST_ROLE(role)			\
-MCL_LIST_HEAD(role) ROLE(role)
+#define MCL_ROLE_LIST_USE(role)			\
+MCL_LIST_HEAD(role) MCL_ROLE(role)
 
-#define ROLE_CAST_TO(role, role_ptr, obj, obj_ptr)\
-obj* obj_ptr = Mcl_ContainerOf(role_ptr, obj, ROLE(role))
+#define MCL_ROLE_CAST_TO(role, role_ptr, obj, obj_ptr)\
+obj* obj_ptr = Mcl_ContainerOf(role_ptr, obj, MCL_ROLE(role))
 
-#define	ROLE_INIT(obj_ptr, role, tbl)\
-obj_ptr->ROLE(role) = tbl
+#define	MCL_ROLE_INIT(obj_ptr, role, tbl)\
+obj_ptr->MCL_ROLE(role) = tbl
 
-#define SELF_ROLE_INIT(role, tbl)	\
-ROLE_INIT(self, role, tbl)
+#define MCL_ROLE_SELF_INIT(role, tbl)	\
+MCL_ROLE_INIT(self, role, tbl)
 
-#define ROLE_INIT_BY_TBL(obj_ptr, role, ...)	\
+#define MCL_ROLE_INIT_BY_TBL(obj_ptr, role, ...)\
 do {											\
 	role __tbl = __VA_ARGS__;					\
-	obj_ptr->ROLE(role) = __tbl;				\
+	obj_ptr->MCL_ROLE(role) = __tbl;			\
 } while(0)
 
-#define SELF_ROLE_INIT_BY_TBL(role, ...)		\
-ROLE_INIT_BY_TBL(self, role, ##__VA_ARGS__)
+#define MCL_ROLE_INIT_SELF_BY_TBL(role, ...)	\
+MCL_ROLE_INIT_BY_TBL(self, role, ##__VA_ARGS__)
 
-#define ROLE_OF(obj_ptr, role) obj_ptr->ROLE(role)
-#define SELF_ROLE(role) ROLE_OF(self, role)
-#define SELF_ROLE_P(role) &ROLE_OF(self, role)
-#define SELF_INVOKE(role, func, ...) SELF_ROLE(role)->func(SELF_ROLE(role), ##__VA_ARGS__)
+#define MCL_ROLE_OF(obj_ptr, role) obj_ptr->MCL_ROLE(role)
+#define MCL_ROLE_SELF(role)  MCL_ROLE_OF(self, role)
+#define MCL_ROLE_SELF_P(role) &MCL_ROLE_OF(self, role)
+#define MCL_ROLE_SELF_INVOKE(role, func, ...) MCL_ROLE_SELF(role)->func(MCL_ROLE_SELF(role), ##__VA_ARGS__)
 
 #endif

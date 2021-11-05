@@ -7,8 +7,8 @@
 MCL_STDC_BEGIN
 
 typedef struct RobotEnergy {
-	IMPL_ROLE(Energy);
-	IMPL_ROLE(Robot);
+	MCL_ROLE_IMPL(Energy);
+	MCL_ROLE_IMPL(Robot);
 }RobotEnergy;
 
 void robot_energy_init(RobotEnergy*, uint8_t);

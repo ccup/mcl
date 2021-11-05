@@ -12,9 +12,9 @@ typedef enum WorkerType {
 	HUMAN, ROBOT,
 }WorkerType;
 
-DEFINE_ROLE(Worker) {
+MCL_ROLE_DEF(Worker) {
 	uint32_t produce_num;
-	USE_ROLE(Energy);
+	MCL_ROLE_USE(Energy);
 };
 
 Worker* worker_create(WorkerType, uint8_t);

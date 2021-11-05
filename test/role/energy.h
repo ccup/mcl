@@ -7,7 +7,7 @@
 
 MCL_STDC_BEGIN
 
-DEFINE_ROLE(Energy) {
+MCL_ROLE_DEF(Energy) {
 	void (*consume)(Energy*, uint8_t);
 	bool (*exhausted)(const Energy*);
 };

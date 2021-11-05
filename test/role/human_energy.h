@@ -7,8 +7,8 @@
 MCL_STDC_BEGIN
 
 typedef struct HumanEnergy {
-	IMPL_ROLE(Energy);
-    IMPL_ROLE(Human);
+	MCL_ROLE_IMPL(Energy);
+    MCL_ROLE_IMPL(Human);
 }HumanEnergy;
 
 void human_energy_init(HumanEnergy*, uint8_t);

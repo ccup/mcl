@@ -1,7 +1,6 @@
 #ifndef HF595E244_DC76_4DAB_A3AA_4D9FB62983E8
 #define HF595E244_DC76_4DAB_A3AA_4D9FB62983E8
 
-#include "mcl/stdc.h"
 #include "mcl/typedef.h"
 #include "mcl/container_of.h"
 #include "mcl/list.h"

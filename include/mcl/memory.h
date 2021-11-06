@@ -3,6 +3,7 @@
 
 #include "mcl/keyword.h"
 #include <stdlib.h>
+#include <string.h>
 
 MCL_STDC_BEGIN
 

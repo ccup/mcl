@@ -1,7 +1,6 @@
 #ifndef H56A53302_359B_4C7B_996F_2B0CFD849CE9
 #define H56A53302_359B_4C7B_996F_2B0CFD849CE9
 
-#include "mcl/stdc.h"
 #include "mcl/typedef.h"
 
 #define MCL_PRIVATE static

@@ -1,5 +1,5 @@
 #include <cctest/cctest.h>
-#include "mcl/link.h"
+#include "mcl/link/link.h"
 
 namespace
 {
@@ -36,28 +36,28 @@ FIXTURE(LinkTest)
 	}
 
 	AFTER {
-		MclLink_Delete(link, (MclLinkNodeHandleDeleter)Foo_Delete);
+		MclLink_Delete(link, (MclLinkDataDeleter)Foo_Delete);
 		ASSERT_EQ(0, g_foo_count);
 	}
 
 	TEST("should be empty when initialized")
 	{
 		ASSERT_TRUE(MclLink_IsEmpty(link));
-		ASSERT_EQ(0, MclLink_GetSize(link));
-		ASSERT_EQ(NULL, MclLink_FindNodeByHandle(link, 0));
+		ASSERT_EQ(0, MclLink_GetCount(link));
+		ASSERT_EQ(NULL, MclLink_FindNode(link, 0));
 	}
 
 	TEST("should add element to link")
 	{
 		auto foo = Foo_Create();
-		MclLink_AddHeadWithHandle(link, (uintptr_t)foo);
+		MclLink_PushFront(link, foo);
 		ASSERT_FALSE(MclLink_IsEmpty(link));
-		ASSERT_EQ(1, MclLink_GetSize(link));
+		ASSERT_EQ(1, MclLink_GetCount(link));
 
-		auto result = MclLink_FindNodeByHandle(link, (uintptr_t)foo);
-		ASSERT_EQ((uintptr_t)foo, result->handle);
+		auto result = MclLink_FindNode(link, foo);
+		ASSERT_EQ(foo, result->data);
 
-		ASSERT_EQ(NULL, MclLink_FindNodeByHandle(link, 0));
+		ASSERT_EQ(NULL, MclLink_FindNode(link, 0));
 	}
 
 	TEST("should add more elements to link")
@@ -66,33 +66,33 @@ FIXTURE(LinkTest)
 		auto foo2 = Foo_Create(2);
 		auto foo3 = Foo_Create(3);
 
-		MclLink_AddHeadWithHandle(link, (uintptr_t)foo1);
-		MclLink_AddHeadWithHandle(link, (uintptr_t)foo2);
-		MclLink_AddHeadWithHandle(link, (uintptr_t)foo3);
+		MclLink_PushFront(link, foo1);
+		MclLink_PushFront(link, foo2);
+		MclLink_PushFront(link, foo3);
 
 		ASSERT_FALSE(MclLink_IsEmpty(link));
-		ASSERT_EQ(3, MclLink_GetSize(link));
+		ASSERT_EQ(3, MclLink_GetCount(link));
 
-		auto result = MclLink_FindNodeByHandle(link, (uintptr_t)foo1);
-		ASSERT_EQ((uintptr_t)foo1, result->handle);
+		auto result = MclLink_FindNode(link, foo1);
+		ASSERT_EQ(foo1, result->data);
 
-		result = MclLink_FindNodeByHandle(link, (uintptr_t)foo2);
-		ASSERT_EQ((uintptr_t)foo2, result->handle);
+		result = MclLink_FindNode(link, foo2);
+		ASSERT_EQ(foo2, result->data);
 
-		result = MclLink_FindNodeByHandle(link, (uintptr_t)foo3);
-		ASSERT_EQ((uintptr_t)foo3, result->handle);
+		result = MclLink_FindNode(link, foo3);
+		ASSERT_EQ(foo3, result->data);
 	}
 
 	TEST("should remove element from link")
 	{
 		auto foo = Foo_Create();
 
-		MclLink_AddHeadWithHandle(link, (uintptr_t)foo);
-		MclLink_RemoveNodeWithHandle(link, (uintptr_t)foo);
+		MclLink_PushFront(link, foo);
+		MclLink_RemoveNodeOfData(link, foo, NULL);
 
 		ASSERT_TRUE(MclLink_IsEmpty(link));
-		ASSERT_EQ(0, MclLink_GetSize(link));
-		ASSERT_EQ(NULL, MclLink_FindNodeByHandle(link, (uintptr_t)foo));
+		ASSERT_EQ(0, MclLink_GetCount(link));
+		ASSERT_EQ(NULL, MclLink_FindNode(link, foo));
 
 		Foo_Delete(foo);
 	}
@@ -103,25 +103,25 @@ FIXTURE(LinkTest)
 		auto foo2 = Foo_Create(2);
 		auto foo3 = Foo_Create(3);
 
-		MclLink_AddHeadWithHandle(link, (uintptr_t)foo1);
-		MclLink_AddHeadWithHandle(link, (uintptr_t)foo2);
-		MclLink_AddHeadWithHandle(link, (uintptr_t)foo3);
+		MclLink_PushFront(link, foo1);
+		MclLink_PushFront(link, foo2);
+		MclLink_PushFront(link, foo3);
 
-		MclLink_RemoveNodeWithHandle(link, (uintptr_t)foo2);
+		MclLink_RemoveNodeOfData(link, foo2, NULL);
 		Foo_Delete(foo2);
 
 		ASSERT_FALSE(MclLink_IsEmpty(link));
-		ASSERT_EQ(2, MclLink_GetSize(link));
+		ASSERT_EQ(2, MclLink_GetCount(link));
 
-		MclLink_RemoveNodeWithHandle(link, (uintptr_t)foo1);
+		MclLink_RemoveNodeOfData(link, foo1, NULL);
 
 		ASSERT_FALSE(MclLink_IsEmpty(link));
-		ASSERT_EQ(1, MclLink_GetSize(link));
+		ASSERT_EQ(1, MclLink_GetCount(link));
 
-		MclLink_RemoveNodeWithHandle(link, (uintptr_t)foo3);
+		MclLink_RemoveNodeOfData(link, foo3, NULL);
 
 		ASSERT_TRUE(MclLink_IsEmpty(link));
-		ASSERT_EQ(0, MclLink_GetSize(link));
+		ASSERT_EQ(0, MclLink_GetCount(link));
 
 		Foo_Delete(foo1);
 		Foo_Delete(foo3);
@@ -131,8 +131,8 @@ FIXTURE(LinkTest)
 	{
 		auto foo = Foo_Create();
 
-		MclLink_AddTailWithHandle(link, (uintptr_t)foo);
-		MclLink_DeleteNodeWithHandle(link, (uintptr_t)foo, (MclLinkNodeHandleDeleter)Foo_Delete);
+		MclLink_PushBack(link, foo);
+		MclLink_RemoveNodeOfData(link, foo, (MclLinkDataDeleter)Foo_Delete);
 
 		ASSERT_TRUE(MclLink_IsEmpty(link));
 	}
@@ -143,29 +143,29 @@ FIXTURE(LinkTest)
 		auto foo2 = Foo_Create(2);
 		auto foo3 = Foo_Create(3);
 
-		MclLink_AddHeadWithHandle(link, (uintptr_t)foo1);
-		MclLink_AddHeadWithHandle(link, (uintptr_t)foo2);
-		MclLink_AddHeadWithHandle(link, (uintptr_t)foo3);
+		MclLink_PushFront(link, foo1);
+		MclLink_PushFront(link, foo2);
+		MclLink_PushFront(link, foo3);
 
-		MclLink_DeleteNodeWithHandle(link, (uintptr_t)foo3, (MclLinkNodeHandleDeleter)Foo_Delete);
-		MclLink_DeleteNodeWithHandle(link, (uintptr_t)foo2, (MclLinkNodeHandleDeleter)Foo_Delete);
+		MclLink_RemoveNodeOfData(link, foo3, (MclLinkDataDeleter)Foo_Delete);
+		MclLink_RemoveNodeOfData(link, foo2, (MclLinkDataDeleter)Foo_Delete);
 
 		ASSERT_FALSE(MclLink_IsEmpty(link));
-		ASSERT_EQ(1, MclLink_GetSize(link));
+		ASSERT_EQ(1, MclLink_GetCount(link));
 
-		MclLink_DeleteNodeWithHandle(link, (uintptr_t)foo1, (MclLinkNodeHandleDeleter)Foo_Delete);
+		MclLink_RemoveNodeOfData(link, foo1, (MclLinkDataDeleter)Foo_Delete);
 
 		ASSERT_TRUE(MclLink_IsEmpty(link));
-		ASSERT_EQ(0, MclLink_GetSize(link));
+		ASSERT_EQ(0, MclLink_GetCount(link));
 	}
 
 	TEST("should clear element from link")
 	{
 		auto foo = Foo_Create();
 
-		MclLink_AddTailWithHandle(link, (uintptr_t)foo);
+		MclLink_PushBack(link, foo);
 
-		MclLink_Clear(link,  (MclLinkNodeHandleDeleter)Foo_Delete);
+		MclLink_Clear(link,  (MclLinkDataDeleter)Foo_Delete);
 
 		ASSERT_TRUE(MclLink_IsEmpty(link));
 	}
@@ -176,20 +176,20 @@ FIXTURE(LinkTest)
 		auto foo2 = Foo_Create(2);
 		auto foo3 = Foo_Create(3);
 
-		MclLink_AddTailWithHandle(link, (uintptr_t)foo1);
-		MclLink_AddHeadWithHandle(link, (uintptr_t)foo2);
-		MclLink_AddTailWithHandle(link, (uintptr_t)foo3);
+		MclLink_PushBack(link, foo1);
+		MclLink_PushFront(link, foo2);
+		MclLink_PushBack(link, foo3);
 
 		int sum = 0;
 
 		MclLinkNode *node = NULL;
 		MCL_LINK_FOR_EACH(link, node) {
-			sum += ((Foo*)node->handle)->x;
+			sum += ((Foo*)node->data)->x;
 		}
 
 		ASSERT_EQ(6, sum);
 
-		MclLink_Clear(link, (MclLinkNodeHandleDeleter)Foo_Delete);
+		MclLink_Clear(link, (MclLinkDataDeleter)Foo_Delete);
 	}
 
 	TEST("should travel each node safe on link")
@@ -198,25 +198,25 @@ FIXTURE(LinkTest)
 		auto foo2 = Foo_Create(2);
 		auto foo3 = Foo_Create(3);
 
-		MclLink_AddHeadWithHandle(link, (uintptr_t)foo1);
-		MclLink_AddTailWithHandle(link, (uintptr_t)foo2);
-		MclLink_AddHeadWithHandle(link, (uintptr_t)foo3);
+		MclLink_PushFront(link, foo1);
+		MclLink_PushBack(link, foo2);
+		MclLink_PushFront(link, foo3);
 
 		int sum = 0;
 
 		MclLinkNode *node = NULL;
 		MclLinkNode *tmpNode = NULL;
 		MCL_LINK_FOR_EACH_SAFE(link, node, tmpNode) {
-			if (node->handle == (uintptr_t)foo2) {
-				MclLink_DeleteNode(link, node, (MclLinkNodeHandleDeleter)Foo_Delete);
+			if (node->data == foo2) {
+				MclLink_RemoveNode(link, node, (MclLinkDataDeleter)Foo_Delete);
 				continue;
 			}
-			sum += ((Foo*)node->handle)->x;
+			sum += ((Foo*)node->data)->x;
 		}
 
 		ASSERT_EQ(4, sum);
 
-		MclLink_Clear(link, (MclLinkNodeHandleDeleter)Foo_Delete);
+		MclLink_Clear(link, (MclLinkDataDeleter)Foo_Delete);
 	}
 
 	TEST("should visit each node on link")
@@ -225,15 +225,102 @@ FIXTURE(LinkTest)
 		auto foo2 = Foo_Create(2);
 		auto foo3 = Foo_Create(3);
 
-		MclLink_AddHeadWithHandle(link, (uintptr_t)foo1);
-		MclLink_AddHeadWithHandle(link, (uintptr_t)foo2);
-		MclLink_AddHeadWithHandle(link, (uintptr_t)foo3);
+		MclLink_PushFront(link, foo1);
+		MclLink_PushFront(link, foo2);
+		MclLink_PushFront(link, foo3);
 
 		int sum = 0;
 
-		MCL_LINK_VISIT_VOID(link, Foo, Foo_Sum, &sum);
+		MCL_LINK_VISIT_CALL_VOID(link, Foo, Foo_Sum, &sum);
 		ASSERT_EQ(6, sum);
 
-		MclLink_Clear(link, (MclLinkNodeHandleDeleter)Foo_Delete);
+		MclLink_Clear(link, (MclLinkDataDeleter)Foo_Delete);
+	}
+
+	TEST("should insert before node")
+	{
+		auto foo1 = Foo_Create(1);
+		auto foo2 = Foo_Create(2);
+		auto foo3 = Foo_Create(3);
+
+		MclLink_PushBack(link, foo1);
+		MclLink_PushBack(link, foo3);
+
+		auto node = MclLink_FindNode(link, foo3);
+		ASSERT_EQ(MCL_SUCCESS, MclLink_InsertBefore(link, node, foo2));
+
+		ASSERT_EQ(3, MclLink_GetCount(link));
+
+		auto secondNode = MclLinkNode_GetNext(MclLink_GetFirst(link));
+		ASSERT_EQ(MclLinkNode_GetData(secondNode), foo2);
+
+		MclLink_Clear(link, (MclLinkDataDeleter)Foo_Delete);
+	}
+
+	TEST("should insert after node")
+	{
+		auto foo1 = Foo_Create(1);
+		auto foo2 = Foo_Create(2);
+		auto foo3 = Foo_Create(3);
+
+		MclLink_PushBack(link, foo1);
+		MclLink_PushBack(link, foo3);
+
+		auto node = MclLink_FindNode(link, foo1);
+		ASSERT_EQ(MCL_SUCCESS, MclLink_InsertAfter(link, node, foo2));
+
+		ASSERT_EQ(3, MclLink_GetCount(link));
+
+		auto secondNode = MclLinkNode_GetNext(MclLink_GetFirst(link));
+		ASSERT_EQ(MclLinkNode_GetData(secondNode), foo2);
+
+		MclLink_Clear(link, (MclLinkDataDeleter)Foo_Delete);
+	}
+};
+
+namespace {
+	const int INVALID_VALUE = 0xFFFFFFFF;
+
+	MclStatus Foo_Visit(const MclLinkNode *node, void *arg) {
+		int value = (long)MclLinkNode_GetData(node);
+		if (value == INVALID_VALUE) return MCL_STATUS_DONE;
+		(*(int*)arg) += value;
+		return MCL_SUCCESS;
+	}
+}
+
+FIXTURE(LinkVisitorTest)
+{
+	MclLink link;
+
+	LinkVisitorTest() {
+		MckLink_Init(&link);
+	}
+
+	AFTER {
+		MclLink_Clear(&link, NULL);
+	}
+
+	TEST("should visit all nodes in link")
+	{
+		MclLink_PushBack(&link, (MclLinkData)1);
+		MclLink_PushBack(&link, (MclLinkData)3);
+		MclLink_PushBack(&link, (MclLinkData)5);
+
+		long sum = 0;
+		ASSERT_EQ(MCL_SUCCESS, MclLink_AcceptConst(&link, Foo_Visit, &sum));
+		ASSERT_EQ(9, sum);
+	}
+
+	TEST("should visit nodes until invalid")
+	{
+		MclLink_PushBack(&link, (MclLinkData)1);
+		MclLink_PushBack(&link, (MclLinkData)3);
+		MclLink_PushBack(&link, (MclLinkData)INVALID_VALUE);
+		MclLink_PushBack(&link, (MclLinkData)5);
+
+		long sum = 0;
+		ASSERT_EQ(MCL_SUCCESS, MclLink_AcceptConst(&link, Foo_Visit, &sum));
+		ASSERT_EQ(4, sum);
 	}
 };

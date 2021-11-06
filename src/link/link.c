@@ -137,27 +137,26 @@ MclStatus MclLink_InsertAfter(MclLink *self, MclLinkNode *prevNode, MclLinkData 
 	return MCL_SUCCESS;
 }
 
-MclStatus MclLink_Accept(MclLink* self, MclLink_Visit visitor, void* arg) {
-	MCL_ASSERT_VALID_PTR(self);
-	MCL_ASSERT_VALID_PTR(visitor);
+void MclLink_FindBy(const MclLink *self, MclLinkPred pred, void *arg, MclLink *result) {
+	MCL_ASSERT_VALID_PTR_VOID(self);
+	MCL_ASSERT_VALID_PTR_VOID(pred);
+	MCL_ASSERT_VALID_PTR_VOID(result);
 
 	MclLinkNode *node = NULL;
-	MclLinkNode *tmpNode = NULL;
-	MCL_LINK_FOR_EACH_SAFE(self, node, tmpNode) {
-		MclStatus ret = visitor(node, arg);
-		if (MCL_DONE(ret)) return MCL_SUCCESS;
-		if (MCL_FAILED(ret)) return ret;
+	MCL_LINK_FOR_EACH((MclLink*)self, node) {
+		if (pred(node->data, arg)) {
+			MclLink_PushBack(result, node->data);
+		}
 	}
-	return MCL_SUCCESS;
 }
 
-MclStatus MclLink_AcceptConst(const MclLink* self, MclLink_VisitConst visitor, void* arg) {
+MclStatus MclLink_Accept(const MclLink* self, MclLinkVisiter visitor, void* arg) {
 	MCL_ASSERT_VALID_PTR(self);
 	MCL_ASSERT_VALID_PTR(visitor);
 
 	MclLinkNode *node = NULL;
 	MCL_LINK_FOR_EACH((MclLink*)self, node) {
-		MclStatus ret = visitor(node, arg);
+		MclStatus ret = visitor(node->data, arg);
 		if (MCL_DONE(ret)) return MCL_SUCCESS;
 		if (MCL_FAILED(ret)) return ret;
 	}

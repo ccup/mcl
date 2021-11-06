@@ -19,8 +19,6 @@ void MclLink_Delete(MclLink*, MclLinkDataDeleter);
 void MckLink_Init(MclLink*);
 void MclLink_Clear(MclLink*, MclLinkDataDeleter);
 
-MclLinkNode* MclLink_FindNode(MclLink*, MclLinkData);
-
 MclStatus MclLink_PushFront(MclLink*, MclLinkData);
 MclStatus MclLink_PushBack(MclLink*, MclLinkData);
 
@@ -30,11 +28,13 @@ MclStatus MclLink_InsertAfter(MclLink*, MclLinkNode* prevNode, MclLinkData);
 void MclLink_RemoveNode(MclLink*, MclLinkNode*, MclLinkDataDeleter);
 void MclLink_RemoveNodeOfData(MclLink*, MclLinkData, MclLinkDataDeleter);
 
-typedef MclStatus (*MclLink_Visit)(MclLinkNode*, void*);
-MclStatus MclLink_Accept(MclLink*, MclLink_Visit, void*);
+MclLinkNode* MclLink_FindNode(MclLink*, MclLinkData);
 
-typedef MclStatus (*MclLink_VisitConst)(const MclLinkNode*, void*);
-MclStatus MclLink_AcceptConst(const MclLink*, MclLink_VisitConst, void*);
+typedef bool (*MclLinkPred)(MclLinkData, void *arg);
+void MclLink_FindBy(const MclLink*, MclLinkPred, void *arg, MclLink *result);
+
+typedef MclStatus (*MclLinkVisiter)(MclLinkData, void *arg);
+MclStatus MclLink_Accept(const MclLink*, MclLinkVisiter, void *arg);
 
 ///////////////////////////////////////////////////////////////
 MCL_INLINE uint32_t MclLink_GetCount(const MclLink *self) {

@@ -279,26 +279,51 @@ FIXTURE(LinkTest)
 };
 
 namespace {
-	const int INVALID_VALUE = 0xFFFFFFFF;
+	const long INVALID_DATA = 0xFFFFFFFF;
 
-	MclStatus Foo_Visit(const MclLinkNode *node, void *arg) {
-		int value = (long)MclLinkNode_GetData(node);
-		if (value == INVALID_VALUE) return MCL_STATUS_DONE;
-		(*(int*)arg) += value;
+	MclStatus Data_Visit(MclLinkData data, void *arg) {
+		long value = (long)data;
+		if (value == INVALID_DATA) return MCL_STATUS_DONE;
+		(*(long*)arg) += value;
 		return MCL_SUCCESS;
+	}
+
+	bool Data_IsLargerThan(MclLinkData data, void *arg) {
+		return data > arg;
 	}
 }
 
-FIXTURE(LinkVisitorTest)
+FIXTURE(LinkAdvanceTest)
 {
 	MclLink link;
 
-	LinkVisitorTest() {
+	LinkAdvanceTest() {
 		MckLink_Init(&link);
 	}
 
 	AFTER {
 		MclLink_Clear(&link, NULL);
+	}
+
+	TEST("find all valid data")
+	{
+		MclLink_PushBack(&link, (MclLinkData)1);
+		MclLink_PushBack(&link, (MclLinkData)3);
+		MclLink_PushBack(&link, (MclLinkData)5);
+		MclLink_PushBack(&link, (MclLinkData)2);
+
+		auto result = MclLink_Create();
+		MclLink_FindBy(&link, Data_IsLargerThan, (MclLinkData)2, result);
+
+		ASSERT_EQ(2, MclLink_GetCount(result));
+
+		auto firstNode = MclLink_GetFirst(result);
+		ASSERT_EQ(3, (long)MclLinkNode_GetData(firstNode));
+
+		auto secondNode = MclLinkNode_GetNext(firstNode);
+		ASSERT_EQ(5, (long)MclLinkNode_GetData(secondNode));
+
+		MclLink_Delete(result, NULL);
 	}
 
 	TEST("should visit all nodes in link")
@@ -308,7 +333,7 @@ FIXTURE(LinkVisitorTest)
 		MclLink_PushBack(&link, (MclLinkData)5);
 
 		long sum = 0;
-		ASSERT_EQ(MCL_SUCCESS, MclLink_AcceptConst(&link, Foo_Visit, &sum));
+		ASSERT_EQ(MCL_SUCCESS, MclLink_Accept(&link, Data_Visit, &sum));
 		ASSERT_EQ(9, sum);
 	}
 
@@ -316,11 +341,11 @@ FIXTURE(LinkVisitorTest)
 	{
 		MclLink_PushBack(&link, (MclLinkData)1);
 		MclLink_PushBack(&link, (MclLinkData)3);
-		MclLink_PushBack(&link, (MclLinkData)INVALID_VALUE);
+		MclLink_PushBack(&link, (MclLinkData)INVALID_DATA);
 		MclLink_PushBack(&link, (MclLinkData)5);
 
 		long sum = 0;
-		ASSERT_EQ(MCL_SUCCESS, MclLink_AcceptConst(&link, Foo_Visit, &sum));
+		ASSERT_EQ(MCL_SUCCESS, MclLink_Accept(&link, Data_Visit, &sum));
 		ASSERT_EQ(4, sum);
 	}
 };

@@ -96,3 +96,15 @@ MclStatus MclTaskScheduler_DelTask(MclTaskScheduler *self, MclTaskKey key, uint3
 	MCL_ASSERT_SUCC_CALL(MclTaskQueue_RemoveTask(self->taskQueue, key, priority));
 	return MCL_SUCCESS;
 }
+
+void MclTaskScheduler_WaitDone(MclTaskScheduler *self) {
+	MCL_ASSERT_VALID_PTR_VOID(self);
+	MCL_ASSERT_VALID_PTR_VOID(self->taskQueue);
+
+	if (!MclTaskScheduler_IsRunning(self)) return;
+
+	while (!MclTaskQueue_IsEmpty(self->taskQueue)) {
+		MclThread_Yield();
+	}
+	MCL_LOG_DBG("Wait scheduler done!");
+}

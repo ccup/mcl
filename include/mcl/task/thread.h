@@ -26,6 +26,10 @@ MCL_INLINE void MclThread_Exit(MclThread *thread) {
 	pthread_exit(thread);
 }
 
+MCL_INLINE void MclThread_Yield() {
+	pthread_yield_np();
+}
+
 MCL_STDC_END
 
 #endif

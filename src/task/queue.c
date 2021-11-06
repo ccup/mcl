@@ -28,7 +28,7 @@ MCL_PRIVATE bool TaskQueue_IsEmpty(const TaskQueue *queue) {
 
 MCL_PRIVATE bool TaskQueue_IsReachThreshold(const TaskQueue *queue) {
 	if (!queue->threshold || !queue->poppedCount) return false;
-	return (queue->poppedCount + 1) % queue->threshold == 0;
+	return queue->poppedCount % queue->threshold == 0;
 }
 
 MCL_PRIVATE void TaskQueue_ResetPoppedCount(TaskQueue *queue) {
@@ -70,7 +70,15 @@ MCL_TYPE_DEF(MclTaskQueue) {
 	TaskQueue queues[];
 };
 
-MCL_PRIVATE bool MclTaskQueue_IsEmpty(const MclTaskQueue *self) {
+bool MclTaskQueue_IsReady(const MclTaskQueue *self) {
+	MCL_ASSERT_VALID_PTR_BOOL(self);
+	return MclAtom_IsTrue(&self->isReady);
+}
+
+bool MclTaskQueue_IsEmpty(const MclTaskQueue *self) {
+	MCL_ASSERT_VALID_PTR_BOOL(self);
+
+	MCL_LOCK_AUTO(((MclTaskQueue*)self)->mutex);
 	for (uint32_t i = 0; i < self->queueCount; i++) {
 		if (!TaskQueue_IsEmpty(&self->queues[i])) return false;
 	}
@@ -211,11 +219,6 @@ MclStatus MclTaskQueue_RemoveTask(MclTaskQueue *self, MclTaskKey key, uint32_t p
 		MCL_LOG_DBG("Task queue remove task %u of level %u OK!", key, priority);
 	}
 	return MCL_SUCCESS;
-}
-
-bool MclTaskQueue_IsReady(const MclTaskQueue *self) {
-	MCL_ASSERT_VALID_PTR_NIL(self);
-	return MclAtom_IsTrue(&self->isReady);
 }
 
 void* MclTaskQueue_Execute(void *data) {

@@ -20,6 +20,8 @@ MclStatus MclTaskQueue_InsertTask(MclTaskQueue*, MclTask*, uint32_t priority);
 MclStatus MclTaskQueue_RemoveTask(MclTaskQueue*, MclTaskKey, uint32_t priority);
 
 bool MclTaskQueue_IsReady(const MclTaskQueue*);
+bool MclTaskQueue_IsEmpty(const MclTaskQueue*);
+
 void* MclTaskQueue_Execute(void*);
 
 MCL_STDC_END

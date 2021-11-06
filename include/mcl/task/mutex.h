@@ -1,5 +1,5 @@
-#ifndef H90B6970A_7AC3_43F4_9432_0647CA0925A0
-#define H90B6970A_7AC3_43F4_9432_0647CA0925A0
+#ifndef H90B6970A_7AC3_43F4_9432_0647CA0925A1
+#define H90B6970A_7AC3_43F4_9432_0647CA0925A1
 
 #include "mcl/keyword.h"
 #include "mcl/typedef.h"
@@ -14,46 +14,46 @@ typedef pthread_mutexattr_t MclMutexAttr;
 
 #define MCL_MUTEX_INIT(MUTEX) MUTEX=PTHREAD_MUTEX_INITIALIZER
 
-MCL_INLINE MclStatus Mcl_InitMutexAttr(MclMutexAttr *attr) {
+MCL_INLINE MclStatus MclMutex_InitAttr(MclMutexAttr *attr) {
     return pthread_mutexattr_init(attr) ? MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus Mcl_DestroyMutexAttr(MclMutexAttr *attr) {
+MCL_INLINE MclStatus MclMutex_DestroyAttr(MclMutexAttr *attr) {
     return pthread_mutexattr_destroy(attr) ? MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus Mcl_SetMutexAttrPShared(MclMutexAttr *attr, int pshared) {
+MCL_INLINE MclStatus MclMutex_SetAttrPShared(MclMutexAttr *attr, int pshared) {
     return pthread_mutexattr_setpshared(attr, pshared) ? MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus Mcl_SetMutexAttrType(MclMutexAttr *attr, int type) {
+MCL_INLINE MclStatus MclMutex_SetAttrType(MclMutexAttr *attr, int type) {
     return pthread_mutexattr_settype(attr, type) ? MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus Mcl_InitMutex(MclMutex *mutex, const MclMutexAttr *attr) {
+MCL_INLINE MclStatus MclMutex_Init(MclMutex *mutex, const MclMutexAttr *attr) {
     return pthread_mutex_init(mutex, attr) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus Mcl_DestroyMutex(MclMutex *mutex) {
+MCL_INLINE MclStatus MclMutex_Destroy(MclMutex *mutex) {
     return pthread_mutex_destroy(mutex) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus Mcl_InitRecursiveMutex(MclMutex *mutex) {
+MCL_INLINE MclStatus MclMutex_InitRecursive(MclMutex *mutex) {
     MclMutexAttr attr;
-    MCL_ASSERT_SUCC_CALL(Mcl_InitMutexAttr(&attr));
-    MCL_ASSERT_SUCC_CALL(Mcl_SetMutexAttrType(&attr, PTHREAD_MUTEX_RECURSIVE));
+    MCL_ASSERT_SUCC_CALL(MclMutex_InitAttr(&attr));
+    MCL_ASSERT_SUCC_CALL(MclMutex_SetAttrType(&attr, PTHREAD_MUTEX_RECURSIVE));
     return pthread_mutex_init(mutex, &attr) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus Mcl_LockMutex(MclMutex *mutex) {
+MCL_INLINE MclStatus MclMutex_Lock(MclMutex *mutex) {
     return pthread_mutex_lock(mutex) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus Mcl_UnlockMutex(MclMutex *mutex) {
+MCL_INLINE MclStatus MclMutex_Unlock(MclMutex *mutex) {
     return pthread_mutex_unlock(mutex) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus Mcl_TryLockMutex(MclMutex *mutex) {
+MCL_INLINE MclStatus MclMutex_TryLock(MclMutex *mutex) {
     return pthread_mutex_unlock(mutex) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
@@ -62,14 +62,14 @@ MCL_TYPE_DEF(MclAutoLock) {
 };
 
 MCL_INLINE MclAutoLock MclLock_AutoLock(MclMutex *mutex) {
-    Mcl_LockMutex(mutex);
+    MclMutex_Lock(mutex);
     MclAutoLock lock = {.mutex = mutex};
     return lock;
 }
 
 MCL_INLINE void MclLock_AutoUnlock(MclAutoLock *lock) {
     if (lock && lock->mutex) {
-        (void)Mcl_UnlockMutex(lock->mutex);
+        (void)MclMutex_Unlock(lock->mutex);
         lock->mutex = NULL;
     }
 }

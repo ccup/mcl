@@ -9,7 +9,7 @@ MCL_PRIVATE void MclLinkNode_Init(MclLinkNode *self, MclLinkData data) {
 }
 
 MclLinkNode* MclLinkNode_Create(MclLinkData data) {
-	MclLinkNode* self = (MclLinkNode*)MCL_MALLOC(sizeof(MclLinkNode));
+	MclLinkNode* self = MCL_MALLOC(sizeof(MclLinkNode));
 	MCL_ASSERT_VALID_PTR_NIL(self);
 
 	MclLinkNode_Init(self, data);

@@ -1,7 +1,7 @@
 #ifndef HE531412B_FC62_48BD_9975_81CFE4573F0F
 #define HE531412B_FC62_48BD_9975_81CFE4573F0F
 
-#include <stdint.h>
+#include "mcl/stdtype.h"
 
 #ifndef MCL_BIT_MASK
 #define MCL_BIT_MASK(BIT_NUM)       				\

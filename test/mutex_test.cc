@@ -1,5 +1,6 @@
 #include <cctest/cctest.h>
 #include "mcl/task/mutex.h"
+#include "mcl/task/thread.h"
 
 namespace {
 	struct Obj {
@@ -50,31 +51,31 @@ FIXTURE(MutexTest)
 	Obj obj;
 
 	BEFORE {
-		Mcl_InitRecursiveMutex(&obj.mutex);
+		MclMutex_InitRecursive(&obj.mutex);
 	}
 
 	TEST("should auto lock")
 	{
-		pthread_t t1, t2;
-		pthread_create(&t1, NULL, increase, &obj);
-		pthread_create(&t2, NULL, decrease, &obj);
+		MclThread t1, t2;
+		MclThread_Create(&t1, NULL, increase, &obj);
+		MclThread_Create(&t2, NULL, decrease, &obj);
 
 		MCL_LOCK_SCOPE(obj.mutex) {
 			obj.count += 2;
 		}
 
-		pthread_join(t1, NULL);
-		pthread_join(t2, NULL);
+		MclThread_Join(t1, NULL);
+		MclThread_Join(t2, NULL);
 		ASSERT_EQ(2, obj.count);
 	}
 
 	TEST("should unlock when return") {
-		pthread_t t1, t2;
-		pthread_create(&t1, NULL, increase, &obj);
-		pthread_create(&t2, NULL, decreaseInMiddle, &obj);
+		MclThread t1, t2;
+		MclThread_Create(&t1, NULL, increase, &obj);
+		MclThread_Create(&t2, NULL, decreaseInMiddle, &obj);
 
-		pthread_join(t1, NULL);
-		pthread_join(t2, NULL);
+		MclThread_Join(t1, NULL);
+		MclThread_Join(t2, NULL);
 		ASSERT_EQ(5000, obj.count);
 	}
 };

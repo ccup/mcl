@@ -16,7 +16,7 @@ MCL_TYPE_DEF(MclLink) {
 MclLink* MclLink_Create();
 void MclLink_Delete(MclLink*, MclLinkDataDeleter);
 
-void MckLink_Init(MclLink*);
+void MclLink_Init(MclLink*);
 void MclLink_Clear(MclLink*, MclLinkDataDeleter);
 
 MclStatus MclLink_PushFront(MclLink*, MclLinkData);

@@ -2,8 +2,8 @@
 #define H90B6970A_7AC3_43F4_9432_0647CA0925A0
 
 #include "mcl/keyword.h"
+#include "mcl/stdtype.h"
 #include <stdlib.h>
-#include <string.h>
 
 MCL_STDC_BEGIN
 

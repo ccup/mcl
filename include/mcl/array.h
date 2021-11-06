@@ -4,8 +4,7 @@
 #include "mcl/keyword.h"
 #include "mcl/assert.h"
 #include "mcl/log/log.h"
-#include <stdlib.h>
-#include <stdint.h>
+#include "mcl/stdtype.h"
 
 #ifndef ARRAY_SIZE
 #define ARRAY_SIZE(arr) sizeof(arr) / sizeof(arr[0])

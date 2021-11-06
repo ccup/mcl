@@ -36,10 +36,10 @@ MCL_PRIVATE void MclLink_AddTail(MclLink *self, MclLinkNode *node) {
 }
 
 MclLink* MclLink_Create() {
-	MclLink *self = (MclLink*)MCL_MALLOC(sizeof(MclLink));
+	MclLink *self = MCL_MALLOC(sizeof(MclLink));
 	MCL_ASSERT_VALID_PTR_NIL(self);
 
-	MckLink_Init(self);
+	MclLink_Init(self);
 	return self;
 }
 
@@ -50,7 +50,7 @@ void MclLink_Delete(MclLink* self, MclLinkDataDeleter deleter) {
 	MCL_FREE(self);
 }
 
-void MckLink_Init(MclLink *self) {
+void MclLink_Init(MclLink *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
 	self->head.next = &(self->head);

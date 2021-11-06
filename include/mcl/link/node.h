@@ -2,9 +2,7 @@
 #define H22383929_F96E_447A_9D78_780E12E969AD
 
 #include "mcl/keyword.h"
-#include <stdint.h>
-#include <stdbool.h>
-#include <stddef.h>
+#include "mcl/stdtype.h"
 
 MCL_STDC_BEGIN
 

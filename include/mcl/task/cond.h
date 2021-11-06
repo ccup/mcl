@@ -35,7 +35,7 @@ MCL_INLINE MclStatus MclCond_Signal(MclCond *cond) {
 	return pthread_cond_signal(cond) ? MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus MclCond_Broadcase(MclCond *cond) {
+MCL_INLINE MclStatus MclCond_Broadcast(MclCond *cond) {
 	return pthread_cond_broadcast(cond) ? MCL_FAILURE : MCL_SUCCESS;
 }
 

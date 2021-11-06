@@ -3,8 +3,7 @@
 
 #include "mcl/status.h"
 #include "mcl/log/log.h"
-#include <stddef.h>
-#include <stdbool.h>
+#include "mcl/stdtype.h"
 
 #define __MCL_FAILED_BOOL_ACTION      return false;
 #define __MCL_FAILED_STATUS_ACTION    return MCL_FAILURE;

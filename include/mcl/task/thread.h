@@ -22,8 +22,8 @@ MCL_INLINE MclStatus MclThread_Join(MclThread thread, void **ext) {
 	return pthread_join(thread, ext) ? MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus MclThread_Exit(MclThread *thread) {
-	return pthread_exit(thread) ? MCL_FAILURE : MCL_SUCCESS;
+MCL_INLINE void MclThread_Exit(MclThread *thread) {
+	pthread_exit(thread);
 }
 
 MCL_STDC_END

@@ -3,8 +3,7 @@
 
 #include "mcl/stdc.h"
 #include "mcl/keyword.h"
-#include <stdbool.h>
-#include <stdint.h>
+#include "mcl/stdtype.h"
 
 MCL_STDC_BEGIN
 

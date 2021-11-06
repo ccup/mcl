@@ -298,7 +298,7 @@ FIXTURE(LinkAdvanceTest)
 	MclLink link;
 
 	LinkAdvanceTest() {
-		MckLink_Init(&link);
+		MclLink_Init(&link);
 	}
 
 	AFTER {

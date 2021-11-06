@@ -1,7 +1,7 @@
 #ifndef HE44FCF65_514D_42A5_AF8D_7445F0D43BCF
 #define HE44FCF65_514D_42A5_AF8D_7445F0D43BCF
 
-#include <stddef.h>
+#include "mcl/stdtype.h"
 
 #define MCL_LIST_ENTRY(elem) struct { elem* next; elem* prev; }
 #define MCL_LIST_HEAD(elem)  MCL_LIST_ENTRY(elem)

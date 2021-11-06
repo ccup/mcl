@@ -13,11 +13,11 @@ MCL_INLINE void MclAtom_Set(MclAtom *atom, int value) {
 	*atom = value;
 }
 
-MCL_INLINE int MclAtom_Get(MclAtom *atom) {
+MCL_INLINE int MclAtom_Get(const MclAtom *atom) {
 	return *atom;
 }
 
-MCL_INLINE bool MclAtom_IsTrue(MclAtom *atom) {
+MCL_INLINE bool MclAtom_IsTrue(const MclAtom *atom) {
 	return MclAtom_Get(atom) != 0;
 }
 

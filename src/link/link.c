@@ -1,5 +1,5 @@
 #include "mcl/link/link.h"
-#include "mcl/memory.h"
+#include "mcl/mem/malloc.h"
 #include "mcl/assert.h"
 
 MCL_PRIVATE void MclLink_RemoveNodeFromLink(MclLink* self, MclLinkNode *node, MclLinkDataDeleter deleter) {

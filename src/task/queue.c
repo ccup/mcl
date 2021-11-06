@@ -4,7 +4,7 @@
 #include "mcl/task/cond.h"
 #include "mcl/task/task.h"
 #include "mcl/assert.h"
-#include "mcl/memory.h"
+#include "mcl/mem/malloc.h"
 
 MCL_TYPE_DEF(TaskQueue) {
 	MclLink tasks;

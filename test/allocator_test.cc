@@ -1,5 +1,5 @@
 #include <cctest/cctest.h>
-#include "mcl/allocator.h"
+#include "mcl/mem/allocator.h"
 
 namespace {
 	typedef struct Object {

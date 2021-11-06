@@ -1,7 +1,7 @@
 #include "role/worker.h"
 #include "role/robot_energy.h"
 #include "role/human_energy.h"
-#include "mcl/allocator.h"
+#include "mcl/mem/allocator.h"
 
 typedef struct WorkerObject {
 	MCL_ROLE_IMPL(Worker);

@@ -1,5 +1,5 @@
 #include <cctest/cctest.h>
-#include "mcl/memory.h"
+#include "mcl/mem/malloc.h"
 
 namespace
 {

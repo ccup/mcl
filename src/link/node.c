@@ -1,5 +1,5 @@
 #include "mcl/link/node.h"
-#include "mcl/memory.h"
+#include "mcl/mem/malloc.h"
 #include "mcl/assert.h"
 
 MCL_PRIVATE void MclLinkNode_Init(MclLinkNode *self, MclLinkData data) {

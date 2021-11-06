@@ -7,22 +7,32 @@
 #include "mcl/mem/malloc.h"
 
 MCL_TYPE_DEF(TaskQueue) {
-	MclLink tasks;
+	MclLink  tasks;
 	uint32_t threshold;
+	uint32_t poppedCount;
 };
 
 MCL_PRIVATE void TaskQueue_Init(TaskQueue *queue, uint32_t threshold) {
 	MclLink_Init(&queue->tasks);
 	queue->threshold = threshold;
+	queue->poppedCount = 0;
 }
 
 MCL_PRIVATE void TaskQueue_Destroy(TaskQueue *queue) {
 	MclLink_Clear(&queue->tasks, (MclLinkDataDeleter)MclTask_Destroy);
-	queue->threshold = 0;
 }
 
 MCL_PRIVATE bool TaskQueue_IsEmpty(const TaskQueue *queue) {
 	return MclLink_IsEmpty(&queue->tasks);
+}
+
+MCL_PRIVATE bool TaskQueue_IsReachThreshold(const TaskQueue *queue) {
+	if (!queue->threshold || !queue->poppedCount) return false;
+	return (queue->poppedCount + 1) % queue->threshold == 0;
+}
+
+MCL_PRIVATE void TaskQueue_ResetPoppedCount(TaskQueue *queue) {
+	queue->poppedCount = 0;
 }
 
 MCL_PRIVATE void TaskQueue_Remove(TaskQueue *queue, MclTaskKey key) {
@@ -30,9 +40,8 @@ MCL_PRIVATE void TaskQueue_Remove(TaskQueue *queue, MclTaskKey key) {
 	MclLinkNode *tmpNode = NULL;
 	MCL_LINK_FOR_EACH_SAFE(&queue->tasks, taskNode, tmpNode) {
 		MclTask *task = (MclTask*)MclLinkNode_GetData(taskNode);
-		if (task && task->key == key) {
-			MclLink_RemoveNode(&queue->tasks, taskNode, (MclLinkDataDeleter)MclTask_Destroy);
-		}
+		if (task && task->key != key) continue;
+		return MclLink_RemoveNode(&queue->tasks, taskNode, (MclLinkDataDeleter)MclTask_Destroy);
 	}
 }
 
@@ -48,14 +57,15 @@ MCL_PRIVATE MclTask* TaskQueue_Pop(TaskQueue *queue) {
 
 	MclTask *task = (MclTask*)MclLinkNode_GetData(node);
 	MclLink_RemoveNode(&queue->tasks, node, NULL);
+	queue->poppedCount++;
 
 	return task;
 }
 
 MCL_TYPE_DEF(MclTaskQueue) {
-	MclAtom isReady;
 	MclMutex mutex;
-	MclCond cond;
+	MclCond  cond;
+	MclAtom  isReady;
 	uint32_t queueCount;
 	TaskQueue queues[];
 };
@@ -74,6 +84,10 @@ MCL_PRIVATE bool MclTaskQueue_NeedWaiting(const MclTaskQueue *self) {
 MCL_PRIVATE MclTask* MclTaskQueue_PopTask(MclTaskQueue *self) {
 	for (uint32_t i = 0; i < self->queueCount; i++) {
 		if (TaskQueue_IsEmpty(&self->queues[i])) continue;
+		if (TaskQueue_IsReachThreshold(&self->queues[i])) {
+			TaskQueue_ResetPoppedCount(&self->queues[i]);
+			continue;
+		}
 
 		MclTask *task = TaskQueue_Pop(&self->queues[i]);
 		if (!task) break;
@@ -85,10 +99,10 @@ MCL_PRIVATE MclTask* MclTaskQueue_PopTask(MclTaskQueue *self) {
 	return NULL;
 }
 
-MCL_PRIVATE void MclTaskQueue_InitQueues(MclTaskQueue *self, uint32_t levels, uint32_t *levelThresholds) {
-	self->queueCount = levels;
-	for (uint32_t i = 0; i < levels; i++) {
-		TaskQueue_Init(&self->queues[i], levelThresholds ? levelThresholds[i] : 0);
+MCL_PRIVATE void MclTaskQueue_InitQueues(MclTaskQueue *self, uint32_t priorities, uint32_t *thresholds) {
+	self->queueCount = priorities;
+	for (uint32_t i = 0; i < priorities; i++) {
+		TaskQueue_Init(&self->queues[i], thresholds ? thresholds[i] : 0);
 	}
 }
 
@@ -99,8 +113,8 @@ MCL_PRIVATE void MclTaskQueue_DestroyQueues(MclTaskQueue *self) {
 	self->queueCount = 0;
 }
 
-MCL_PRIVATE MclStatus MclTaskQueue_Init(MclTaskQueue *self, uint32_t levels, uint32_t *levelThresholds) {
-	MclTaskQueue_InitQueues(self, levels, levelThresholds);
+MCL_PRIVATE MclStatus MclTaskQueue_Init(MclTaskQueue *self, uint32_t priorities, uint32_t *thresholds) {
+	MclTaskQueue_InitQueues(self, priorities, thresholds);
 	if (MCL_FAILED(MclMutex_InitRecursive(&self->mutex))) {
 		MCL_LOG_ERR("MclCond_Init failed!");
 		MclTaskQueue_DestroyQueues(self);

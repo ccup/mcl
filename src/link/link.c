@@ -2,6 +2,15 @@
 #include "mcl/memory.h"
 #include "mcl/assert.h"
 
+MCL_PRIVATE void MclLink_RemoveNodeFromLink(MclLink* self, MclLinkNode *node, MclLinkDataDeleter deleter) {
+	MCL_ASSERT_VALID_PTR_VOID(self);
+	MCL_ASSERT_VALID_PTR_VOID(node);
+
+	MclLinkNode_RemoveFromLink(node);
+	MclLinkNode_Delete(node, deleter);
+	self->count--;
+}
+
 MCL_PRIVATE void MclLink_InsertNodeBetween(MclLink *self, MclLinkNode *prevNode, MclLinkNode *node, MclLinkNode *nextNode) {
 	node->next = nextNode;
 	node->prev = prevNode;
@@ -24,15 +33,6 @@ MCL_PRIVATE void MclLink_AddHead(MclLink *self, MclLinkNode *node) {
 
 MCL_PRIVATE void MclLink_AddTail(MclLink *self, MclLinkNode *node) {
        MclLink_InsertNodeBetween(self, self->head.prev, node, &(self->head));
-}
-
-MCL_PRIVATE void MclLink_RemoveNodeFromLink(MclLink* self, MclLinkNode *node, MclLinkDataDeleter deleter) {
-	MCL_ASSERT_VALID_PTR_VOID(self);
-	MCL_ASSERT_VALID_PTR_VOID(node);
-
-	MclLinkNode_RemoveFromLink(node);
-	MclLinkNode_Delete(node, deleter);
-	self->count--;
 }
 
 MclLink* MclLink_Create() {

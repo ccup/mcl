@@ -3,7 +3,7 @@
 
 namespace
 {
-	size_t g_foo_count = 0;
+	size_t UNRELEASED_FOO_COUNT = 0;
 
     struct Foo{
 		Foo(int x) : x(x) {
@@ -13,13 +13,13 @@ namespace
 
     Foo* Foo_Create(int x = 0) {
     	Foo *foo = new Foo(x);
-    	g_foo_count++;
+    	UNRELEASED_FOO_COUNT++;
     	return foo;
     }
 
     void Foo_Delete(Foo* foo) {
     	delete foo;
-    	g_foo_count--;
+    	UNRELEASED_FOO_COUNT--;
     }
 
     void Foo_Sum(const Foo *foo, int *sum) {
@@ -37,7 +37,7 @@ FIXTURE(LinkTest)
 
 	AFTER {
 		MclLink_Delete(link, (MclLinkDataDeleter)Foo_Delete);
-		ASSERT_EQ(0, g_foo_count);
+		ASSERT_EQ(0, UNRELEASED_FOO_COUNT);
 	}
 
 	TEST("should be empty when initialized")
@@ -159,7 +159,7 @@ FIXTURE(LinkTest)
 		ASSERT_EQ(0, MclLink_GetCount(link));
 	}
 
-	TEST("should clear element from link")
+	TEST("should clear elements in link")
 	{
 		auto foo = Foo_Create();
 

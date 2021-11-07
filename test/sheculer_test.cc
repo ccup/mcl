@@ -104,6 +104,27 @@ FIXTURE(SchedulerTest)
 		ASSERT_EQ(30, history.getSize());
 	}
 
+	TEST("should start again after stop") {
+
+		MclTaskScheduler *scheduler = MclTaskScheduler_Create(1, MAX_PRIORITY, NULL);
+
+		for (int i = 0; i < 10; i++) {
+			scheduleTask(scheduler, SLOW,   i);
+			scheduleTask(scheduler, URGENT, i);
+		}
+
+		MclTaskScheduler_Start(scheduler);
+
+		sleep(1);
+		MclTaskScheduler_Stop(scheduler);
+		MclTaskScheduler_Start(scheduler);
+
+		waitScheduleDone(scheduler);
+		MclTaskScheduler_Delete(scheduler);
+
+		ASSERT_EQ(20, history.getSize());
+	}
+
 	TEST("should execute by specified task thresholds") {
 		uint32_t thresholds[] = {3, 2};
 

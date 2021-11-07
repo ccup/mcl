@@ -1,127 +1,6 @@
 #include <cctest/cctest.h>
 #include "mcl/task/scheduler.h"
-#include "mcl/task/mutex.h"
-#include "mcl/task/task.h"
-#include "mcl/log/log.h"
-#include <unistd.h>
-#include <list>
-#include <string>
-#include <iostream>
-#include <initializer_list>
-
-namespace {
-	enum PriorityLevel {
-		URGENT, NORMAL, SLOW, MAX_PRIORITY
-	};
-
-	std::string PriorityLevel_GetStr(PriorityLevel priority) {
-		switch (priority) {
-		case URGENT : return "URGENT";
-		case NORMAL : return "NORMAL";
-		case SLOW : return "SLOW";
-		default : break;
-		}
-		return "UNKNOWN";
-	}
-
-	struct ExecutedTask {
-		ExecutedTask(MclTaskKey key, PriorityLevel priority)
-		: key(key), priority(priority) {
-		}
-
-		bool operator== (const ExecutedTask& other) const {
-			return (key == other.key) && (priority == other.priority);
-		}
-
-		bool operator!=(const ExecutedTask& other) const {
-			return not(*this == other);
-		}
-
-		std::string toString() const {
-			return std::string("Task {key : ") + std::to_string(key)
-					+ ", priority : " + PriorityLevel_GetStr(priority) + "}";
-		}
-
-		MclTaskKey key;
-		PriorityLevel priority;
-	};
-
-	#define __ET(K, P) ExecutedTask(K, P)
-
-	struct ExecutedTaskHistory {
-		ExecutedTaskHistory() {
-			MclMutex_InitRecursive(&mutex);
-		}
-
-		~ExecutedTaskHistory() {
-			MclMutex_Destroy(&mutex);
-		}
-
-		void onTaskExecuted(const ExecutedTask& task) {
-			MCL_LOCK_AUTO(mutex);
-			executedTasks.push_back(task);
-		}
-
-		void clear() {
-			MCL_LOCK_AUTO(mutex);
-			executedTasks.clear();
-		}
-
-		size_t getSize() const {
-			return executedTasks.size();
-		}
-
-		const std::list<ExecutedTask>& getHistory() const {
-			return executedTasks;
-		}
-
-		void dump() const {
-			for (const auto t : executedTasks) {
-				std::cout << t.toString() << std::endl;
-			}
-		}
-
-	private:
-		std::list<ExecutedTask> executedTasks;
-		MclMutex mutex;
-	};
-
-	struct DemoTask {
-		MclTask task;
-		uint32_t pauseTime;
-		PriorityLevel priority;
-		ExecutedTaskHistory *history;
-	};
-
-	MclStatus DemoTask_Execute(MclTask *task) {
-		MCL_ASSERT_VALID_PTR(task);
-
-		DemoTask *self = MCL_TYPE_OF(task, DemoTask, task);
-		if (self->priority == SLOW) {
-			sleep(self->pauseTime);
-		}
-		self->history->onTaskExecuted(ExecutedTask(self->task.key, self->priority));
-		return MCL_SUCCESS;
-	}
-
-	void DemoTask_Init(DemoTask *self,
-			           MclTaskKey key,
-					   PriorityLevel priority,
-					   uint32_t pauseTime,
-					   ExecutedTaskHistory *history) {
-
-		MCL_ASSERT_VALID_PTR_VOID(self);
-		MCL_ASSERT_VALID_PTR_VOID(history);
-		MCL_ASSERT_TRUE_VOID(priority < MAX_PRIORITY);
-
-		self->task.key = key;
-		self->task.execute = DemoTask_Execute;
-		self->task.destroy = NULL;
-		self->priority = priority;
-		self->pauseTime = pauseTime;
-		self->history = history;
-	}
-}
+#include "task/demo_task.h"
 
 FIXTURE(SchedulerTest)
 {
@@ -129,7 +8,7 @@ FIXTURE(SchedulerTest)
 
 	DemoTask demoTasks[MAX_PRIORITY][TASK_COUNT];
 
-	ExecutedTaskHistory history;
+	TaskHistory history;
 
 	uint32_t slowTaskPauseTime{1};
 
@@ -153,21 +32,7 @@ FIXTURE(SchedulerTest)
 
 	void waitScheduleDone(MclTaskScheduler *scheduler) {
 		MclTaskScheduler_WaitDone(scheduler);
-		sleep(slowTaskPauseTime);
-	}
-
-	bool isScheduledByOrder(std::initializer_list<ExecutedTask> expects) {
-		if (expects.size() != history.getSize()) return false;
-
-		auto expect = expects.begin();
-		for (const auto task : history.getHistory()) {
-			if (task != *expect) {
-				history.dump();
-				return false;
-			}
-			expect++;
-		}
-		return true;
+		sleep(slowTaskPauseTime + 1);
 	}
 
 	BEFORE {
@@ -203,21 +68,22 @@ FIXTURE(SchedulerTest)
 		MclTaskScheduler_Delete(scheduler);
 	}
 
-	TEST("should execute tasks in different priorities")
+	TEST("should execute tasks by priority")
 	{
 		MclTaskScheduler *scheduler = MclTaskScheduler_Create(1, MAX_PRIORITY, NULL);
-
-		MclTaskScheduler_Start(scheduler);
 
 		scheduleTask(scheduler, SLOW);
 		scheduleTask(scheduler, NORMAL);
 		scheduleTask(scheduler, URGENT);
 
+		MclTaskScheduler_Start(scheduler);
+
 		waitScheduleDone(scheduler);
 
-		MclTaskScheduler_Delete(scheduler);
-
 		ASSERT_EQ(3, history.getSize());
+		ASSERT_TRUE(history.isInOrderOf({__ET(URGENT), __ET(NORMAL), __ET(SLOW)}));
+
+		MclTaskScheduler_Delete(scheduler);
 	}
 
 	TEST("should execute tasks by multiple threads")
@@ -253,14 +119,14 @@ FIXTURE(SchedulerTest)
 		waitScheduleDone(scheduler);
 		MclTaskScheduler_Delete(scheduler);
 
-		ASSERT_TRUE(isScheduledByOrder({__ET(0, URGENT), __ET(1, URGENT), __ET(2, URGENT),
-			                            __ET(0, NORMAL),
-			                            __ET(3, URGENT), __ET(4, URGENT),
-										__ET(1, NORMAL),
-			                            __ET(0, SLOW),
-										__ET(2, NORMAL), __ET(3, NORMAL),
-										__ET(1, SLOW),
-										__ET(4, NORMAL),
-										__ET(2, SLOW), __ET(3, SLOW), __ET(4, SLOW) }));
+		ASSERT_TRUE(history.isInOrderOf({__ET(URGENT, 0), __ET(URGENT, 1), __ET(URGENT, 2),
+			                             __ET(NORMAL, 0),
+			                             __ET(URGENT, 3), __ET(URGENT, 4),
+										 __ET(NORMAL, 1),
+			                             __ET(SLOW, 0),
+										 __ET(NORMAL, 2), __ET(NORMAL, 3),
+										 __ET(SLOW, 1),
+										 __ET(NORMAL, 4),
+										 __ET(SLOW, 2), __ET(SLOW, 3), __ET(SLOW, 4) }));
 	}
 };

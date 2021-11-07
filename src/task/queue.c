@@ -27,7 +27,7 @@ MCL_PRIVATE bool TaskQueue_IsEmpty(const TaskQueue *queue) {
 }
 
 MCL_PRIVATE bool TaskQueue_IsReachThreshold(const TaskQueue *queue) {
-	if (!queue->threshold || !queue->poppedCount) return false;
+	if (queue->threshold == 0 || queue->poppedCount == 0) return false;
 	return queue->poppedCount % queue->threshold == 0;
 }
 
@@ -110,7 +110,8 @@ MCL_PRIVATE MclTask* MclTaskQueue_PopTask(MclTaskQueue *self) {
 MCL_PRIVATE void MclTaskQueue_InitQueues(MclTaskQueue *self, uint32_t priorities, uint32_t *thresholds) {
 	self->queueCount = priorities;
 	for (uint32_t i = 0; i < priorities; i++) {
-		TaskQueue_Init(&self->queues[i], thresholds ? thresholds[i] : 0);
+		uint32_t threshold = ((thresholds == NULL) || (i + 1 >= priorities)) ? 0 : thresholds[i];
+		TaskQueue_Init(&self->queues[i], threshold);
 	}
 }
 

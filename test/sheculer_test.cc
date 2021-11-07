@@ -5,20 +5,48 @@
 #include "mcl/log/log.h"
 #include <unistd.h>
 #include <list>
+#include <string>
+#include <iostream>
+#include <initializer_list>
 
 namespace {
 	enum PriorityLevel {
 		URGENT, NORMAL, SLOW, MAX_PRIORITY
 	};
 
+	std::string PriorityLevel_GetStr(PriorityLevel priority) {
+		switch (priority) {
+		case URGENT : return "URGENT";
+		case NORMAL : return "NORMAL";
+		case SLOW : return "SLOW";
+		default : break;
+		}
+		return "UNKNOWN";
+	}
+
 	struct ExecutedTask {
 		ExecutedTask(MclTaskKey key, PriorityLevel priority)
 		: key(key), priority(priority) {
 		}
 
+		bool operator== (const ExecutedTask& other) const {
+			return (key == other.key) && (priority == other.priority);
+		}
+
+		bool operator!=(const ExecutedTask& other) const {
+			return not(*this == other);
+		}
+
+		std::string toString() const {
+			return std::string("Task {key : ") + std::to_string(key)
+					+ ", priority : " + PriorityLevel_GetStr(priority) + "}";
+		}
+
 		MclTaskKey key;
 		PriorityLevel priority;
 	};
+
+	#define __ET(K, P) ExecutedTask(K, P)
 
 	struct ExecutedTaskHistory {
 		ExecutedTaskHistory() {
@@ -45,6 +73,12 @@ namespace {
 
 		const std::list<ExecutedTask>& getHistory() const {
 			return executedTasks;
+		}
+
+		void dump() const {
+			for (const auto t : executedTasks) {
+				std::cout << t.toString() << std::endl;
+			}
 		}
 
 	private:
@@ -122,6 +156,20 @@ FIXTURE(SchedulerTest)
 		sleep(slowTaskPauseTime);
 	}
 
+	bool isScheduledByOrder(std::initializer_list<ExecutedTask> expects) {
+		if (expects.size() != history.getSize()) return false;
+
+		auto expect = expects.begin();
+		for (const auto task : history.getHistory()) {
+			if (task != *expect) {
+				history.dump();
+				return false;
+			}
+			expect++;
+		}
+		return true;
+	}
+
 	BEFORE {
 		history.clear();
 	}
@@ -172,29 +220,9 @@ FIXTURE(SchedulerTest)
 		ASSERT_EQ(3, history.getSize());
 	}
 
-	TEST("should execute tasks limited by threshold")
-	{
-		uint32_t threshold[] = {3, 2};
-		MclTaskScheduler *scheduler = MclTaskScheduler_Create(1, MAX_PRIORITY, threshold);
-
-		MclTaskScheduler_Start(scheduler);
-
-		for (int i = 0; i < 5; i++) {
-			scheduleTask(scheduler, SLOW);
-			scheduleTask(scheduler, URGENT);
-			scheduleTask(scheduler, NORMAL);
-		}
-
-		waitScheduleDone(scheduler);
-		MclTaskScheduler_Delete(scheduler);
-
-		ASSERT_EQ(15, history.getSize());
-	}
-
 	TEST("should execute tasks by multiple threads")
 	{
-		uint32_t threshold[] = {5, 2};
-		MclTaskScheduler *scheduler = MclTaskScheduler_Create(2, MAX_PRIORITY, threshold);
+		MclTaskScheduler *scheduler = MclTaskScheduler_Create(2, MAX_PRIORITY, NULL);
 
 		MclTaskScheduler_Start(scheduler);
 
@@ -208,5 +236,31 @@ FIXTURE(SchedulerTest)
 		MclTaskScheduler_Delete(scheduler);
 
 		ASSERT_EQ(30, history.getSize());
+	}
+
+	TEST("should execute by specified task thresholds") {
+		uint32_t thresholds[] = {3, 2};
+
+		MclTaskScheduler *scheduler = MclTaskScheduler_Create(1, MAX_PRIORITY, thresholds);
+
+		for (int key = 0; key < 5; key++) {
+			scheduleTask(scheduler, SLOW,   key);
+			scheduleTask(scheduler, URGENT, key);
+			scheduleTask(scheduler, NORMAL, key);
+		}
+
+		MclTaskScheduler_Start(scheduler);
+		waitScheduleDone(scheduler);
+		MclTaskScheduler_Delete(scheduler);
+
+		ASSERT_TRUE(isScheduledByOrder({__ET(0, URGENT), __ET(1, URGENT), __ET(2, URGENT),
+			                            __ET(0, NORMAL),
+			                            __ET(3, URGENT), __ET(4, URGENT),
+										__ET(1, NORMAL),
+			                            __ET(0, SLOW),
+										__ET(2, NORMAL), __ET(3, NORMAL),
+										__ET(1, SLOW),
+										__ET(4, NORMAL),
+										__ET(2, SLOW), __ET(3, SLOW), __ET(4, SLOW) }));
 	}
 };

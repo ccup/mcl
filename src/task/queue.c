@@ -222,7 +222,22 @@ MclStatus MclTaskQueue_RemoveTask(MclTaskQueue *self, MclTaskKey key, uint32_t p
 	return MCL_SUCCESS;
 }
 
-void* MclTaskQueue_Execute(void *data) {
+void* MclTaskQueue_SyncExecute(void *data) {
+	MclTaskQueue *self = (MclTaskQueue*)data;
+	MCL_LOCK_AUTO(self->mutex);
+	while (!MclTaskQueue_IsEmpty(self)) {
+		MclTask *task = MclTaskQueue_PopTask(self);
+		if (task) {
+			if (MCL_FAILED(MclTask_Execute(task))) {
+				MCL_LOG_ERR("Execute task %u failed!", task->key);
+			}
+		}
+	}
+	MCL_LOG_DBG("Task queue sync execute exit!");
+	return NULL;
+}
+
+void* MclTaskQueue_AsyncExecute(void *data) {
 	MclTaskQueue *self = (MclTaskQueue*)data;
 	while (MclTaskQueue_IsReady(self)) {
 		MclTask *task = NULL;
@@ -234,16 +249,16 @@ void* MclTaskQueue_Execute(void *data) {
 				MCL_LOG_DBG("Task queue end waiting.");
 			}
 			if (!MclTaskQueue_IsReady(self)) {
-				MCL_LOG_DBG("Task queue execute is stopped!");
+				MCL_LOG_DBG("Task queue async execute is stopped!");
 				return NULL;
 			}
 			task = MclTaskQueue_PopTask(self);
 		}
 		if (task) {
-			MclTask_Execute(task);
+			(void)MclTask_Execute(task);
 		}
 	}
-	MCL_LOG_DBG("Task queue execute exit!");
+	MCL_LOG_DBG("Task queue async execute exit!");
 	return NULL;
 }
 

@@ -150,4 +150,19 @@ FIXTURE(SchedulerTest)
 										 __ET(NORMAL, 4),
 										 __ET(SLOW, 2), __ET(SLOW, 3), __ET(SLOW, 4) }));
 	}
+
+	TEST("should sync execute when 0 thread configured") {
+		MclTaskScheduler *scheduler = MclTaskScheduler_Create(0, MAX_PRIORITY, NULL);
+
+		MclTaskScheduler_Start(scheduler);
+
+		scheduleTask(scheduler, SLOW);
+		scheduleTask(scheduler, URGENT);
+		scheduleTask(scheduler, NORMAL);
+
+		MclTaskScheduler_WaitDone(scheduler);
+		MclTaskScheduler_Delete(scheduler);
+
+		ASSERT_TRUE(history.isInOrderOf({__ET(URGENT), __ET(NORMAL), __ET(SLOW)}));
+	}
 };

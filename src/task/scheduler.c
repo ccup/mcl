@@ -16,7 +16,7 @@ MCL_TYPE_DEF(MclTaskScheduler) {
 
 MCL_PRIVATE MclStatus MclTaskScheduler_StartThreads(MclTaskScheduler *self) {
 	for (uint32_t i = 0; i < self->threadCount; i++) {
-		MCL_ASSERT_SUCC_CALL(MclThread_Create(&self->threads[i], NULL, MclTaskQueue_Execute, self->taskQueue));
+		MCL_ASSERT_SUCC_CALL(MclThread_Create(&self->threads[i], NULL, MclTaskQueue_AsyncExecute, self->taskQueue));
 	}
 	return MCL_SUCCESS;
 }
@@ -104,7 +104,11 @@ void MclTaskScheduler_WaitDone(MclTaskScheduler *self) {
 	if (!MclTaskScheduler_IsRunning(self)) return;
 
 	while (!MclTaskQueue_IsEmpty(self->taskQueue)) {
-		MclThread_Yield();
+		if (self->threadCount) {
+			MclThread_Yield();
+		} else {
+			(void)MclTaskQueue_SyncExecute(self->taskQueue);
+		}
 	}
 	MCL_LOG_DBG("Wait scheduler done!");
 }

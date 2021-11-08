@@ -10,8 +10,13 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
 endif()
 
 option(ENABLE_TEST "Build tests" OFF)
+option(ENABLE_ASON "Enable ason check" ON)
 
 include(${PROJECT_SOURCE_DIR}/cmake/CPM.cmake)
+
+if(ENABLE_ASON)
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address") 
+endif()
 
 add_subdirectory(src)
 

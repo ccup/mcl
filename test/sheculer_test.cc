@@ -117,6 +117,9 @@ FIXTURE(SchedulerTest)
 
 		sleep(1);
 		MclTaskScheduler_Stop(scheduler);
+
+		ASSERT_TRUE(history.getSize() < 20);
+
 		MclTaskScheduler_Start(scheduler);
 
 		waitScheduleDone(scheduler);
@@ -159,6 +162,10 @@ FIXTURE(SchedulerTest)
 		scheduleTask(scheduler, SLOW);
 		scheduleTask(scheduler, URGENT);
 		scheduleTask(scheduler, NORMAL);
+
+		sleep(1);
+
+		ASSERT_EQ(0, history.getSize());
 
 		MclTaskScheduler_WaitDone(scheduler);
 		MclTaskScheduler_Delete(scheduler);

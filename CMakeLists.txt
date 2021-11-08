@@ -10,12 +10,19 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
 endif()
 
 option(ENABLE_TEST "Build tests" OFF)
-option(ENABLE_ASON "Enable ason check" ON)
+option(ENABLE_ASON "Enable AddressSanitizer" OFF)
+option(ENABLE_TSAN "Enable ThreadSanitizer" OFF)
 
 include(${PROJECT_SOURCE_DIR}/cmake/CPM.cmake)
 
 if(ENABLE_ASON)
+    message(STATUS "AddressSanitizer enabled")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address") 
+endif()
+
+if(ENABLE_TSAN)
+    message(STATUS "ThreadSanitizer enabled")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O1 -fsanitize=thread -fno-omit-frame-pointer -fPIC -fPIE")
 endif()
 
 add_subdirectory(src)

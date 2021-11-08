@@ -29,7 +29,7 @@ FIXTURE(ListTest)
 		ASSERT_TRUE(MCL_LIST_EMPTY(&elems, Foo, link));
 	}
 
-	TEST("should instert tail after init")
+	TEST("should insert tail after init")
 	{
 		Foo f = {.x = 5};
 

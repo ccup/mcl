@@ -76,10 +76,9 @@ bool MclTaskQueue_IsReady(const MclTaskQueue *self) {
 }
 
 bool MclTaskQueue_IsEmpty(const MclTaskQueue *self) {
-	MCL_ASSERT_VALID_PTR_BOOL(self);
-
 	MCL_LOCK_AUTO(((MclTaskQueue*)self)->mutex);
-	if (!MclAtom_IsTrue(&self->isReady)) return true;
+
+	if (!MclTaskQueue_IsReady(self)) return true;
 
 	for (uint32_t i = 0; i < self->queueCount; i++) {
 		if (!TaskQueue_IsEmpty(&self->queues[i])) return false;
@@ -158,6 +157,7 @@ MclTaskQueue* MclTaskQueue_Create(uint32_t priorities, uint32_t *thresholds) {
 	return self;
 }
 
+/* IMPORTANT: SHOULD INVOKE AFTER ALL OTHER USER THREADS STOPPED!!! */
 void MclTaskQueue_Delete(MclTaskQueue *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
@@ -179,26 +179,28 @@ void MclTaskQueue_Delete(MclTaskQueue *self) {
 MclStatus MclTaskQueue_Start(MclTaskQueue *self) {
 	MCL_ASSERT_VALID_PTR(self);
 
-	if (MclAtom_IsTrue(&self->isReady)) return MCL_SUCCESS;
+	MCL_LOCK_AUTO(self->mutex);
 
-	MCL_LOCK_SCOPE(self->mutex) {
-		MclAtom_Set(&self->isReady, 1);
-		MclCond_Broadcast(&self->cond);
-		MCL_LOG_DBG("Task queue start OK!");
-	}
+	MCL_ASSERT_TRUE(!MclTaskQueue_IsReady(self));
+
+	MclAtom_Set(&self->isReady, 1);
+	MclCond_Broadcast(&self->cond);
+
+	MCL_LOG_DBG("Task queue start OK!");
 	return MCL_SUCCESS;
 }
 
 MclStatus MclTaskQueue_Stop(MclTaskQueue *self) {
 	MCL_ASSERT_VALID_PTR(self);
 
-	if (!MclAtom_IsTrue(&self->isReady)) return MCL_SUCCESS;
+	MCL_LOCK_AUTO(self->mutex);
 
-	MCL_LOCK_SCOPE(self->mutex) {
-		MclAtom_Set(&self->isReady, 0);
-		MclCond_Broadcast(&self->cond);
-		MCL_LOG_DBG("Task queue stop OK!");
-	}
+	MCL_ASSERT_TRUE(MclTaskQueue_IsReady(self));
+
+	MclAtom_Set(&self->isReady, 0);
+	MclCond_Broadcast(&self->cond);
+
+	MCL_LOG_DBG("Task queue stop OK!");
 	return MCL_SUCCESS;
 }
 
@@ -208,6 +210,8 @@ MclStatus MclTaskQueue_InsertTask(MclTaskQueue *self, MclTask *task, uint32_t pr
 	MCL_ASSERT_TRUE(priority < self->queueCount);
 
 	MCL_LOCK_AUTO(self->mutex);
+
+	MCL_ASSERT_TRUE(MclTaskQueue_IsReady(self));
 
 	TaskQueue_Push(&self->queues[priority], task);
 	MclCond_Signal(&self->cond);
@@ -222,6 +226,8 @@ MclStatus MclTaskQueue_RemoveTask(MclTaskQueue *self, MclTaskKey key, uint32_t p
 
 	MCL_LOCK_AUTO(self->mutex);
 
+	MCL_ASSERT_TRUE(MclTaskQueue_IsReady(self));
+
 	TaskQueue_Remove(&self->queues[priority], key);
 
 	MCL_LOG_DBG("Task queue remove task %u of level %u OK!", key, priority);
@@ -233,9 +239,8 @@ void* MclTaskQueue_SyncExecute(void *data) {
 	MclTaskQueue *self = (MclTaskQueue*)data;
 
 	MCL_LOCK_AUTO(self->mutex);
-	MCL_ASSERT_TRUE_NIL(MclAtom_IsTrue(&self->isReady));
 
-	while (!MclTaskQueue_IsEmpty(self)) {
+	while (MclTaskQueue_IsReady(self) && !MclTaskQueue_IsEmpty(self)) {
 		MclTask *task = MclTaskQueue_PopTask(self);
 		if (task) {
 			if (MCL_FAILED(MclTask_Execute(task))) {
@@ -251,7 +256,7 @@ void* MclTaskQueue_AsyncExecute(void *data) {
 
 	MclTaskQueue *self = (MclTaskQueue*)data;
 
-	while (MclAtom_IsTrue(&self->isReady)) {
+	while (MclTaskQueue_IsReady(self)) {
 		MclTask *task = NULL;
 		MCL_LOCK_SCOPE(self->mutex) {
 			MCL_LOG_DBG("Task queue get mutex.");
@@ -266,7 +271,7 @@ void* MclTaskQueue_AsyncExecute(void *data) {
 			}
 			task = MclTaskQueue_PopTask(self);
 		}
-		/* IMPORTANT: SHOULD EXECUTE TASK IN OUTSIDE OF LOCK SCOPE */
+		/* IMPORTANT: SHOULD EXECUTE TASK IN OUTSIDE OF LOCK SCOPE!!! */
 		if (task) {
 			(void)MclTask_Execute(task);
 		}

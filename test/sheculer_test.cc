@@ -72,11 +72,11 @@ FIXTURE(SchedulerTest)
 	{
 		MclTaskScheduler *scheduler = MclTaskScheduler_Create(1, MAX_PRIORITY, NULL);
 
+		MclTaskScheduler_Start(scheduler);
+
 		scheduleTask(scheduler, SLOW);
 		scheduleTask(scheduler, NORMAL);
 		scheduleTask(scheduler, URGENT);
-
-		MclTaskScheduler_Start(scheduler);
 
 		waitScheduleDone(scheduler);
 
@@ -108,12 +108,12 @@ FIXTURE(SchedulerTest)
 
 		MclTaskScheduler *scheduler = MclTaskScheduler_Create(1, MAX_PRIORITY, NULL);
 
+		MclTaskScheduler_Start(scheduler);
+
 		for (int i = 0; i < 10; i++) {
 			scheduleTask(scheduler, SLOW,   i);
 			scheduleTask(scheduler, URGENT, i);
 		}
-
-		MclTaskScheduler_Start(scheduler);
 
 		sleep(1);
 		MclTaskScheduler_Stop(scheduler);
@@ -133,13 +133,14 @@ FIXTURE(SchedulerTest)
 
 		MclTaskScheduler *scheduler = MclTaskScheduler_Create(1, MAX_PRIORITY, thresholds);
 
+		MclTaskScheduler_Start(scheduler);
+
 		for (int key = 0; key < 5; key++) {
 			scheduleTask(scheduler, SLOW,   key);
 			scheduleTask(scheduler, URGENT, key);
 			scheduleTask(scheduler, NORMAL, key);
 		}
 
-		MclTaskScheduler_Start(scheduler);
 		waitScheduleDone(scheduler);
 		MclTaskScheduler_Delete(scheduler);
 

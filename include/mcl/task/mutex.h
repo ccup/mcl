@@ -62,14 +62,21 @@ MCL_TYPE_DEF(MclAutoLock) {
 };
 
 MCL_INLINE MclAutoLock MclLock_AutoLock(MclMutex *mutex) {
-    MclMutex_Lock(mutex);
+	if (!mutex) {
+		MCL_LOG_ERR("Auto lock a NULL mutex!");
+	}
+    if (MCL_FAILED(MclMutex_Lock(mutex))) {
+		MCL_LOG_ERR("Auto lock mutex failed!");
+    }
     MclAutoLock lock = {.mutex = mutex};
     return lock;
 }
 
 MCL_INLINE void MclLock_AutoUnlock(MclAutoLock *lock) {
     if (lock && lock->mutex) {
-        (void)MclMutex_Unlock(lock->mutex);
+    	if (MCL_FAILED(MclMutex_Unlock(lock->mutex))) {
+			MCL_LOG_ERR("Auto unlock mutex failed!");
+		}
         lock->mutex = NULL;
     }
 }
@@ -78,10 +85,10 @@ MCL_INLINE bool MclLock_IsLocked(const MclAutoLock *lock) {
     return (lock && lock->mutex);
 }
 
-#define MCL_LOCK_AUTO(MUTEX) MCL_RAII(MclLock_AutoUnlock) MclAutoLock MCL_SYMBOL_UNIQUE(MCL_LOCK) = MclLock_AutoLock(&MUTEX)
+#define MCL_LOCK_AUTO(MUTEX) MCL_RAII(MclLock_AutoUnlock) MclAutoLock MCL_SYMBOL_UNIQUE(MCL_LOCK) = MclLock_AutoLock((MclMutex*)&MUTEX)
 
 #define MCL_LOCK_SCOPE(MUTEX)           \
-for (MCL_RAII(MclLock_AutoUnlock) MclAutoLock mclLock=MclLock_AutoLock(&MUTEX); MclLock_IsLocked(&mclLock); MclLock_AutoUnlock(&mclLock))
+for (MCL_RAII(MclLock_AutoUnlock) MclAutoLock mclLock=MclLock_AutoLock((MclMutex*)&MUTEX); MclLock_IsLocked(&mclLock); MclLock_AutoUnlock(&mclLock))
 
 MCL_STDC_END
 

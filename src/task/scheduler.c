@@ -16,7 +16,7 @@ MCL_TYPE_DEF(MclTaskScheduler) {
 
 MCL_PRIVATE MclStatus MclTaskScheduler_StartThreads(MclTaskScheduler *self) {
 	for (uint32_t i = 0; i < self->threadCount; i++) {
-		MCL_ASSERT_SUCC_CALL(MclThread_Create(&self->threads[i], NULL, MclTaskQueue_AsyncExecute, self->taskQueue));
+		MCL_ASSERT_SUCC_CALL(MclThread_Create(&self->threads[i], NULL, MclTaskQueue_ThreadExecute, self->taskQueue));
 	}
 	return MCL_SUCCESS;
 }
@@ -63,7 +63,7 @@ void MclTaskScheduler_Delete(MclTaskScheduler *self) {
 MclStatus MclTaskScheduler_Start(MclTaskScheduler *self) {
 	MCL_ASSERT_VALID_PTR(self);
 
-	MCL_ASSERT_TRUE(!MclTaskScheduler_IsRunning(self));
+	if (MclTaskScheduler_IsRunning(self)) return MCL_SUCCESS;
 
 	MCL_ASSERT_SUCC_CALL(MclTaskQueue_Start(self->taskQueue));
 	MCL_ASSERT_SUCC_CALL(MclTaskScheduler_StartThreads(self));
@@ -73,7 +73,7 @@ MclStatus MclTaskScheduler_Start(MclTaskScheduler *self) {
 MclStatus MclTaskScheduler_Stop(MclTaskScheduler *self) {
 	MCL_ASSERT_VALID_PTR(self);
 
-	MCL_ASSERT_TRUE(MclTaskScheduler_IsRunning(self));
+	if (!MclTaskScheduler_IsRunning(self)) return MCL_SUCCESS;
 
 	MCL_ASSERT_SUCC_CALL(MclTaskQueue_Stop(self->taskQueue));
 	MCL_ASSERT_SUCC_CALL(MclTaskScheduler_JoinThreads(self));
@@ -105,13 +105,12 @@ void MclTaskScheduler_WaitDone(MclTaskScheduler *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 	MCL_ASSERT_VALID_PTR_VOID(self->taskQueue);
 
-	MCL_ASSERT_TRUE_VOID(MclTaskScheduler_IsRunning(self));
-
-	while (!MclTaskQueue_IsEmpty(self->taskQueue)) {
-		if (self->threadCount) {
+	if (!self->threadCount) {
+		MclTaskQueue_ExecuteAll(self->taskQueue);
+	} else {
+		MCL_ASSERT_TRUE_VOID(MclTaskScheduler_IsRunning(self));
+		while (!MclTaskQueue_IsEmpty(self->taskQueue)) {
 			MclThread_Yield();
-		} else {
-			(void)MclTaskQueue_SyncExecute(self->taskQueue);
 		}
 	}
 	MCL_LOG_DBG("Wait scheduler done!");

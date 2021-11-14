@@ -76,6 +76,8 @@ bool MclTaskQueue_IsReady(const MclTaskQueue *self) {
 }
 
 bool MclTaskQueue_IsEmpty(const MclTaskQueue *self) {
+	MCL_ASSERT_VALID_PTR_R(self, true);
+
 	MCL_LOCK_AUTO(((MclTaskQueue*)self)->mutex);
 
 	if (!MclTaskQueue_IsReady(self)) return true;
@@ -181,7 +183,7 @@ MclStatus MclTaskQueue_Start(MclTaskQueue *self) {
 
 	MCL_LOCK_AUTO(self->mutex);
 
-	MCL_ASSERT_TRUE(!MclTaskQueue_IsReady(self));
+	if(MclTaskQueue_IsReady(self)) return MCL_SUCCESS;
 
 	MclAtom_Set(&self->isReady, 1);
 	MclCond_Broadcast(&self->cond);
@@ -195,7 +197,7 @@ MclStatus MclTaskQueue_Stop(MclTaskQueue *self) {
 
 	MCL_LOCK_AUTO(self->mutex);
 
-	MCL_ASSERT_TRUE(MclTaskQueue_IsReady(self));
+	if(!MclTaskQueue_IsReady(self)) return MCL_SUCCESS;
 
 	MclAtom_Set(&self->isReady, 0);
 	MclCond_Broadcast(&self->cond);
@@ -234,13 +236,12 @@ MclStatus MclTaskQueue_RemoveTask(MclTaskQueue *self, MclTaskKey key, uint32_t p
 	return MCL_SUCCESS;
 }
 
-void* MclTaskQueue_SyncExecute(void *data) {
-
-	MclTaskQueue *self = (MclTaskQueue*)data;
+void MclTaskQueue_ExecuteAll(MclTaskQueue *self) {
+	MCL_ASSERT_VALID_PTR_VOID(self);
 
 	MCL_LOCK_AUTO(self->mutex);
 
-	while (MclTaskQueue_IsReady(self) && !MclTaskQueue_IsEmpty(self)) {
+	while (!MclTaskQueue_IsEmpty(self)) {
 		MclTask *task = MclTaskQueue_PopTask(self);
 		if (task) {
 			if (MCL_FAILED(MclTask_Execute(task))) {
@@ -248,11 +249,10 @@ void* MclTaskQueue_SyncExecute(void *data) {
 			}
 		}
 	}
-	MCL_LOG_DBG("Task queue sync execute exit!");
-	return NULL;
+	MCL_LOG_DBG("Task queue executes finish!");
 }
 
-void* MclTaskQueue_AsyncExecute(void *data) {
+void* MclTaskQueue_ThreadExecute(void *data) {
 
 	MclTaskQueue *self = (MclTaskQueue*)data;
 

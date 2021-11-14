@@ -22,8 +22,9 @@ MclStatus MclTaskQueue_RemoveTask(MclTaskQueue*, MclTaskKey, uint32_t priority);
 bool MclTaskQueue_IsReady(const MclTaskQueue*);
 bool MclTaskQueue_IsEmpty(const MclTaskQueue*);
 
-void* MclTaskQueue_SyncExecute(void*);
-void* MclTaskQueue_AsyncExecute(void*);
+void MclTaskQueue_ExecuteAll(MclTaskQueue*);
+
+void* MclTaskQueue_ThreadExecute(void*);
 
 MCL_STDC_END
 

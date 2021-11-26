@@ -15,7 +15,7 @@ target_include_directories(${TEST_TARGET} PRIVATE  ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(${TEST_TARGET} PRIVATE mcl cctest_main)
 
-set_target_properties(${TEST_TARGET} PROPERTIES CXX_STANDARD 14)
+target_compile_features(${TEST_TARGET} PRIVATE cxx_std_17)
 
 include(CTest)
 enable_testing()

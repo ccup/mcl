@@ -1,5 +1,7 @@
 build/*
 deps/*
+cmake-build-debug/*
+.idea/*
 .settings/*
 .vscode/*
 .DS_Store

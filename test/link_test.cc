@@ -88,7 +88,7 @@ FIXTURE(LinkTest)
 		auto foo = Foo_Create();
 
 		MclLink_PushFront(link, foo);
-		MclLink_RemoveNodeOfData(link, foo, NULL);
+        MclLink_RemoveData(link, foo, NULL);
 
 		ASSERT_TRUE(MclLink_IsEmpty(link));
 		ASSERT_EQ(0, MclLink_GetCount(link));
@@ -107,18 +107,18 @@ FIXTURE(LinkTest)
 		MclLink_PushFront(link, foo2);
 		MclLink_PushFront(link, foo3);
 
-		MclLink_RemoveNodeOfData(link, foo2, NULL);
+        MclLink_RemoveData(link, foo2, NULL);
 		Foo_Delete(foo2);
 
 		ASSERT_FALSE(MclLink_IsEmpty(link));
 		ASSERT_EQ(2, MclLink_GetCount(link));
 
-		MclLink_RemoveNodeOfData(link, foo1, NULL);
+        MclLink_RemoveData(link, foo1, NULL);
 
 		ASSERT_FALSE(MclLink_IsEmpty(link));
 		ASSERT_EQ(1, MclLink_GetCount(link));
 
-		MclLink_RemoveNodeOfData(link, foo3, NULL);
+        MclLink_RemoveData(link, foo3, NULL);
 
 		ASSERT_TRUE(MclLink_IsEmpty(link));
 		ASSERT_EQ(0, MclLink_GetCount(link));
@@ -132,7 +132,7 @@ FIXTURE(LinkTest)
 		auto foo = Foo_Create();
 
 		MclLink_PushBack(link, foo);
-		MclLink_RemoveNodeOfData(link, foo, (MclLinkDataDeleter)Foo_Delete);
+        MclLink_RemoveData(link, foo, (MclLinkDataDeleter) Foo_Delete);
 
 		ASSERT_TRUE(MclLink_IsEmpty(link));
 	}
@@ -147,13 +147,13 @@ FIXTURE(LinkTest)
 		MclLink_PushFront(link, foo2);
 		MclLink_PushFront(link, foo3);
 
-		MclLink_RemoveNodeOfData(link, foo3, (MclLinkDataDeleter)Foo_Delete);
-		MclLink_RemoveNodeOfData(link, foo2, (MclLinkDataDeleter)Foo_Delete);
+        MclLink_RemoveData(link, foo3, (MclLinkDataDeleter) Foo_Delete);
+        MclLink_RemoveData(link, foo2, (MclLinkDataDeleter) Foo_Delete);
 
 		ASSERT_FALSE(MclLink_IsEmpty(link));
 		ASSERT_EQ(1, MclLink_GetCount(link));
 
-		MclLink_RemoveNodeOfData(link, foo1, (MclLinkDataDeleter)Foo_Delete);
+        MclLink_RemoveData(link, foo1, (MclLinkDataDeleter) Foo_Delete);
 
 		ASSERT_TRUE(MclLink_IsEmpty(link));
 		ASSERT_EQ(0, MclLink_GetCount(link));
@@ -325,6 +325,24 @@ FIXTURE(LinkAdvanceTest)
 
 		MclLink_Delete(result, NULL);
 	}
+
+	TEST("should remove all matched nodes in link")
+    {
+        MclLink_PushBack(&link, (MclLinkData)1);
+        MclLink_PushBack(&link, (MclLinkData)3);
+        MclLink_PushBack(&link, (MclLinkData)5);
+        MclLink_PushBack(&link, (MclLinkData)2);
+
+        MclLink_RemoveBy(&link, Data_IsLargerThan, (MclLinkData)2, NULL);
+
+        ASSERT_EQ(2, MclLink_GetCount(&link));
+
+        auto firstNode = MclLink_GetFirst(&link);
+        ASSERT_EQ(1, (long)MclLinkNode_GetData(firstNode));
+
+        auto secondNode = MclLinkNode_GetNext(firstNode);
+        ASSERT_EQ(2, (long)MclLinkNode_GetData(secondNode));
+    }
 
 	TEST("should visit all nodes in link")
 	{

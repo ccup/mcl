@@ -88,14 +88,26 @@ MclStatus MclLink_PushBack(MclLink *self, MclLinkData data) {
 	return MCL_SUCCESS;
 }
 
-MclLinkNode* MclLink_FindNode(MclLink *self, MclLinkData data) {
-	MCL_ASSERT_VALID_PTR_NIL(self);
+MclStatus MclLink_InsertBefore(MclLink *self, MclLinkNode *nextNode, MclLinkData data) {
+    MCL_ASSERT_VALID_PTR(self);
+    MCL_ASSERT_VALID_PTR(nextNode);
 
-	MclLinkNode *node = NULL;
-	MCL_LINK_FOR_EACH(self, node) {
-		if (data == node->data) return node;
-	}
-	return NULL;
+    MclLinkNode *node = MclLinkNode_Create(data);
+    MCL_ASSERT_VALID_PTR(node);
+
+    MclLink_InsertBeforeNode(self, nextNode, node);
+    return MCL_SUCCESS;
+}
+
+MclStatus MclLink_InsertAfter(MclLink *self, MclLinkNode *prevNode, MclLinkData data) {
+    MCL_ASSERT_VALID_PTR(self);
+    MCL_ASSERT_VALID_PTR(prevNode);
+
+    MclLinkNode *node = MclLinkNode_Create(data);
+    MCL_ASSERT_VALID_PTR(node);
+
+    MclLink_InsertAfterNode(self, prevNode, node);
+    return MCL_SUCCESS;
 }
 
 void MclLink_RemoveNode(MclLink *self, MclLinkNode *node, MclLinkDataDeleter deleter) {
@@ -106,7 +118,7 @@ void MclLink_RemoveNode(MclLink *self, MclLinkNode *node, MclLinkDataDeleter del
 	MclLink_RemoveNodeFromLink(self, node, deleter);
 }
 
-void MclLink_RemoveNodeOfData(MclLink *self, MclLinkData data, MclLinkDataDeleter deleter) {
+void MclLink_RemoveData(MclLink *self, MclLinkData data, MclLinkDataDeleter deleter) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
 	MclLinkNode *node = MclLink_FindNode(self, data);
@@ -115,26 +127,27 @@ void MclLink_RemoveNodeOfData(MclLink *self, MclLinkData data, MclLinkDataDelete
 	MclLink_RemoveNodeFromLink(self, node, deleter);
 }
 
-MclStatus MclLink_InsertBefore(MclLink *self, MclLinkNode *nextNode, MclLinkData data) {
-	MCL_ASSERT_VALID_PTR(self);
-	MCL_ASSERT_VALID_PTR(nextNode);
+void MclLink_RemoveBy(MclLink *self, MclLinkPred pred, void *arg, MclLinkDataDeleter deleter) {
+	MCL_ASSERT_VALID_PTR_VOID(self);
+	MCL_ASSERT_VALID_PTR_VOID(pred);
 
-	MclLinkNode *node = MclLinkNode_Create(data);
-	MCL_ASSERT_VALID_PTR(node);
-
-	MclLink_InsertBeforeNode(self, nextNode, node);
-	return MCL_SUCCESS;
+    MclLinkNode *node = NULL;
+    MclLinkNode *tmpNode = NULL;
+    MCL_LINK_FOR_EACH_SAFE((MclLink*)self, node, tmpNode) {
+        if (pred(node->data, arg)) {
+            MclLink_RemoveNodeFromLink(self, node, deleter);
+        }
+    }
 }
 
-MclStatus MclLink_InsertAfter(MclLink *self, MclLinkNode *prevNode, MclLinkData data) {
-	MCL_ASSERT_VALID_PTR(self);
-	MCL_ASSERT_VALID_PTR(prevNode);
+MclLinkNode* MclLink_FindNode(MclLink *self, MclLinkData data) {
+    MCL_ASSERT_VALID_PTR_NIL(self);
 
-	MclLinkNode *node = MclLinkNode_Create(data);
-	MCL_ASSERT_VALID_PTR(node);
-
-	MclLink_InsertAfterNode(self, prevNode, node);
-	return MCL_SUCCESS;
+    MclLinkNode *node = NULL;
+    MCL_LINK_FOR_EACH(self, node) {
+        if (data == node->data) return node;
+    }
+    return NULL;
 }
 
 void MclLink_FindBy(const MclLink *self, MclLinkPred pred, void *arg, MclLink *result) {
@@ -144,10 +157,10 @@ void MclLink_FindBy(const MclLink *self, MclLinkPred pred, void *arg, MclLink *r
 
 	MclLinkNode *node = NULL;
 	MCL_LINK_FOR_EACH((MclLink*)self, node) {
-		if (pred(node->data, arg)) {
-			MclLink_PushBack(result, node->data);
-		}
-	}
+        if (pred(node->data, arg)) {
+            MclLink_PushBack(result, node->data);
+        }
+    }
 }
 
 MclStatus MclLink_Accept(const MclLink* self, MclLinkVisiter visitor, void* arg) {

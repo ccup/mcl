@@ -26,11 +26,12 @@ MclStatus MclLink_InsertBefore(MclLink*, MclLinkNode* nextNode, MclLinkData);
 MclStatus MclLink_InsertAfter(MclLink*, MclLinkNode* prevNode, MclLinkData);
 
 void MclLink_RemoveNode(MclLink*, MclLinkNode*, MclLinkDataDeleter);
-void MclLink_RemoveNodeOfData(MclLink*, MclLinkData, MclLinkDataDeleter);
-
-MclLinkNode* MclLink_FindNode(MclLink*, MclLinkData);
+void MclLink_RemoveData(MclLink*, MclLinkData, MclLinkDataDeleter);
 
 typedef bool (*MclLinkPred)(MclLinkData, void *arg);
+void MclLink_RemoveBy(MclLink*, MclLinkPred, void *arg, MclLinkDataDeleter);
+
+MclLinkNode* MclLink_FindNode(MclLink*, MclLinkData);
 void MclLink_FindBy(const MclLink*, MclLinkPred, void *arg, MclLink *result);
 
 typedef MclStatus (*MclLinkVisiter)(MclLinkData, void *arg);

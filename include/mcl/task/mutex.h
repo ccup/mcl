@@ -46,11 +46,19 @@ MCL_INLINE MclStatus MclMutex_InitRecursive(MclMutex *mutex) {
 }
 
 MCL_INLINE MclStatus MclMutex_Lock(MclMutex *mutex) {
-    return pthread_mutex_lock(mutex) ?  MCL_FAILURE : MCL_SUCCESS;
+    int ret = pthread_mutex_lock(mutex);
+    if (ret) {
+        MCL_LOG_ERR("pthread_mutex_lock fail %d!", ret);
+    }
+    return ret ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
 MCL_INLINE MclStatus MclMutex_Unlock(MclMutex *mutex) {
-    return pthread_mutex_unlock(mutex) ?  MCL_FAILURE : MCL_SUCCESS;
+    int ret = pthread_mutex_unlock(mutex);
+    if (ret) {
+        MCL_LOG_ERR("pthread_mutex_unlock fail %d!", ret);
+    }
+    return ret ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
 MCL_INLINE MclStatus MclMutex_TryLock(MclMutex *mutex) {
@@ -63,10 +71,10 @@ MCL_TYPE_DEF(MclAutoLock) {
 
 MCL_INLINE MclAutoLock MclLock_AutoLock(MclMutex *mutex) {
 	if (!mutex) {
-		MCL_LOG_ERR("Auto lock a NULL mutex!");
+        MCL_LOG_FATAL("Auto lock a NULL mutex!");
 	}
     if (MCL_FAILED(MclMutex_Lock(mutex))) {
-		MCL_LOG_ERR("Auto lock mutex failed!");
+        MCL_LOG_FATAL("Auto lock mutex failed!");
     }
     MclAutoLock lock = {.mutex = mutex};
     return lock;
@@ -75,7 +83,7 @@ MCL_INLINE MclAutoLock MclLock_AutoLock(MclMutex *mutex) {
 MCL_INLINE void MclLock_AutoUnlock(MclAutoLock *lock) {
     if (lock && lock->mutex) {
     	if (MCL_FAILED(MclMutex_Unlock(lock->mutex))) {
-			MCL_LOG_ERR("Auto unlock mutex failed!");
+            MCL_LOG_FATAL("Auto unlock mutex failed!");
 		}
         lock->mutex = NULL;
     }

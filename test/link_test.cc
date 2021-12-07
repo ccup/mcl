@@ -1,5 +1,6 @@
 #include <cctest/cctest.h>
 #include "mcl/link/link.h"
+#include "mcl/link/link_node_allocator.h"
 
 namespace
 {
@@ -32,7 +33,7 @@ FIXTURE(LinkTest)
 	MclLink *link;
 
 	BEFORE {
-		link = MclLink_Create();
+		link = MclLink_Create(MclLinkNodeAllocator_GetDefault());
 	}
 
 	AFTER {
@@ -295,10 +296,17 @@ namespace {
 
 FIXTURE(LinkAdvanceTest)
 {
+    constexpr static uint32_t NODE_NUM = 6;
+
 	MclLink link;
+	MclLinkNode nodes[NODE_NUM];
 
 	LinkAdvanceTest() {
-		MclLink_Init(&link);
+		MclLink_Init(&link, NULL);
+
+		for (long i = 0; i < NODE_NUM; i++) {
+		    MclLinkNode_Init(&nodes[i], (MclLinkData)i);
+		}
 	}
 
 	AFTER {
@@ -307,31 +315,32 @@ FIXTURE(LinkAdvanceTest)
 
 	TEST("find all valid data")
 	{
-		MclLink_PushBack(&link, (MclLinkData)1);
-		MclLink_PushBack(&link, (MclLinkData)3);
-		MclLink_PushBack(&link, (MclLinkData)5);
-		MclLink_PushBack(&link, (MclLinkData)2);
+		MclLink_PushBackNode(&link, &nodes[1]);
+		MclLink_PushBackNode(&link, &nodes[3]);
+		MclLink_PushBackNode(&link, &nodes[5]);
+		MclLink_PushBackNode(&link, &nodes[2]);
 
-		auto result = MclLink_Create();
-		MclLink_FindBy(&link, Data_IsLargerThan, (MclLinkData)2, result);
+        MclLink result;
+        MclLink_Init(&result, MclLinkNodeAllocator_GetDefault());
+		MclLink_FindBy(&link, Data_IsLargerThan, (MclLinkData)2, &result);
 
-		ASSERT_EQ(2, MclLink_GetCount(result));
+		ASSERT_EQ(2, MclLink_GetCount(&result));
 
-		auto firstNode = MclLink_GetFirst(result);
+		auto firstNode = MclLink_GetFirst(&result);
 		ASSERT_EQ(3, (long)MclLinkNode_GetData(firstNode));
 
 		auto secondNode = MclLinkNode_GetNext(firstNode);
 		ASSERT_EQ(5, (long)MclLinkNode_GetData(secondNode));
 
-		MclLink_Delete(result, NULL);
+        MclLink_Clear(&result, NULL);
 	}
 
 	TEST("should remove all matched nodes in link")
     {
-        MclLink_PushBack(&link, (MclLinkData)1);
-        MclLink_PushBack(&link, (MclLinkData)3);
-        MclLink_PushBack(&link, (MclLinkData)5);
-        MclLink_PushBack(&link, (MclLinkData)2);
+        MclLink_PushBackNode(&link, &nodes[1]);
+        MclLink_PushBackNode(&link, &nodes[3]);
+        MclLink_PushBackNode(&link, &nodes[5]);
+        MclLink_PushBackNode(&link, &nodes[2]);
 
         MclLink_RemoveBy(&link, Data_IsLargerThan, (MclLinkData)2, NULL);
 
@@ -346,9 +355,9 @@ FIXTURE(LinkAdvanceTest)
 
 	TEST("should visit all nodes in link")
 	{
-		MclLink_PushBack(&link, (MclLinkData)1);
-		MclLink_PushBack(&link, (MclLinkData)3);
-		MclLink_PushBack(&link, (MclLinkData)5);
+        MclLink_PushBackNode(&link, &nodes[1]);
+        MclLink_PushBackNode(&link, &nodes[3]);
+        MclLink_PushBackNode(&link, &nodes[5]);
 
 		long sum = 0;
 		ASSERT_EQ(MCL_SUCCESS, MclLink_Accept(&link, Data_Visit, &sum));
@@ -357,10 +366,13 @@ FIXTURE(LinkAdvanceTest)
 
 	TEST("should visit nodes until invalid")
 	{
-		MclLink_PushBack(&link, (MclLinkData)1);
-		MclLink_PushBack(&link, (MclLinkData)3);
-		MclLink_PushBack(&link, (MclLinkData)INVALID_DATA);
-		MclLink_PushBack(&link, (MclLinkData)5);
+        MclLinkNode invalidNode;
+        MclLinkNode_Init(&invalidNode, (MclLinkData)INVALID_DATA);
+
+        MclLink_PushBackNode(&link, &nodes[1]);
+        MclLink_PushBackNode(&link, &nodes[3]);
+        MclLink_PushBackNode(&link, &invalidNode);
+        MclLink_PushBackNode(&link, &nodes[5]);
 
 		long sum = 0;
 		ASSERT_EQ(MCL_SUCCESS, MclLink_Accept(&link, Data_Visit, &sum));

@@ -1,23 +1,32 @@
 #ifndef H8E11CCEE_05CA_4E3E_BF3C_1E19204214E5
 #define H8E11CCEE_05CA_4E3E_BF3C_1E19204214E5
 
-#include "mcl/link/node.h"
+#include "mcl/link/link_node.h"
 #include "mcl/status.h"
 
 MCL_STDC_BEGIN
+
+MCL_TYPE_FWD(MclLinkNodeAllocator);
 
 typedef MclLinkNode MclLinkHead;
 
 MCL_TYPE_DEF(MclLink) {
 	MclLinkHead head;
 	uint32_t count;
+    MclLinkNodeAllocator *allocator;
 };
 
-MclLink* MclLink_Create();
+MclLink* MclLink_Create(MclLinkNodeAllocator*);
 void MclLink_Delete(MclLink*, MclLinkDataDeleter);
 
-void MclLink_Init(MclLink*);
+void MclLink_Init(MclLink*, MclLinkNodeAllocator*);
 void MclLink_Clear(MclLink*, MclLinkDataDeleter);
+
+MclStatus MclLink_PushFrontNode(MclLink*, MclLinkNode*);
+MclStatus MclLink_PushBackNode(MclLink*, MclLinkNode*);
+
+MclStatus MclLink_InsertNodeBefore(MclLink*, MclLinkNode* nextNode, MclLinkNode*);
+MclStatus MclLink_InsertNodeAfter(MclLink*, MclLinkNode* prevNode, MclLinkNode*);
 
 MclStatus MclLink_PushFront(MclLink*, MclLinkData);
 MclStatus MclLink_PushBack(MclLink*, MclLinkData);

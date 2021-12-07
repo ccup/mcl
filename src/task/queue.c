@@ -1,10 +1,11 @@
 #include "mcl/task/queue.h"
-#include "mcl/link/link.h"
 #include "mcl/task/atom.h"
 #include "mcl/task/cond.h"
 #include "mcl/task/task.h"
-#include "mcl/assert.h"
+#include "mcl/link/link.h"
+#include "mcl/link/link_node_allocator.h"
 #include "mcl/mem/malloc.h"
+#include "mcl/assert.h"
 
 MCL_TYPE_DEF(TaskQueue) {
 	MclLink  tasks;
@@ -13,7 +14,7 @@ MCL_TYPE_DEF(TaskQueue) {
 };
 
 MCL_PRIVATE void TaskQueue_Init(TaskQueue *queue, uint32_t threshold) {
-	MclLink_Init(&queue->tasks);
+	MclLink_Init(&queue->tasks, MclLinkNodeAllocator_GetDefault());
 	queue->threshold = threshold;
 	queue->poppedCount = 0;
 }

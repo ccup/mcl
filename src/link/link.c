@@ -1,13 +1,14 @@
 #include "mcl/link/link.h"
+#include "mcl/link/link_node_allocator.h"
 #include "mcl/mem/malloc.h"
 #include "mcl/assert.h"
 
-MCL_PRIVATE void MclLink_RemoveNodeFromLink(MclLink* self, MclLinkNode *node, MclLinkDataDeleter deleter) {
+MCL_PRIVATE void MclLink_RemoveNodeFromLink(MclLink* self, MclLinkNode *node, MclLinkDataDeleter dataDeleter) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 	MCL_ASSERT_VALID_PTR_VOID(node);
 
 	MclLinkNode_RemoveFromLink(node);
-	MclLinkNode_Delete(node, deleter);
+	MclLinkNode_Delete(node, self->allocator, dataDeleter);
 	self->count--;
 }
 
@@ -35,11 +36,11 @@ MCL_PRIVATE void MclLink_AddTail(MclLink *self, MclLinkNode *node) {
        MclLink_InsertNodeBetween(self, self->head.prev, node, &(self->head));
 }
 
-MclLink* MclLink_Create() {
+MclLink* MclLink_Create(MclLinkNodeAllocator *allocator) {
 	MclLink *self = MCL_MALLOC(sizeof(MclLink));
 	MCL_ASSERT_VALID_PTR_NIL(self);
 
-	MclLink_Init(self);
+	MclLink_Init(self, allocator);
 	return self;
 }
 
@@ -50,12 +51,13 @@ void MclLink_Delete(MclLink* self, MclLinkDataDeleter deleter) {
 	MCL_FREE(self);
 }
 
-void MclLink_Init(MclLink *self) {
+void MclLink_Init(MclLink *self, MclLinkNodeAllocator *allocator) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
 	self->head.next = &(self->head);
 	self->head.prev = &(self->head);
 	self->count = 0;
+	self->allocator = allocator;
 }
 
 void MclLink_Clear(MclLink *self, MclLinkDataDeleter deleter) {
@@ -68,46 +70,54 @@ void MclLink_Clear(MclLink *self, MclLinkDataDeleter deleter) {
 	}
 }
 
-MclStatus MclLink_PushFront(MclLink *self, MclLinkData data) {
-	MCL_ASSERT_VALID_PTR(self);
+MclStatus MclLink_PushFrontNode(MclLink *self, MclLinkNode *node) {
+    MCL_ASSERT_VALID_PTR(self);
+    MCL_ASSERT_VALID_PTR(node);
 
-	MclLinkNode *node = MclLinkNode_Create(data);
-	MCL_ASSERT_VALID_PTR(node);
-
-	MclLink_AddHead(self, node);
-	return MCL_SUCCESS;
+    MclLink_AddHead(self, node);
+    return MCL_SUCCESS;
 }
 
-MclStatus MclLink_PushBack(MclLink *self, MclLinkData data) {
-	MCL_ASSERT_VALID_PTR(self);
+MclStatus MclLink_PushBackNode(MclLink *self, MclLinkNode *node) {
+    MCL_ASSERT_VALID_PTR(self);
+    MCL_ASSERT_VALID_PTR(node);
 
-	MclLinkNode *node = MclLinkNode_Create(data);
-	MCL_ASSERT_VALID_PTR(node);
-
-	MclLink_AddTail(self ,node);
-	return MCL_SUCCESS;
+    MclLink_AddTail(self ,node);
+    return MCL_SUCCESS;
 }
 
-MclStatus MclLink_InsertBefore(MclLink *self, MclLinkNode *nextNode, MclLinkData data) {
+MclStatus MclLink_InsertNodeBefore(MclLink *self, MclLinkNode* nextNode, MclLinkNode *node) {
     MCL_ASSERT_VALID_PTR(self);
     MCL_ASSERT_VALID_PTR(nextNode);
-
-    MclLinkNode *node = MclLinkNode_Create(data);
     MCL_ASSERT_VALID_PTR(node);
 
     MclLink_InsertBeforeNode(self, nextNode, node);
     return MCL_SUCCESS;
 }
 
-MclStatus MclLink_InsertAfter(MclLink *self, MclLinkNode *prevNode, MclLinkData data) {
+MclStatus MclLink_InsertNodeAfter(MclLink *self, MclLinkNode* prevNode, MclLinkNode *node) {
     MCL_ASSERT_VALID_PTR(self);
     MCL_ASSERT_VALID_PTR(prevNode);
-
-    MclLinkNode *node = MclLinkNode_Create(data);
     MCL_ASSERT_VALID_PTR(node);
 
     MclLink_InsertAfterNode(self, prevNode, node);
     return MCL_SUCCESS;
+}
+
+MclStatus MclLink_PushFront(MclLink *self, MclLinkData data) {
+    return MclLink_PushFrontNode(self, MclLinkNode_Create(data, self->allocator));
+}
+
+MclStatus MclLink_PushBack(MclLink *self, MclLinkData data) {
+    return MclLink_PushBackNode(self, MclLinkNode_Create(data, self->allocator));
+}
+
+MclStatus MclLink_InsertBefore(MclLink *self, MclLinkNode *nextNode, MclLinkData data) {
+    return MclLink_InsertNodeBefore(self, nextNode, MclLinkNode_Create(data, self->allocator));
+}
+
+MclStatus MclLink_InsertAfter(MclLink *self, MclLinkNode *prevNode, MclLinkData data) {
+    return MclLink_InsertNodeAfter(self, prevNode, MclLinkNode_Create(data, self->allocator));
 }
 
 void MclLink_RemoveNode(MclLink *self, MclLinkNode *node, MclLinkDataDeleter deleter) {

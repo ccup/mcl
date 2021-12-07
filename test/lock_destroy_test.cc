@@ -2,6 +2,7 @@
 #include "mcl/task/mutex.h"
 #include "mcl/task/thread.h"
 #include "mcl/link/link.h"
+#include "mcl/link/link_node_allocator.h"
 #include <string>
 #include <unistd.h>
 
@@ -56,7 +57,7 @@ namespace {
 
     struct FooRepo {
         FooRepo() {
-            foos = MclLink_Create();
+            foos = MclLink_Create(MclLinkNodeAllocator_GetDefault());
             MCL_MUTEX_INIT(mutex);
         }
 
@@ -91,7 +92,7 @@ namespace {
         Foo* get(int id) {
             MCL_LOCK_AUTO(mutex);
             MclLink result;
-            MclLink_Init(&result);
+            MclLink_Init(&result, NULL);
             MclLink_FindBy(foos, Foo_IsEq, &id, &result);
             Foo *f = MclLink_IsEmpty(&result)? NULL : (Foo*)MclLinkNode_GetData(MclLink_GetFirst(&result));
             MclLink_Clear(&result, NULL);

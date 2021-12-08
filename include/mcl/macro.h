@@ -19,4 +19,23 @@
 	_50, _51, _52, _53, _54, _55, _56, _57, _58, _59, \
 	_60, _61, _62, _63, _64, N, ...) N
 
+#define ARG_0(...) 
+#define ARG_1(a, ...) a 
+#define ARG_2(a, ...) a, ARG_1(__VA_ARGS__)
+#define ARG_3(a, ...) a, ARG_2(__VA_ARGS__)
+#define ARG_4(a, ...) a, ARG_3(__VA_ARGS__)
+#define ARG_5(a, ...) a, ARG_4(__VA_ARGS__)
+
+#define ARG_TAKE_N_0(n, ...) ARG_##n(__VA_ARGS__)
+#define ARG_TAKE_N_1(n, a, ...) ARG_TAKE_N_0(n, __VA_ARGS__)
+#define ARG_TAKE_N_2(n, a, ...) ARG_TAKE_N_1(n, __VA_ARGS__)
+#define ARG_TAKE_N_3(n, a, ...) ARG_TAKE_N_2(n, __VA_ARGS__)
+#define ARG_TAKE_N_4(n, a, ...) ARG_TAKE_N_3(n, __VA_ARGS__)
+#define ARG_TAKE_N_5(n, a, ...) ARG_TAKE_N_4(n, __VA_ARGS__)
+
+// pos start from 0
+#define MCL_ARG_TAKE(pos, n, ...) ARG_TAKE_N_##pos(n, __VA_ARGS__)
+#define MCL_ARGS(...) __VA_ARGS__
+
+
 #endif

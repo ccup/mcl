@@ -43,8 +43,8 @@ void MclLink_RemoveBy(MclLink*, MclLinkPred, void *arg, MclLinkDataDeleter);
 MclLinkNode* MclLink_FindNode(MclLink*, MclLinkData);
 void MclLink_FindBy(const MclLink*, MclLinkPred, void *arg, MclLink *result);
 
-typedef MclStatus (*MclLinkVisiter)(MclLinkData, void *arg);
-MclStatus MclLink_Accept(const MclLink*, MclLinkVisiter, void *arg);
+typedef MclStatus (*MclLinkVisitor)(MclLinkData, void *arg);
+MclStatus MclLink_Accept(const MclLink*, MclLinkVisitor, void *arg);
 
 ///////////////////////////////////////////////////////////////
 MCL_INLINE uint32_t MclLink_GetCount(const MclLink *self) {
@@ -84,7 +84,7 @@ MCL_INLINE MclLinkNode* MclLink_GetPrevOf(MclLink *self, MclLinkNode *node) {
 		(node) = (tmpNode), (tmpNode) = MclLink_GetNextOf((link), (node)))
 
 ///////////////////////////////////////////////////////////////
-#define MCL_LINK_VISIT_CALL_VOID(link, type, visitor, ...)	\
+#define MCL_LINK_FOR_EACH_CALL(link, type, visitor, ...)	\
 	do {													\
 		MclLinkNode *node = NULL;							\
 		MCL_LINK_FOR_EACH((link), (node)) {					\
@@ -93,13 +93,16 @@ MCL_INLINE MclLinkNode* MclLink_GetPrevOf(MclLink *self, MclLinkNode *node) {
 	} while(0)
 
 ///////////////////////////////////////////////////////////////
-#define MCL_LINK_VISIT_CALL(link, type, visitor, ...)		\
+#define MCL_LINK_FOR_EACH_CALL_ASSERT(link, type, visitor, ...)\
 	do {													\
 		MclLinkNode *node = NULL;							\
 		MCL_LINK_FOR_EACH((link), (node)) {					\
 			MCL_ASSERT_SUCC_CALL(visitor((type*)((node)->data), ##__VA_ARGS__));\
 		}													\
 	} while(0)
+
+#define MCL_LINK_INITIALIZE(LIST, ALLOCATOR)                \
+{.head.next = &((LIST).head), .head.prev = &((LIST).head), .count = 0, .allocator = (ALLOCATOR)}
 
 MCL_STDC_END
 

@@ -3,11 +3,11 @@
 
 #include "mcl/keyword.h"
 #include "mcl/stdtype.h"
-#include "mcl/link/link_data.h"
 
 MCL_STDC_BEGIN
 
-MCL_TYPE_FWD(MclLinkNodeAllocator);
+typedef void* MclLinkData;
+typedef void (*MclLinkDataDeleter)(MclLinkData);
 
 MCL_TYPE_DEF(MclLinkNode) {
 	MclLinkNode *next;
@@ -47,8 +47,12 @@ MCL_INLINE void MclLinkNode_RemoveFromLink(MclLinkNode *self) {
     nextNode->prev = prevNode;
 }
 
+MCL_TYPE_FWD(MclLinkNodeAllocator);
+
 MclLinkNode* MclLinkNode_Create(MclLinkData, MclLinkNodeAllocator*);
 void MclLinkNode_Delete(MclLinkNode*, MclLinkNodeAllocator*, MclLinkDataDeleter);
+
+#define MCL_LINK_NODE_INITIALIZE(DATA) {.next = NULL, .prev = NULL, .data = (DATA)}
 
 MCL_STDC_END
 

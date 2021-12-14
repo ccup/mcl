@@ -232,7 +232,7 @@ FIXTURE(LinkTest)
 
 		int sum = 0;
 
-		MCL_LINK_VISIT_CALL_VOID(link, Foo, Foo_Sum, &sum);
+		MCL_LINK_FOR_EACH_CALL(link, Foo, Foo_Sum, &sum);
 		ASSERT_EQ(6, sum);
 
 		MclLink_Clear(link, (MclLinkDataDeleter)Foo_Delete);
@@ -320,8 +320,8 @@ FIXTURE(LinkAdvanceTest)
 		MclLink_PushBackNode(&link, &nodes[5]);
 		MclLink_PushBackNode(&link, &nodes[2]);
 
-        MclLink result;
-        MclLink_Init(&result, MclLinkNodeAllocator_GetDefault());
+        MclLink result = MCL_LINK_INITIALIZE(result, MclLinkNodeAllocator_GetDefault());
+//        MclLink_Init(&result, MclLinkNodeAllocator_GetDefault());
 		MclLink_FindBy(&link, Data_IsLargerThan, (MclLinkData)2, &result);
 
 		ASSERT_EQ(2, MclLink_GetCount(&result));

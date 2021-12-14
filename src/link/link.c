@@ -173,7 +173,7 @@ void MclLink_FindBy(const MclLink *self, MclLinkPred pred, void *arg, MclLink *r
     }
 }
 
-MclStatus MclLink_Accept(const MclLink* self, MclLinkVisiter visitor, void* arg) {
+MclStatus MclLink_Accept(const MclLink* self, MclLinkVisitor visitor, void* arg) {
 	MCL_ASSERT_VALID_PTR(self);
 	MCL_ASSERT_VALID_PTR(visitor);
 

@@ -14,7 +14,7 @@ FIXTURE(VaArgsNumTest) {
 	}
 
 	TEST("should take n arg from given pos of VA_ARGS") {
-		int a[] = {MCL_ARG_TAKE(2, 4, MCL_ARGS(1, 2, 3, 4, 5, 6))};
+		int a[] = {MCL_MACRO_ARG_TAKE(2, 4, MCL_MACRO_ARGS(1, 2, 3, 4, 5, 6))};
 		ASSERT_EQ(4, ARRAY_SIZE(a));
 		ASSERT_EQ(3, a[0]);
 		ASSERT_EQ(4, a[1]);

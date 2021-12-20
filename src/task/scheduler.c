@@ -80,22 +80,18 @@ MclStatus MclTaskScheduler_Stop(MclTaskScheduler *self) {
 	return MCL_SUCCESS;
 }
 
-MclStatus MclTaskScheduler_AddTask(MclTaskScheduler *self, MclTask *task, uint32_t priority) {
+MclStatus MclTaskScheduler_SubmitTask(MclTaskScheduler *self, MclTask *task, uint32_t priority) {
 	MCL_ASSERT_VALID_PTR(self);
 	MCL_ASSERT_VALID_PTR(task);
 	MCL_ASSERT_TRUE(priority < MCL_TASK_SCHEDULER_LEVEL_MAX);
 
-	MCL_ASSERT_TRUE(MclTaskScheduler_IsRunning(self));
-
-	MCL_ASSERT_SUCC_CALL(MclTaskQueue_InsertTask(self->taskQueue, task, priority));
+	MCL_ASSERT_SUCC_CALL(MclTaskQueue_SubmitTask(self->taskQueue, task, priority));
 	return MCL_SUCCESS;
 }
 
-MclStatus MclTaskScheduler_DelTask(MclTaskScheduler *self, MclTaskKey key, uint32_t priority) {
+MclStatus MclTaskScheduler_RemoveTask(MclTaskScheduler *self, MclTaskKey key, uint32_t priority) {
 	MCL_ASSERT_VALID_PTR(self);
 	MCL_ASSERT_TRUE(priority < MCL_TASK_SCHEDULER_LEVEL_MAX);
-
-	MCL_ASSERT_TRUE(MclTaskScheduler_IsRunning(self));
 
 	MCL_ASSERT_SUCC_CALL(MclTaskQueue_RemoveTask(self->taskQueue, key, priority));
 	return MCL_SUCCESS;

@@ -16,7 +16,7 @@ void MclTaskQueue_Delete(MclTaskQueue*);
 MclStatus MclTaskQueue_Start(MclTaskQueue*);
 MclStatus MclTaskQueue_Stop(MclTaskQueue*);
 
-MclStatus MclTaskQueue_InsertTask(MclTaskQueue*, MclTask*, uint32_t priority);
+MclStatus MclTaskQueue_SubmitTask(MclTaskQueue*, MclTask*, uint32_t priority);
 MclStatus MclTaskQueue_RemoveTask(MclTaskQueue*, MclTaskKey, uint32_t priority);
 
 bool MclTaskQueue_IsReady(const MclTaskQueue*);

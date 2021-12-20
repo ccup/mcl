@@ -18,8 +18,8 @@ MclStatus MclTaskScheduler_Stop(MclTaskScheduler*);
 
 bool MclTaskScheduler_IsRunning(const MclTaskScheduler*);
 
-MclStatus MclTaskScheduler_AddTask(MclTaskScheduler*, MclTask*, uint32_t priority);
-MclStatus MclTaskScheduler_DelTask(MclTaskScheduler*, MclTaskKey, uint32_t priority);
+MclStatus MclTaskScheduler_SubmitTask(MclTaskScheduler*, MclTask*, uint32_t priority);
+MclStatus MclTaskScheduler_RemoveTask(MclTaskScheduler*, MclTaskKey, uint32_t priority);
 
 void MclTaskScheduler_WaitDone(MclTaskScheduler*);
 

@@ -207,14 +207,12 @@ MclStatus MclTaskQueue_Stop(MclTaskQueue *self) {
 	return MCL_SUCCESS;
 }
 
-MclStatus MclTaskQueue_InsertTask(MclTaskQueue *self, MclTask *task, uint32_t priority) {
+MclStatus MclTaskQueue_SubmitTask(MclTaskQueue *self, MclTask *task, uint32_t priority) {
 	MCL_ASSERT_VALID_PTR(self);
 	MCL_ASSERT_VALID_PTR(task);
 	MCL_ASSERT_TRUE(priority < self->queueCount);
 
 	MCL_LOCK_AUTO(self->mutex);
-
-	MCL_ASSERT_TRUE(MclTaskQueue_IsReady(self));
 
 	TaskQueue_Push(&self->queues[priority], task);
 	MclCond_Signal(&self->cond);
@@ -228,8 +226,6 @@ MclStatus MclTaskQueue_RemoveTask(MclTaskQueue *self, MclTaskKey key, uint32_t p
 	MCL_ASSERT_TRUE(priority < self->queueCount);
 
 	MCL_LOCK_AUTO(self->mutex);
-
-	MCL_ASSERT_TRUE(MclTaskQueue_IsReady(self));
 
 	TaskQueue_Remove(&self->queues[priority], key);
 

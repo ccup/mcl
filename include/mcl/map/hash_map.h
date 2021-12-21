@@ -16,11 +16,10 @@ bool MclHashMap_IsEmpty(const MclHashMap*);
 
 void MclHashMap_Clear(MclHashMap*, MclHashValueDeleter);
 
-MclHashValue MclHashMap_Get(MclHashMap*, MclHashKey);
-void MclHashMap_Set(MclHashMap*, MclHashKey, MclHashValue);
+MclStatus MclHashMap_Get(const MclHashMap*, MclHashKey, MclHashValue*);
+MclStatus MclHashMap_Set(MclHashMap*, MclHashKey, MclHashValue);
 
-void MclHashMap_Remove(MclHashMap*, MclHashKey);
-void MclHashMap_RemoveValue(MclHashMap*, MclHashValue, MclHashValueDeleter);
+void MclHashMap_Remove(MclHashMap*, MclHashKey, MclHashValueDeleter);
 
 typedef bool (*MclHashNodePred)(MclHashNode, void *arg);
 void MclHashMap_RemoveBy(MclHashMap*, MclHashNodePred, void *arg, MclHashValueDeleter);

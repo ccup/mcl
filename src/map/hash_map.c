@@ -16,7 +16,7 @@ MCL_PRIVATE void MclHashMap_Init(MclHashMap *self, uint32_t bucketCount) {
     self->bucketCount = bucketCount;
     self->count = 0;
     for (uint32_t i = 0; i < bucketCount; i++) {
-        self->buckets[i] = MclLink_Create(MclLinkNodeAllocator_GetDefault());
+        self->buckets[i] = MclLink_CreateDefault();
     }
 }
 
@@ -45,33 +45,30 @@ bool MclHashMap_IsEmpty(const MclHashMap *self) {
     return MclHashMap_GetCount(self) == 0;
 }
 
-//void MclHashMap_Clear(MclHashMap *self, MclHashValueDeleter valueDeleter) {
-//    for (uint32_t i = 0; i < self->bucketCount; i++) {
-//        MclLink_Clear(&self->buckets[i], valueDeleter);
-//    }
-//    self->count = 0;
-//}
+void MclHashMap_Clear(MclHashMap *self, MclHashValueDeleter valueDeleter) {
+    for (uint32_t i = 0; i < self->bucketCount; i++) {
+        MclLink_Clear(self->buckets[i], valueDeleter);
+    }
+    self->count = 0;
+}
 
-//MclHashValue MclHashMap_Get(MclHashMap*, MclHashKey) {
-//
-//}
-//
-//void MclHashMap_Set(MclHashMap*, MclHashKey, MclHashValue) {
-//
-//}
-//
-//void MclHashMap_Remove(MclHashMap*, MclHashKey) {
-//
-//}
-//
-//void MclHashMap_RemoveValue(MclHashMap*, MclHashValue, MclHashValueDeleter) {
-//
-//}
-//
-//void MclHashMap_RemoveBy(MclHashMap*, MclHashNodePred, void *arg, MclHashValueDeleter) {
-//
-//}
-//
-//MclStatus MclHashMap_Accept(const MclHashMap*, MclHashNodeVisitor, void *arg) {
-//    return MCL_SUCCESS;
-//}
+MclStatus MclHashMap_Get(const MclHashMap *self, MclHashKey key, MclHashValue *value) {
+    return MCL_SUCCESS;
+}
+
+MclStatus MclHashMap_Set(MclHashMap *self, MclHashKey key, MclHashValue value) {
+    return MCL_SUCCESS;
+}
+
+void MclHashMap_Remove(MclHashMap *self, MclHashKey key, MclHashValueDeleter valueDeleter)
+{
+
+}
+
+void MclHashMap_RemoveBy(MclHashMap *self, MclHashNodePred pred, void *arg, MclHashValueDeleter valueDeleter) {
+
+}
+
+MclStatus MclHashMap_Accept(const MclHashMap *self, MclHashNodeVisitor visitor, void *arg) {
+    return MCL_SUCCESS;
+}

@@ -36,6 +36,10 @@ MCL_PRIVATE void MclLink_AddTail(MclLink *self, MclLinkNode *node) {
        MclLink_InsertNodeBetween(self, self->head.prev, node, &(self->head));
 }
 
+MclLink* MclLink_CreateDefault() {
+    return MclLink_Create(MclLinkNodeAllocator_GetDefault());
+}
+
 MclLink* MclLink_Create(MclLinkNodeAllocator *allocator) {
 	MclLink *self = MCL_MALLOC(sizeof(MclLink));
 	MCL_ASSERT_VALID_PTR_NIL(self);

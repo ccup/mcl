@@ -16,6 +16,7 @@ MCL_TYPE_DEF(MclLink) {
     MclLinkNodeAllocator *allocator;
 };
 
+MclLink* MclLink_CreateDefault();
 MclLink* MclLink_Create(MclLinkNodeAllocator*);
 void MclLink_Delete(MclLink*, MclLinkDataDeleter);
 

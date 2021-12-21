@@ -37,7 +37,7 @@ FIXTURE(LinkTest)
 	}
 
 	AFTER {
-		MclLink_Delete(link, (MclLinkDataDeleter)Foo_Delete);
+		MclLink_Delete(link, (MclLinkDataDeleter)Foo_Delete, NULL);
 		ASSERT_EQ(0, UNRELEASED_FOO_COUNT);
 	}
 
@@ -89,7 +89,7 @@ FIXTURE(LinkTest)
 		auto foo = Foo_Create();
 
 		MclLink_PushFront(link, foo);
-        MclLink_RemoveData(link, foo, NULL);
+        MclLink_RemoveData(link, foo, NULL, NULL);
 
 		ASSERT_TRUE(MclLink_IsEmpty(link));
 		ASSERT_EQ(0, MclLink_GetCount(link));
@@ -108,18 +108,18 @@ FIXTURE(LinkTest)
 		MclLink_PushFront(link, foo2);
 		MclLink_PushFront(link, foo3);
 
-        MclLink_RemoveData(link, foo2, NULL);
+        MclLink_RemoveData(link, foo2, NULL, NULL);
 		Foo_Delete(foo2);
 
 		ASSERT_FALSE(MclLink_IsEmpty(link));
 		ASSERT_EQ(2, MclLink_GetCount(link));
 
-        MclLink_RemoveData(link, foo1, NULL);
+        MclLink_RemoveData(link, foo1, NULL, NULL);
 
 		ASSERT_FALSE(MclLink_IsEmpty(link));
 		ASSERT_EQ(1, MclLink_GetCount(link));
 
-        MclLink_RemoveData(link, foo3, NULL);
+        MclLink_RemoveData(link, foo3, NULL, NULL);
 
 		ASSERT_TRUE(MclLink_IsEmpty(link));
 		ASSERT_EQ(0, MclLink_GetCount(link));
@@ -133,7 +133,7 @@ FIXTURE(LinkTest)
 		auto foo = Foo_Create();
 
 		MclLink_PushBack(link, foo);
-        MclLink_RemoveData(link, foo, (MclLinkDataDeleter) Foo_Delete);
+        MclLink_RemoveData(link, foo, (MclLinkDataDeleter)Foo_Delete, NULL);
 
 		ASSERT_TRUE(MclLink_IsEmpty(link));
 	}
@@ -148,13 +148,13 @@ FIXTURE(LinkTest)
 		MclLink_PushFront(link, foo2);
 		MclLink_PushFront(link, foo3);
 
-        MclLink_RemoveData(link, foo3, (MclLinkDataDeleter) Foo_Delete);
-        MclLink_RemoveData(link, foo2, (MclLinkDataDeleter) Foo_Delete);
+        MclLink_RemoveData(link, foo3, (MclLinkDataDeleter) Foo_Delete, NULL);
+        MclLink_RemoveData(link, foo2, (MclLinkDataDeleter) Foo_Delete, NULL);
 
 		ASSERT_FALSE(MclLink_IsEmpty(link));
 		ASSERT_EQ(1, MclLink_GetCount(link));
 
-        MclLink_RemoveData(link, foo1, (MclLinkDataDeleter) Foo_Delete);
+        MclLink_RemoveData(link, foo1, (MclLinkDataDeleter) Foo_Delete, NULL);
 
 		ASSERT_TRUE(MclLink_IsEmpty(link));
 		ASSERT_EQ(0, MclLink_GetCount(link));
@@ -166,7 +166,7 @@ FIXTURE(LinkTest)
 
 		MclLink_PushBack(link, foo);
 
-		MclLink_Clear(link,  (MclLinkDataDeleter)Foo_Delete);
+		MclLink_Clear(link,  (MclLinkDataDeleter)Foo_Delete, NULL);
 
 		ASSERT_TRUE(MclLink_IsEmpty(link));
 	}
@@ -190,7 +190,7 @@ FIXTURE(LinkTest)
 
 		ASSERT_EQ(6, sum);
 
-		MclLink_Clear(link, (MclLinkDataDeleter)Foo_Delete);
+		MclLink_Clear(link, (MclLinkDataDeleter)Foo_Delete, NULL);
 	}
 
 	TEST("should travel each node safe on link")
@@ -209,7 +209,7 @@ FIXTURE(LinkTest)
 		MclLinkNode *tmpNode = NULL;
 		MCL_LINK_FOR_EACH_SAFE(link, node, tmpNode) {
 			if (node->data == foo2) {
-				MclLink_RemoveNode(link, node, (MclLinkDataDeleter)Foo_Delete);
+				MclLink_RemoveNode(link, node, (MclLinkDataDeleter)Foo_Delete, NULL);
 				continue;
 			}
 			sum += ((Foo*)node->data)->x;
@@ -217,7 +217,7 @@ FIXTURE(LinkTest)
 
 		ASSERT_EQ(4, sum);
 
-		MclLink_Clear(link, (MclLinkDataDeleter)Foo_Delete);
+		MclLink_Clear(link, (MclLinkDataDeleter)Foo_Delete, NULL);
 	}
 
 	TEST("should visit each node on link")
@@ -235,7 +235,7 @@ FIXTURE(LinkTest)
 		MCL_LINK_FOR_EACH_CALL(link, Foo, Foo_Sum, &sum);
 		ASSERT_EQ(6, sum);
 
-		MclLink_Clear(link, (MclLinkDataDeleter)Foo_Delete);
+		MclLink_Clear(link, (MclLinkDataDeleter)Foo_Delete, NULL);
 	}
 
 	TEST("should insert before node")
@@ -255,7 +255,7 @@ FIXTURE(LinkTest)
 		auto secondNode = MclLinkNode_GetNext(MclLink_GetFirst(link));
 		ASSERT_EQ(MclLinkNode_GetData(secondNode), foo2);
 
-		MclLink_Clear(link, (MclLinkDataDeleter)Foo_Delete);
+		MclLink_Clear(link, (MclLinkDataDeleter)Foo_Delete, NULL);
 	}
 
 	TEST("should insert after node")
@@ -275,7 +275,7 @@ FIXTURE(LinkTest)
 		auto secondNode = MclLinkNode_GetNext(MclLink_GetFirst(link));
 		ASSERT_EQ(MclLinkNode_GetData(secondNode), foo2);
 
-		MclLink_Clear(link, (MclLinkDataDeleter)Foo_Delete);
+		MclLink_Clear(link, (MclLinkDataDeleter)Foo_Delete, NULL);
 	}
 };
 
@@ -310,7 +310,7 @@ FIXTURE(LinkAdvanceTest)
 	}
 
 	AFTER {
-		MclLink_Clear(&link, NULL);
+		MclLink_Clear(&link, NULL, NULL);
 	}
 
 	TEST("find all valid data")
@@ -332,7 +332,7 @@ FIXTURE(LinkAdvanceTest)
 		auto secondNode = MclLinkNode_GetNext(firstNode);
 		ASSERT_EQ(5, (long)MclLinkNode_GetData(secondNode));
 
-        MclLink_Clear(&result, NULL);
+        MclLink_Clear(&result, NULL, NULL);
 	}
 
 	TEST("should remove all matched nodes in link")
@@ -342,7 +342,7 @@ FIXTURE(LinkAdvanceTest)
         MclLink_PushBackNode(&link, &nodes[5]);
         MclLink_PushBackNode(&link, &nodes[2]);
 
-        MclLink_RemoveBy(&link, Data_IsLargerThan, (MclLinkData)2, NULL);
+        MclLink_RemoveBy(&link, Data_IsLargerThan, (MclLinkData)2, NULL, NULL);
 
         ASSERT_EQ(2, MclLink_GetCount(&link));
 

@@ -18,10 +18,10 @@ MCL_TYPE_DEF(MclLink) {
 
 MclLink* MclLink_CreateDefault();
 MclLink* MclLink_Create(MclLinkNodeAllocator*);
-void MclLink_Delete(MclLink*, MclLinkDataDeleter);
+void MclLink_Delete(MclLink*, MclLinkDataDeleter, void *delArg);
 
 void MclLink_Init(MclLink*, MclLinkNodeAllocator*);
-void MclLink_Clear(MclLink*, MclLinkDataDeleter);
+void MclLink_Clear(MclLink*, MclLinkDataDeleter, void *delArg);
 
 MclStatus MclLink_PushFrontNode(MclLink*, MclLinkNode*);
 MclStatus MclLink_PushBackNode(MclLink*, MclLinkNode*);
@@ -35,11 +35,11 @@ MclStatus MclLink_PushBack(MclLink*, MclLinkData);
 MclStatus MclLink_InsertBefore(MclLink*, MclLinkNode* nextNode, MclLinkData);
 MclStatus MclLink_InsertAfter(MclLink*, MclLinkNode* prevNode, MclLinkData);
 
-void MclLink_RemoveNode(MclLink*, MclLinkNode*, MclLinkDataDeleter);
-void MclLink_RemoveData(MclLink*, MclLinkData, MclLinkDataDeleter);
+void MclLink_RemoveNode(MclLink*, MclLinkNode*, MclLinkDataDeleter, void *delArg);
+void MclLink_RemoveData(MclLink*, MclLinkData, MclLinkDataDeleter, void *delArg);
 
 typedef bool (*MclLinkPred)(MclLinkData, void *arg);
-void MclLink_RemoveBy(MclLink*, MclLinkPred, void *arg, MclLinkDataDeleter);
+void MclLink_RemoveBy(MclLink*, MclLinkPred, void *arg, MclLinkDataDeleter, void *delArg);
 
 MclLinkNode* MclLink_FindNode(MclLink*, MclLinkData);
 void MclLink_FindBy(const MclLink*, MclLinkPred, void *arg, MclLink *result);

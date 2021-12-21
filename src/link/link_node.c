@@ -13,9 +13,9 @@ MclLinkNode* MclLinkNode_Create(MclLinkData data, MclLinkNodeAllocator *allocato
 	return self;
 }
 
-void MclLinkNode_Delete(MclLinkNode *self, MclLinkNodeAllocator *allocator, MclLinkDataDeleter dataDeleter) {
+void MclLinkNode_Delete(MclLinkNode *self, MclLinkNodeAllocator *allocator, MclLinkDataDeleter dataDeleter, void *delArg) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
-    if (dataDeleter && self->data) dataDeleter(self->data);
+    if (dataDeleter && self->data) dataDeleter(self->data, delArg);
     if (allocator && allocator->release) allocator->release(self);
 }

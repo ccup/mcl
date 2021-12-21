@@ -7,7 +7,7 @@
 MCL_STDC_BEGIN
 
 typedef void* MclLinkData;
-typedef void (*MclLinkDataDeleter)(MclLinkData);
+typedef void (*MclLinkDataDeleter)(MclLinkData, void*);
 
 MCL_TYPE_DEF(MclLinkNode) {
 	MclLinkNode *next;
@@ -50,7 +50,7 @@ MCL_INLINE void MclLinkNode_RemoveFromLink(MclLinkNode *self) {
 MCL_TYPE_FWD(MclLinkNodeAllocator);
 
 MclLinkNode* MclLinkNode_Create(MclLinkData, MclLinkNodeAllocator*);
-void MclLinkNode_Delete(MclLinkNode*, MclLinkNodeAllocator*, MclLinkDataDeleter);
+void MclLinkNode_Delete(MclLinkNode*, MclLinkNodeAllocator*, MclLinkDataDeleter, void *delArg);
 
 #define MCL_LINK_NODE_INITIALIZE(DATA) {.next = NULL, .prev = NULL, .data = (DATA)}
 

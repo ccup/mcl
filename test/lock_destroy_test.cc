@@ -62,7 +62,7 @@ namespace {
         }
 
         ~FooRepo() {
-            MclLink_Delete(foos, (MclLinkDataDeleter)FooFactory::release);
+            MclLink_Delete(foos, (MclLinkDataDeleter)FooFactory::release, NULL);
             MclMutex_Destroy(&mutex);
         }
 
@@ -80,13 +80,13 @@ namespace {
 
         void remove(int id) {
             MCL_LOCK_AUTO(mutex);
-            MclLink_RemoveBy(foos, Foo_IsEq, &id, (MclLinkDataDeleter)FooFactory::release);
+            MclLink_RemoveBy(foos, Foo_IsEq, &id, (MclLinkDataDeleter)FooFactory::release, NULL);
         }
 
         void remove(Foo *f) {
             MCL_LOCK_AUTO(mutex);
             MCL_LOG_INFO("remove foo of id %d", f->getId());
-            MclLink_RemoveData(foos, f, NULL);
+            MclLink_RemoveData(foos, f, NULL, NULL);
         }
 
         Foo* get(int id) {
@@ -95,7 +95,7 @@ namespace {
             MclLink_Init(&result, NULL);
             MclLink_FindBy(foos, Foo_IsEq, &id, &result);
             Foo *f = MclLink_IsEmpty(&result)? NULL : (Foo*)MclLinkNode_GetData(MclLink_GetFirst(&result));
-            MclLink_Clear(&result, NULL);
+            MclLink_Clear(&result, NULL, NULL);
             return f;
         }
 

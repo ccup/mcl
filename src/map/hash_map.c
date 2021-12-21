@@ -103,7 +103,7 @@ void MclHashMap_Remove(MclHashMap *self, MclHashKey key, MclHashValueDeleter val
     MCL_ASSERT_VALID_PTR_VOID(self);
 
     uint32_t bucketId = MclHashMap_GetBucketId(self, key);
-    MclLink_RemoveBy(self->buckets[bucketId], MclHashMap_IsKeyEqual, &key, valueDeleter);
+    MclLink_RemoveBy(self->buckets[bucketId], MclHashMap_IsKeyEqual, &key, valueDeleter, NULL);
 }
 
 void MclHashMap_RemoveBy(MclHashMap *self, MclHashNodePred pred, void *arg, MclHashValueDeleter valueDeleter) {

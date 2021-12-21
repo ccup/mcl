@@ -8,7 +8,7 @@ MCL_STDC_BEGIN
 typedef uint64_t MclHashKey;
 typedef void* MclHashValue;
 
-typedef void (*MclHashValueDeleter)(MclHashValue);
+typedef void (*MclHashValueDeleter)(MclHashValue, void *delArg);
 
 MCL_TYPE_DEF(MclHashNode) {
     MclHashKey key;
@@ -16,7 +16,7 @@ MCL_TYPE_DEF(MclHashNode) {
 };
 
 MclHashNode* MclHashNode_Create(MclHashKey, MclHashValue);
-void MclHashNode_Delete(MclHashNode*, MclHashValueDeleter);
+void MclHashNode_Delete(MclHashNode*, MclHashValueDeleter, void *delArg);
 
 MCL_STDC_END
 

@@ -11,9 +11,9 @@ MclHashNode* MclHashNode_Create(MclHashKey key, MclHashValue value) {
     return self;
 }
 
-void MclHashNode_Delete(MclHashNode *self, MclHashValueDeleter valueDeleter) {
+void MclHashNode_Delete(MclHashNode *self, MclHashValueDeleter valueDeleter, void *delArg) {
     MCL_ASSERT_VALID_PTR_VOID(self);
 
-    if (valueDeleter && self->value) valueDeleter(self->value);
+    if (valueDeleter && self->value) valueDeleter(self->value, delArg);
     MCL_FREE(self);
 }

@@ -3,12 +3,12 @@
 #include "mcl/mem/malloc.h"
 #include "mcl/assert.h"
 
-MCL_PRIVATE void MclLink_RemoveNodeFromLink(MclLink* self, MclLinkNode *node, MclLinkDataDeleter dataDeleter) {
+MCL_PRIVATE void MclLink_RemoveNodeFromLink(MclLink* self, MclLinkNode *node, MclLinkDataDeleter dataDeleter, void *delArg) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 	MCL_ASSERT_VALID_PTR_VOID(node);
 
 	MclLinkNode_RemoveFromLink(node);
-	MclLinkNode_Delete(node, self->allocator, dataDeleter);
+	MclLinkNode_Delete(node, self->allocator, dataDeleter, delArg);
 	self->count--;
 }
 
@@ -48,10 +48,10 @@ MclLink* MclLink_Create(MclLinkNodeAllocator *allocator) {
 	return self;
 }
 
-void MclLink_Delete(MclLink* self, MclLinkDataDeleter deleter) {
+void MclLink_Delete(MclLink* self, MclLinkDataDeleter deleter, void *delArg) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
-	MclLink_Clear(self, deleter);
+	MclLink_Clear(self, deleter, delArg);
 	MCL_FREE(self);
 }
 
@@ -64,13 +64,13 @@ void MclLink_Init(MclLink *self, MclLinkNodeAllocator *allocator) {
 	self->allocator = allocator;
 }
 
-void MclLink_Clear(MclLink *self, MclLinkDataDeleter deleter) {
+void MclLink_Clear(MclLink *self, MclLinkDataDeleter deleter, void *delArg) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
 	MclLinkNode *node = NULL;
 	MclLinkNode *tmpNode = NULL;
 	MCL_LINK_FOR_EACH_SAFE(self, node, tmpNode) {
-		MclLink_RemoveNodeFromLink(self, node, deleter);
+		MclLink_RemoveNodeFromLink(self, node, deleter, delArg);
 	}
 }
 
@@ -124,24 +124,24 @@ MclStatus MclLink_InsertAfter(MclLink *self, MclLinkNode *prevNode, MclLinkData 
     return MclLink_InsertNodeAfter(self, prevNode, MclLinkNode_Create(data, self->allocator));
 }
 
-void MclLink_RemoveNode(MclLink *self, MclLinkNode *node, MclLinkDataDeleter deleter) {
+void MclLink_RemoveNode(MclLink *self, MclLinkNode *node, MclLinkDataDeleter deleter, void *delArg) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 	MCL_ASSERT_VALID_PTR_VOID(node);
 	MCL_ASSERT_TRUE_VOID(MclLinkNode_IsInLink(node));
 
-	MclLink_RemoveNodeFromLink(self, node, deleter);
+	MclLink_RemoveNodeFromLink(self, node, deleter, delArg);
 }
 
-void MclLink_RemoveData(MclLink *self, MclLinkData data, MclLinkDataDeleter deleter) {
+void MclLink_RemoveData(MclLink *self, MclLinkData data, MclLinkDataDeleter deleter, void *delArg) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
 	MclLinkNode *node = MclLink_FindNode(self, data);
 	if (!node) return;
 
-	MclLink_RemoveNodeFromLink(self, node, deleter);
+	MclLink_RemoveNodeFromLink(self, node, deleter, delArg);
 }
 
-void MclLink_RemoveBy(MclLink *self, MclLinkPred pred, void *arg, MclLinkDataDeleter deleter) {
+void MclLink_RemoveBy(MclLink *self, MclLinkPred pred, void *arg, MclLinkDataDeleter deleter, void *delArg) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 	MCL_ASSERT_VALID_PTR_VOID(pred);
 
@@ -149,7 +149,7 @@ void MclLink_RemoveBy(MclLink *self, MclLinkPred pred, void *arg, MclLinkDataDel
     MclLinkNode *tmpNode = NULL;
     MCL_LINK_FOR_EACH_SAFE((MclLink*)self, node, tmpNode) {
         if (pred(node->data, arg)) {
-            MclLink_RemoveNodeFromLink(self, node, deleter);
+            MclLink_RemoveNodeFromLink(self, node, deleter, delArg);
         }
     }
 }

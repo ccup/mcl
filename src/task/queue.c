@@ -20,7 +20,7 @@ MCL_PRIVATE void TaskQueue_Init(TaskQueue *queue, uint32_t threshold) {
 }
 
 MCL_PRIVATE void TaskQueue_Destroy(TaskQueue *queue) {
-	MclLink_Clear(&queue->tasks, (MclLinkDataDeleter)MclTask_Destroy);
+	MclLink_Clear(&queue->tasks, (MclLinkDataDeleter)MclTask_Destroy, NULL);
 }
 
 MCL_PRIVATE bool TaskQueue_IsEmpty(const TaskQueue *queue) {
@@ -42,7 +42,7 @@ MCL_PRIVATE void TaskQueue_Remove(TaskQueue *queue, MclTaskKey key) {
 	MCL_LINK_FOR_EACH_SAFE(&queue->tasks, taskNode, tmpNode) {
 		MclTask *task = (MclTask*)MclLinkNode_GetData(taskNode);
 		if (task && task->key != key) continue;
-		return MclLink_RemoveNode(&queue->tasks, taskNode, (MclLinkDataDeleter)MclTask_Destroy);
+		return MclLink_RemoveNode(&queue->tasks, taskNode, (MclLinkDataDeleter)MclTask_Destroy, NULL);
 	}
 }
 
@@ -57,7 +57,7 @@ MCL_PRIVATE MclTask* TaskQueue_Pop(TaskQueue *queue) {
 	MCL_ASSERT_VALID_PTR_NIL(node);
 
 	MclTask *task = (MclTask*)MclLinkNode_GetData(node);
-	MclLink_RemoveNode(&queue->tasks, node, NULL);
+	MclLink_RemoveNode(&queue->tasks, node, NULL, NULL);
 	queue->poppedCount++;
 
 	return task;

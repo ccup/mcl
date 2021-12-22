@@ -7,8 +7,8 @@
 
 MCL_STDC_BEGIN
 
-MCL_TYPE_FWD(MclTask);
-MCL_TYPE_FWD(MclTaskScheduler);
+MCL_TYPE_DECL(MclTask);
+MCL_TYPE_DECL(MclTaskScheduler);
 
 MclTaskScheduler* MclTaskScheduler_Create(uint32_t threadCount, uint32_t priorities, uint32_t *thresholds);
 void MclTaskScheduler_Delete(MclTaskScheduler*);

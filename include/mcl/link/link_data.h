@@ -9,7 +9,7 @@ MCL_STDC_BEGIN
 
 typedef void* MclLinkData;
 
-MCL_TYPE_DEF(MclLinkDataPred) {
+MCL_TYPE(MclLinkDataPred) {
     bool (*pred)(MclLinkDataPred*, MclLinkData data);
 };
 
@@ -19,7 +19,7 @@ MCL_INLINE bool MclLinkDataPred_Predicate(MclLinkDataPred *pred, MclLinkData dat
 
 #define MCL_LINK_DATA_PRED(PRED) {.pred = PRED}
 
-MCL_TYPE_DEF(MclLinkDataVisitor) {
+MCL_TYPE(MclLinkDataVisitor) {
     MclStatus (*visit)(MclLinkDataVisitor*, MclLinkData);
 };
 
@@ -29,7 +29,7 @@ MCL_INLINE MclStatus MclLinkDataVisitor_Visit(MclLinkDataVisitor *visitor, MclLi
 
 #define MCL_LINK_DATA_VISITOR(VISITOR) {.visit = VISITOR}
 
-MCL_TYPE_DEF(MclLinkDataDeleter) {
+MCL_TYPE(MclLinkDataDeleter) {
     void (*destroy)(MclLinkDataDeleter*, MclLinkData data);
 };
 

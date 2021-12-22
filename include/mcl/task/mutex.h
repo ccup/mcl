@@ -65,7 +65,7 @@ MCL_INLINE MclStatus MclMutex_TryLock(MclMutex *mutex) {
     return pthread_mutex_unlock(mutex) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_TYPE_DEF(MclAutoLock) {
+MCL_TYPE(MclAutoLock) {
     MclMutex *mutex;
 };
 

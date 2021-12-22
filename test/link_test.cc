@@ -297,7 +297,7 @@ namespace {
     MclStatus DataVisitor_Sum(MclLinkDataVisitor *visitor, MclLinkData data) {
         auto v = (long)data;
         if (v == INVALID_DATA) return MCL_STATUS_DONE;
-        DataVisitor *self = MCL_TYPE_OF(visitor, DataVisitor, visitor);
+        DataVisitor *self = MCL_TYPE_REDUCT(visitor, DataVisitor, visitor);
         self->sum += v;
         return MCL_SUCCESS;
     }
@@ -314,7 +314,7 @@ namespace {
 
 	bool DataPred_IsLargerThan(MclLinkDataPred *pred, MclLinkData data) {
 	    auto v = (long)data;
-        DataPred *self = MCL_TYPE_OF(pred, DataPred, pred);
+        DataPred *self = MCL_TYPE_REDUCT(pred, DataPred, pred);
         return v > self->arg;
 	}
 

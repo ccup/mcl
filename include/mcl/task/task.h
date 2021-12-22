@@ -7,7 +7,7 @@
 
 MCL_STDC_BEGIN
 
-MCL_TYPE_DEF(MclTask) {
+MCL_TYPE(MclTask) {
 	MclTaskKey key;
 	MclStatus (*execute)(MclTask*);
 	void (*destroy)(MclTask*);

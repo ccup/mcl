@@ -62,7 +62,7 @@ namespace {
 
     bool FooIdPred_IsEqual(MclLinkDataPred *pred, MclLinkData data) {
         Foo *foo = (Foo*)data;
-        FooIdPred *self = MCL_TYPE_OF(pred, FooIdPred, pred);
+        FooIdPred *self = MCL_TYPE_REDUCT(pred, FooIdPred, pred);
         return foo->getId() == self->id;
     }
 

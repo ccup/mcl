@@ -6,7 +6,7 @@
 
 MCL_STDC_BEGIN
 
-MCL_TYPE_FWD(MclHashMap);
+MCL_TYPE_DECL(MclHashMap);
 
 MclHashMap* MclHashMap_Create(uint32_t bucketCount);
 void MclHashMap_Delete(MclHashMap*, MclHashValueDeleter, void *delArg);

@@ -6,7 +6,7 @@
 
 typedef MclLink MclHashBucket;
 
-MCL_TYPE_DEF(MclHashMap) {
+MCL_TYPE(MclHashMap) {
     uint32_t count;
     uint32_t bucketCount;
     MclHashBucket* buckets[];

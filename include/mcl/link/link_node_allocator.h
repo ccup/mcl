@@ -5,9 +5,9 @@
 
 MCL_STDC_BEGIN
 
-MCL_TYPE_FWD(MclLinkNode);
+MCL_TYPE_DECL(MclLinkNode);
 
-MCL_TYPE_DEF(MclLinkNodeAllocator) {
+MCL_TYPE(MclLinkNodeAllocator) {
     MclLinkNode* (*alloc)(MclLinkNodeAllocator*);
     void (*release)(MclLinkNodeAllocator*, MclLinkNode*);
 };

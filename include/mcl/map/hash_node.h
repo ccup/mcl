@@ -10,7 +10,7 @@ typedef void* MclHashValue;
 
 typedef void (*MclHashValueDeleter)(MclHashValue, void *delArg);
 
-MCL_TYPE_DEF(MclHashNode) {
+MCL_TYPE(MclHashNode) {
     MclHashKey key;
     MclHashValue value;
 };

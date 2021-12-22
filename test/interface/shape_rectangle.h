@@ -7,7 +7,7 @@
 
 MCL_STDC_BEGIN
 
-MCL_TYPE_FWD(Color);
+MCL_TYPE_DECL(Color);
 
 typedef struct ShapeRectangle {
 	MCL_INTF_IMPL(Shape);

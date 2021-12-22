@@ -18,7 +18,7 @@ struct DemoTask {
 MclStatus DemoTask_Execute(MclTask *task) {
 	MCL_ASSERT_VALID_PTR(task);
 
-	DemoTask *self = MCL_TYPE_OF(task, DemoTask, task);
+	DemoTask *self = MCL_TYPE_REDUCT(task, DemoTask, task);
 	if (self->priority == SLOW) {
 		sleep(self->pauseTime);
 	}

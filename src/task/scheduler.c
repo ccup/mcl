@@ -8,7 +8,7 @@
 #define MCL_TASK_SCHEDULER_THREAD_MAX 8
 #define MCL_TASK_SCHEDULER_LEVEL_MAX  3
 
-MCL_TYPE_DEF(MclTaskScheduler) {
+MCL_TYPE(MclTaskScheduler) {
 	MclThread threads[MCL_TASK_SCHEDULER_THREAD_MAX];
 	uint32_t threadCount;
 	MclTaskQueue *taskQueue;

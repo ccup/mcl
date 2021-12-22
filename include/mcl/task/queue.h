@@ -7,8 +7,8 @@
 
 MCL_STDC_BEGIN
 
-MCL_TYPE_FWD(MclTask);
-MCL_TYPE_FWD(MclTaskQueue);
+MCL_TYPE_DECL(MclTask);
+MCL_TYPE_DECL(MclTaskQueue);
 
 MclTaskQueue* MclTaskQueue_Create(uint32_t priorities, uint32_t *thresholds);
 void MclTaskQueue_Delete(MclTaskQueue*);

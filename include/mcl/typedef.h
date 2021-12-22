@@ -3,14 +3,14 @@
 
 #include "mcl/stdtype.h"
 
-#define MCL_TYPE_FWD(TYPE)  \
+#define MCL_TYPE_DECL(TYPE)     \
 typedef struct TYPE TYPE
 
-#define MCL_TYPE_DEF(TYPE)	\
-MCL_TYPE_FWD(TYPE);			\
+#define MCL_TYPE(TYPE)	        \
+MCL_TYPE_DECL(TYPE);			\
 struct TYPE
 
-#define MCL_TYPE_OF(ptr, type, member) ({ \
+#define MCL_TYPE_REDUCT(ptr, type, member) ({ \
 	const typeof( ((type *)0)->member ) *__mptr = (ptr); \
 	(type *)( (char *)__mptr - offsetof(type,member) );})
 

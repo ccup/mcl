@@ -5,11 +5,11 @@
 
 MCL_STDC_BEGIN
 
-MCL_TYPE_FWD(MclLinkNodeAllocator);
+MCL_TYPE_DECL(MclLinkNodeAllocator);
 
 typedef MclLinkNode MclLinkHead;
 
-MCL_TYPE_DEF(MclLink) {
+MCL_TYPE(MclLink) {
 	MclLinkHead head;
 	uint32_t count;
     MclLinkNodeAllocator *allocator;

@@ -7,7 +7,7 @@
 #define MCL_ROLE(role)	__##role
 
 #define MCL_ROLE_DEF(role)  			\
-MCL_TYPE_FWD(role);						\
+MCL_TYPE_DECL(role);						\
 struct role
 
 #define MCL_ROLE_IMPL(role)				\
@@ -20,7 +20,7 @@ role* MCL_ROLE(role)
 MCL_LIST_HEAD(role) MCL_ROLE(role)
 
 #define MCL_ROLE_CAST_TO(role, role_ptr, obj, obj_ptr)\
-obj* obj_ptr = MCL_TYPE_OF(role_ptr, obj, MCL_ROLE(role))
+obj* obj_ptr = MCL_TYPE_REDUCT(role_ptr, obj, MCL_ROLE(role))
 
 #define	MCL_ROLE_INIT(obj_ptr, role, tbl)\
 obj_ptr->MCL_ROLE(role) = tbl

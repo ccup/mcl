@@ -7,7 +7,7 @@
 #include "mcl/mem/malloc.h"
 #include "mcl/assert.h"
 
-MCL_TYPE_DEF(TaskQueue) {
+MCL_TYPE(TaskQueue) {
 	MclLink  tasks;
 	uint32_t threshold;
 	uint32_t poppedCount;
@@ -70,7 +70,7 @@ MCL_PRIVATE MclTask* TaskQueue_Pop(TaskQueue *queue) {
 	return task;
 }
 
-MCL_TYPE_DEF(MclTaskQueue) {
+MCL_TYPE(MclTaskQueue) {
 	MclMutex mutex;
 	MclCond  cond;
 	MclAtom  isReady;

@@ -1,413 +1,96 @@
 #include <cctest/cctest.h>
-#include "mcl/list/list.h"
-#include "mcl/list/list_node_allocator.h"
+#include "mcl/link/link.h"
 
 namespace
 {
-	size_t UNRELEASED_FOO_COUNT = 0;
-
     struct Foo{
-		Foo(int x) : x(x) {
-		}
+		MCL_LINK_NODE(Foo) link;
 		int x;
 	};
-
-    Foo* Foo_Create(int x = 0) {
-    	Foo *foo = new Foo(x);
-    	UNRELEASED_FOO_COUNT++;
-    	return foo;
-    }
-
-    void Foo_Delete(Foo* foo) {
-    	delete foo;
-    	UNRELEASED_FOO_COUNT--;
-    }
-
-    void Foo_Sum(const Foo *foo, int *sum) {
-    	(*sum) += foo->x;
-    }
-
-    void ListDataDeleter_DeleteFoo(MclListDataDeleter *deleter, MclListData data) {
-        auto f = (Foo*)data;
-        Foo_Delete(f);
-    }
 }
 
-FIXTURE(ListTest)
+FIXTURE(LinkTest)
 {
-	MclList *list;
-    MclListDataDeleter fooDeleter{.destroy = ListDataDeleter_DeleteFoo};
+	MCL_LINK(Foo) foos;
 
 	BEFORE {
-		list = MclList_Create(MclListNodeAllocator_GetDefault());
+		MCL_LINK_INIT(&foos, Foo, link);
 	}
 
 	AFTER {
-		MclList_Delete(list, &fooDeleter);
-		ASSERT_EQ(0, UNRELEASED_FOO_COUNT);
-	}
-
-	TEST("should be empty when initialized")
-	{
-		ASSERT_TRUE(MclList_IsEmpty(list));
-		ASSERT_EQ(0, MclList_GetCount(list));
-		ASSERT_EQ(NULL, MclList_FindNode(list, 0));
-	}
-
-	TEST("should add element to link")
-	{
-		auto foo = Foo_Create();
-		MclList_PushFront(list, foo);
-		ASSERT_FALSE(MclList_IsEmpty(list));
-		ASSERT_EQ(1, MclList_GetCount(list));
-
-		auto result = MclList_FindNode(list, foo);
-		ASSERT_EQ(foo, result->data);
-
-		ASSERT_EQ(NULL, MclList_FindNode(list, 0));
-	}
-
-	TEST("should add more elements to link")
-	{
-		auto foo1 = Foo_Create(1);
-		auto foo2 = Foo_Create(2);
-		auto foo3 = Foo_Create(3);
-
-		MclList_PushFront(list, foo1);
-		MclList_PushFront(list, foo2);
-		MclList_PushFront(list, foo3);
-
-		ASSERT_FALSE(MclList_IsEmpty(list));
-		ASSERT_EQ(3, MclList_GetCount(list));
-
-		auto result = MclList_FindNode(list, foo1);
-		ASSERT_EQ(foo1, result->data);
-
-		result = MclList_FindNode(list, foo2);
-		ASSERT_EQ(foo2, result->data);
-
-		result = MclList_FindNode(list, foo3);
-		ASSERT_EQ(foo3, result->data);
-	}
-
-	TEST("should remove element from link")
-	{
-		auto foo = Foo_Create();
-
-		MclList_PushFront(list, foo);
-        MclList_RemoveData(list, foo, NULL);
-
-		ASSERT_TRUE(MclList_IsEmpty(list));
-		ASSERT_EQ(0, MclList_GetCount(list));
-		ASSERT_EQ(NULL, MclList_FindNode(list, foo));
-
-		Foo_Delete(foo);
-	}
-
-	TEST("should remove elements from link")
-	{
-		auto foo1 = Foo_Create(1);
-		auto foo2 = Foo_Create(2);
-		auto foo3 = Foo_Create(3);
-
-		MclList_PushFront(list, foo1);
-		MclList_PushFront(list, foo2);
-		MclList_PushFront(list, foo3);
-
-        MclList_RemoveData(list, foo2, NULL);
-		Foo_Delete(foo2);
-
-		ASSERT_FALSE(MclList_IsEmpty(list));
-		ASSERT_EQ(2, MclList_GetCount(list));
-
-        MclList_RemoveData(list, foo1, NULL);
-
-		ASSERT_FALSE(MclList_IsEmpty(list));
-		ASSERT_EQ(1, MclList_GetCount(list));
-
-        MclList_RemoveData(list, foo3, NULL);
-
-		ASSERT_TRUE(MclList_IsEmpty(list));
-		ASSERT_EQ(0, MclList_GetCount(list));
-
-		Foo_Delete(foo1);
-		Foo_Delete(foo3);
-	}
-
-	TEST("should delete element from link")
-	{
-		auto foo = Foo_Create();
-
-		MclList_PushBack(list, foo);
-
-        MclList_RemoveData(list, foo, &fooDeleter);
-
-		ASSERT_TRUE(MclList_IsEmpty(list));
-	}
-
-	TEST("should delete elements from link")
-	{
-		auto foo1 = Foo_Create(1);
-		auto foo2 = Foo_Create(2);
-		auto foo3 = Foo_Create(3);
-
-		MclList_PushFront(list, foo1);
-		MclList_PushFront(list, foo2);
-		MclList_PushFront(list, foo3);
-
-        MclList_RemoveData(list, foo3, &fooDeleter);
-        MclList_RemoveData(list, foo2, &fooDeleter);
-
-		ASSERT_FALSE(MclList_IsEmpty(list));
-		ASSERT_EQ(1, MclList_GetCount(list));
-
-        MclList_RemoveData(list, foo1, &fooDeleter);
-
-		ASSERT_TRUE(MclList_IsEmpty(list));
-		ASSERT_EQ(0, MclList_GetCount(list));
-	}
-
-	TEST("should clear elements in link")
-	{
-		auto foo = Foo_Create();
-
-		MclList_PushBack(list, foo);
-
-		MclList_Clear(list, &fooDeleter);
-
-		ASSERT_TRUE(MclList_IsEmpty(list));
-	}
-
-	TEST("should travel each node on link")
-	{
-		auto foo1 = Foo_Create(1);
-		auto foo2 = Foo_Create(2);
-		auto foo3 = Foo_Create(3);
-
-		MclList_PushBack(list, foo1);
-		MclList_PushFront(list, foo2);
-		MclList_PushBack(list, foo3);
-
-		int sum = 0;
-
-		MclListNode *node = NULL;
-		MCL_LIST_FOREACH(list, node) {
-			sum += ((Foo*)node->data)->x;
-		}
-
-		ASSERT_EQ(6, sum);
-
-		MclList_Clear(list, &fooDeleter);
-	}
-
-	TEST("should travel each node safe on link")
-	{
-		auto foo1 = Foo_Create(1);
-		auto foo2 = Foo_Create(2);
-		auto foo3 = Foo_Create(3);
-
-		MclList_PushFront(list, foo1);
-		MclList_PushBack(list, foo2);
-		MclList_PushFront(list, foo3);
-
-		int sum = 0;
-
-		MclListNode *node = NULL;
-		MclListNode *tmpNode = NULL;
-		MCL_LIST_FOREACH_SAFE(list, node, tmpNode) {
-			if (node->data == foo2) {
-				MclList_RemoveNode(list, node, &fooDeleter);
-				continue;
-			}
-			sum += ((Foo*)node->data)->x;
-		}
-
-		ASSERT_EQ(4, sum);
-
-		MclList_Clear(list, &fooDeleter);
-	}
-
-	TEST("should visit each node on link")
-	{
-		auto foo1 = Foo_Create(1);
-		auto foo2 = Foo_Create(2);
-		auto foo3 = Foo_Create(3);
-
-		MclList_PushFront(list, foo1);
-		MclList_PushFront(list, foo2);
-		MclList_PushFront(list, foo3);
-
-		int sum = 0;
-
-		MCL_LIST_FOREACH_CALL(list, Foo, Foo_Sum, &sum);
-		ASSERT_EQ(6, sum);
-
-		MclList_Clear(list, &fooDeleter);
-	}
-
-	TEST("should insert before node")
-	{
-		auto foo1 = Foo_Create(1);
-		auto foo2 = Foo_Create(2);
-		auto foo3 = Foo_Create(3);
-
-		MclList_PushBack(list, foo1);
-		MclList_PushBack(list, foo3);
-
-		auto node = MclList_FindNode(list, foo3);
-		ASSERT_EQ(MCL_SUCCESS, MclList_InsertBefore(list, node, foo2));
-
-		ASSERT_EQ(3, MclList_GetCount(list));
-
-		auto secondNode = MclListNode_GetNext(MclList_GetFirst(list));
-		ASSERT_EQ(MclListNode_GetData(secondNode), foo2);
-
-		MclList_Clear(list, &fooDeleter);
-	}
-
-	TEST("should insert after node")
-	{
-		auto foo1 = Foo_Create(1);
-		auto foo2 = Foo_Create(2);
-		auto foo3 = Foo_Create(3);
-
-		MclList_PushBack(list, foo1);
-		MclList_PushBack(list, foo3);
-
-		auto node = MclList_FindNode(list, foo1);
-		ASSERT_EQ(MCL_SUCCESS, MclList_InsertAfter(list, node, foo2));
-
-		ASSERT_EQ(3, MclList_GetCount(list));
-
-		auto secondNode = MclListNode_GetNext(MclList_GetFirst(list));
-		ASSERT_EQ(MclListNode_GetData(secondNode), foo2);
-
-		MclList_Clear(list, &fooDeleter);
-	}
-};
-
-namespace {
-	const long INVALID_DATA = 0xFFFFFFFF;
-
-	struct DataVisitor {
-	    MclListDataVisitor visitor;
-	    long sum;
-	};
-
-    MclStatus DataVisitor_Sum(MclListDataVisitor *visitor, MclListData data) {
-        auto v = (long)data;
-        if (v == INVALID_DATA) return MCL_STATUS_DONE;
-        DataVisitor *self = MCL_TYPE_REDUCT(visitor, DataVisitor, visitor);
-        self->sum += v;
-        return MCL_SUCCESS;
-    }
-
-    DataVisitor DataVisitor_Create() {
-        DataVisitor visitor = {.visitor = MCL_LIST_DATA_VISITOR(DataVisitor_Sum), .sum = 0};
-        return visitor;
-    }
-
-	struct DataPred {
-	    MclListDataPred pred;
-        long arg;
-	};
-
-	bool DataPred_IsLargerThan(MclListDataPred *pred, MclListData data) {
-	    auto v = (long)data;
-        DataPred *self = MCL_TYPE_REDUCT(pred, DataPred, pred);
-        return v > self->arg;
-	}
-
-    DataPred DataPred_Create(long arg) {
-        DataPred pred = {.pred = MCL_LIST_DATA_PRED(DataPred_IsLargerThan), .arg = arg};
-        return pred;
-	}
-}
-
-FIXTURE(LinkAdvanceTest)
-{
-    constexpr static uint32_t NODE_NUM = 6;
-
-	MclList link;
-	MclListNode nodes[NODE_NUM];
-
-	LinkAdvanceTest() {
-		MclList_Init(&link, NULL);
-
-		for (long i = 0; i < NODE_NUM; i++) {
-		    MclListNode_Init(&nodes[i], (MclListData)i);
+		Foo *f1, *f2;
+		MCL_LINK_FOREACH_SAFE(&foos, Foo, link, f1, f2) {
+			MCL_LINK_REMOVE(f1, link);
 		}
 	}
 
-	AFTER {
-		MclList_Clear(&link, NULL);
-	}
-
-	TEST("find all valid data")
+	TEST("should be empty when init")
 	{
-		MclList_PushBackNode(&link, &nodes[1]);
-		MclList_PushBackNode(&link, &nodes[3]);
-		MclList_PushBackNode(&link, &nodes[5]);
-		MclList_PushBackNode(&link, &nodes[2]);
-
-        MclList result = MCL_LIST(result, MclListNodeAllocator_GetDefault());
-
-        auto isLargerThan = DataPred_Create(2);
-		MclList_FindBy(&link, &isLargerThan.pred, &result);
-
-		ASSERT_EQ(2, MclList_GetCount(&result));
-
-		auto firstNode = MclList_GetFirst(&result);
-		ASSERT_EQ(3, (long)MclListNode_GetData(firstNode));
-
-		auto secondNode = MclListNode_GetNext(firstNode);
-		ASSERT_EQ(5, (long)MclListNode_GetData(secondNode));
-
-        MclList_Clear(&result, NULL);
+		ASSERT_TRUE(MCL_LINK_EMPTY(&foos, Foo, link));
 	}
 
-	TEST("should remove all matched nodes in link")
-    {
-        MclList_PushBackNode(&link, &nodes[1]);
-        MclList_PushBackNode(&link, &nodes[3]);
-        MclList_PushBackNode(&link, &nodes[5]);
-        MclList_PushBackNode(&link, &nodes[2]);
-
-        auto isLargerThan = DataPred_Create(2);
-        MclList_RemoveBy(&link, &isLargerThan.pred, NULL);
-
-        ASSERT_EQ(2, MclList_GetCount(&link));
-
-        auto firstNode = MclList_GetFirst(&link);
-        ASSERT_EQ(1, (long)MclListNode_GetData(firstNode));
-
-        auto secondNode = MclListNode_GetNext(firstNode);
-        ASSERT_EQ(2, (long)MclListNode_GetData(secondNode));
-    }
-
-	TEST("should visit all nodes in link")
+	TEST("should insert tail after init")
 	{
-        MclList_PushBackNode(&link, &nodes[1]);
-        MclList_PushBackNode(&link, &nodes[3]);
-        MclList_PushBackNode(&link, &nodes[5]);
+		Foo f = {.x = 5};
 
-        auto sumVisitor = DataVisitor_Create();
-		ASSERT_EQ(MCL_SUCCESS, MclList_Accept(&link, &sumVisitor.visitor));
-		ASSERT_EQ(9, sumVisitor.sum);
+		MCL_LINK_INSERT_TAIL(&foos, &f, Foo, link);
+
+		ASSERT_FALSE(MCL_LINK_EMPTY(&foos, Foo, link));
+		ASSERT_EQ(5, MCL_LINK_FIRST(&foos)->x);
+		ASSERT_EQ(5, MCL_LINK_LAST(&foos)->x);
 	}
 
-	TEST("should visit nodes until invalid")
+	TEST("should insert before specified element")
 	{
-        MclListNode invalidNode;
-        MclListNode_Init(&invalidNode, (MclListData)INVALID_DATA);
+		Foo f1 = {.x = 5};
+		MCL_LINK_INSERT_TAIL(&foos, &f1, Foo, link);
 
-        MclList_PushBackNode(&link, &nodes[1]);
-        MclList_PushBackNode(&link, &nodes[3]);
-        MclList_PushBackNode(&link, &invalidNode);
-        MclList_PushBackNode(&link, &nodes[5]);
+		Foo f2 = {.x = 6};
+		MCL_LINK_INSERT_BEFORE(&f1, &f2, link);
 
-        auto sumVisitor = DataVisitor_Create();
-		ASSERT_EQ(MCL_SUCCESS, MclList_Accept(&link, &sumVisitor.visitor));
-		ASSERT_EQ(4, sumVisitor.sum);
+		ASSERT_EQ(6, MCL_LINK_FIRST(&foos)->x);
+		ASSERT_EQ(5, MCL_LINK_LAST(&foos)->x);
 	}
+
+	TEST("should remove single element")
+	{
+		Foo f1 = {.x = 5};
+		MCL_LINK_INSERT_TAIL(&foos, &f1, Foo, link);
+
+		MCL_LINK_REMOVE(&f1, link);
+
+		ASSERT_TRUE(MCL_LINK_EMPTY(&foos, Foo, link));
+	}	
+
+	TEST("should remove specified element")
+	{
+		Foo f1 = {.x = 5};
+		MCL_LINK_INSERT_TAIL(&foos, &f1, Foo, link);
+
+		Foo f2 = {.x = 6};
+		MCL_LINK_INSERT_BEFORE(&f1, &f2, link);
+
+		MCL_LINK_REMOVE(&f1, link);
+
+		ASSERT_FALSE(MCL_LINK_EMPTY(&foos, Foo, link));
+		ASSERT_EQ(6, MCL_LINK_FIRST(&foos)->x);
+		ASSERT_EQ(6, MCL_LINK_LAST(&foos)->x);
+	}
+
+	TEST("should foreach all elements")
+	{
+		Foo f1 = {.x = 5};
+		MCL_LINK_INSERT_TAIL(&foos, &f1, Foo, link);
+
+		Foo f2 = {.x = 6};
+		MCL_LINK_INSERT_BEFORE(&f1, &f2, link);
+
+		int sum = 0;
+		Foo *f;
+		MCL_LINK_FOREACH(&foos, Foo, link, f) {
+			sum += f->x;
+		}
+
+		ASSERT_EQ(11, sum);
+	}	
 };

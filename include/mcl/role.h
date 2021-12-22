@@ -16,8 +16,8 @@ role MCL_ROLE(role)
 #define MCL_ROLE_USE(role)				\
 role* MCL_ROLE(role)
 
-#define MCL_ROLE_LIST_USE(role)			\
-MCL_LIST(role) MCL_ROLE(role)
+#define MCL_ROLE_LINK_USE(role)			\
+MCL_LINK(role) MCL_ROLE(role)
 
 #define MCL_ROLE_CAST_TO(role, role_ptr, obj, obj_ptr)\
 obj* obj_ptr = MCL_TYPE_REDUCT(role_ptr, obj, MCL_ROLE(role))

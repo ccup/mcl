@@ -2,8 +2,8 @@
 #include "mcl/list/list.h"
 #include "mcl/list/list_node_allocator.h"
 
-namespace
-{
+namespace {
+
 	size_t UNRELEASED_FOO_COUNT = 0;
 
     struct Foo{
@@ -35,11 +35,12 @@ namespace
 
 FIXTURE(ListTest)
 {
-	MclList *list;
-    MclListDataDeleter fooDeleter{.destroy = ListDataDeleter_DeleteFoo};
+	MclList *list {nullptr};
+    MclListDataDeleter fooDeleter;
 
 	BEFORE {
-		list = MclList_Create(MclListNodeAllocator_GetDefault());
+		list = MclList_CreateDefault();
+		fooDeleter.destroy = ListDataDeleter_DeleteFoo;
 	}
 
 	AFTER {
@@ -95,7 +96,7 @@ FIXTURE(ListTest)
 		auto foo = Foo_Create();
 
 		MclList_PushFront(list, foo);
-        MclList_RemoveData(list, foo, NULL);
+        ASSERT_EQ(1, MclList_RemoveData(list, foo, NULL));
 
 		ASSERT_TRUE(MclList_IsEmpty(list));
 		ASSERT_EQ(0, MclList_GetCount(list));
@@ -374,7 +375,7 @@ FIXTURE(ListAdvanceTest)
         MclList_PushBackNode(&list, &nodes[2]);
 
         auto isLargerThan = DataPred_Create(2);
-        MclList_RemoveBy(&list, &isLargerThan.pred, NULL);
+        ASSERT_EQ(2, MclList_RemoveBy(&list, &isLargerThan.pred, NULL));
 
         ASSERT_EQ(2, MclList_GetCount(&list));
 

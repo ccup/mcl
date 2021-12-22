@@ -49,7 +49,7 @@ MCL_PRIVATE void TaskQueue_Remove(TaskQueue *queue, MclTaskKey key) {
 	MCL_LIST_FOREACH_SAFE(&queue->tasks, taskNode, tmpNode) {
 		MclTask *task = (MclTask*)MclListNode_GetData(taskNode);
 		if (task && task->key != key) continue;
-		return MclList_RemoveNode(&queue->tasks, taskNode, &taskDeleter);
+		(void)MclList_RemoveNode(&queue->tasks, taskNode, &taskDeleter);
 	}
 }
 
@@ -64,8 +64,7 @@ MCL_PRIVATE MclTask* TaskQueue_Pop(TaskQueue *queue) {
 	MCL_ASSERT_VALID_PTR_NIL(node);
 
 	MclTask *task = (MclTask*)MclListNode_GetData(node);
-	MclList_RemoveNode(&queue->tasks, node, NULL);
-	queue->poppedCount++;
+	queue->poppedCount += MclList_RemoveNode(&queue->tasks, node, NULL);
 
 	return task;
 }

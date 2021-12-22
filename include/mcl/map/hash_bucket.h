@@ -18,8 +18,8 @@ bool MclHashBucket_IsEmpty(const MclHashBucket*);
 
 MclStatus MclHashBucket_PushBack(MclHashBucket*, MclHashKey, MclHashValue, MclHashNodeAllocator*);
 
-void MclHashBucket_Remove(MclHashBucket*, MclHashKey, MclHashNodeAllocator*, MclHashValueDeleter*);
-void MclHashBucket_RemoveBy(MclHashBucket*, MclHashNodePred*, MclHashNodeAllocator*, MclHashValueDeleter*);
+uint32_t MclHashBucket_Remove(MclHashBucket*, MclHashKey, MclHashNodeAllocator*, MclHashValueDeleter*);
+uint32_t MclHashBucket_RemoveBy(MclHashBucket*, MclHashNodePred*, MclHashNodeAllocator*, MclHashValueDeleter*);
 
 MclHashNode* MclHashBucket_Find(const MclHashBucket*, MclHashKey);
 

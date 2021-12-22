@@ -78,6 +78,7 @@ MclStatus MclHashMap_Set(MclHashMap *self, MclHashKey key, MclHashValue value) {
     	node->value = value;
     } else {
 		MCL_ASSERT_SUCC_CALL(MclHashBucket_PushBack(&self->buckets[bucketId], key, value, self->allocator));
+		self->elementCount++;
     }
     return MCL_SUCCESS;
 }
@@ -86,16 +87,23 @@ void MclHashMap_Remove(MclHashMap *self, MclHashKey key, MclHashValueDeleter *va
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
 	uint32_t bucketId = MclHashMap_GetBucketId(self, key);
-	MclHashBucket_Remove(&self->buckets[bucketId], key, self->allocator, valueDeleter);
+
+	uint32_t removedCount = MclHashBucket_Remove(&self->buckets[bucketId], key, self->allocator, valueDeleter);
+	MCL_ASSERT_TRUE_VOID(removedCount <= self->elementCount);
+	self->elementCount -= removedCount;
 }
 
 void MclHashMap_RemoveBy(MclHashMap *self, MclHashNodePred *pred, MclHashValueDeleter *valueDeleter) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 	MCL_ASSERT_VALID_PTR_VOID(pred);
 
+	uint32_t removedCount = 0;
+
     for (uint32_t i = 0; i < self->bucketCount; i++) {
-        MclHashBucket_RemoveBy(&self->buckets[i], pred, self->allocator, valueDeleter);
+    	removedCount += MclHashBucket_RemoveBy(&self->buckets[i], pred, self->allocator, valueDeleter);
     }
+	MCL_ASSERT_TRUE_VOID(removedCount <= self->elementCount);
+	self->elementCount -= removedCount;
 }
 
 MclStatus MclHashMap_Accept(const MclHashMap *self, MclHashNodeVisitor *visitor) {

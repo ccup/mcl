@@ -4,9 +4,6 @@
 #include "mcl/assert.h"
 
 MCL_PRIVATE void MclList_RemoveNodeFromList(MclList* self, MclListNode *node, MclListDataDeleter *dataDeleter) {
-	MCL_ASSERT_VALID_PTR_VOID(self);
-	MCL_ASSERT_VALID_PTR_VOID(node);
-
 	MclListNode_RemoveFromList(node);
 	MclListNode_Delete(node, self->allocator, dataDeleter);
 	self->count--;
@@ -124,34 +121,40 @@ MclStatus MclList_InsertAfter(MclList *self, MclListNode *prevNode, MclListData 
     return MclList_InsertNodeAfter(self, prevNode, MclListNode_Create(data, self->allocator));
 }
 
-void MclList_RemoveNode(MclList *self, MclListNode *node, MclListDataDeleter *dataDeleter) {
-	MCL_ASSERT_VALID_PTR_VOID(self);
-	MCL_ASSERT_VALID_PTR_VOID(node);
-	MCL_ASSERT_TRUE_VOID(MclListNode_IsInList(node));
+uint32_t MclList_RemoveNode(MclList *self, MclListNode *node, MclListDataDeleter *dataDeleter) {
+	MCL_ASSERT_VALID_PTR_NIL(self);
+	MCL_ASSERT_VALID_PTR_NIL(node);
+	MCL_ASSERT_TRUE_NIL(MclListNode_IsInList(node));
 
 	MclList_RemoveNodeFromList(self, node, dataDeleter);
+	return 1;
 }
 
-void MclList_RemoveData(MclList *self, MclListData data, MclListDataDeleter *dataDeleter) {
-	MCL_ASSERT_VALID_PTR_VOID(self);
+uint32_t MclList_RemoveData(MclList *self, MclListData data, MclListDataDeleter *dataDeleter) {
+	MCL_ASSERT_VALID_PTR_NIL(self);
 
 	MclListNode *node = MclList_FindNode(self, data);
-	if (!node) return;
+	if (!node) return 0;
 
 	MclList_RemoveNodeFromList(self, node, dataDeleter);
+	return 1;
 }
 
-void MclList_RemoveBy(MclList *self, MclListDataPred *pred, MclListDataDeleter *dataDeleter) {
-	MCL_ASSERT_VALID_PTR_VOID(self);
-	MCL_ASSERT_VALID_PTR_VOID(pred);
+uint32_t MclList_RemoveBy(MclList *self, MclListDataPred *pred, MclListDataDeleter *dataDeleter) {
+	MCL_ASSERT_VALID_PTR_NIL(self);
+	MCL_ASSERT_VALID_PTR_NIL(pred);
+
+	uint32_t removedCount = 0;
 
     MclListNode *node = NULL;
     MclListNode *tmpNode = NULL;
     MCL_LIST_FOREACH_SAFE((MclList*)self, node, tmpNode) {
         if (MclListDataPred_Predicate(pred, node->data)) {
             MclList_RemoveNodeFromList(self, node, dataDeleter);
+            removedCount++;
         }
     }
+    return removedCount;
 }
 
 MclListNode* MclList_FindNode(MclList *self, MclListData data) {

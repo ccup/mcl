@@ -17,7 +17,7 @@ role MCL_ROLE(role)
 role* MCL_ROLE(role)
 
 #define MCL_ROLE_LIST_USE(role)			\
-MCL_LIST_HEAD(role) MCL_ROLE(role)
+MCL_LIST(role) MCL_ROLE(role)
 
 #define MCL_ROLE_CAST_TO(role, role_ptr, obj, obj_ptr)\
 obj* obj_ptr = MCL_TYPE_REDUCT(role_ptr, obj, MCL_ROLE(role))

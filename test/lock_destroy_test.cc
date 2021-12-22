@@ -129,7 +129,7 @@ namespace {
             MCL_LOCK_AUTO(mutex);
             auto result = ""s;
             MclLinkNode *node = NULL;
-            MCL_LINK_FOR_EACH(foos, node) {
+            MCL_LINK_FOREACH(foos, node) {
                 result += std::to_string(((Foo*)MclLinkNode_GetData(node))->getId());
                 result += ";";
             }

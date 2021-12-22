@@ -73,31 +73,31 @@ MCL_INLINE MclLinkNode* MclLink_GetPrevOf(MclLink *self, MclLinkNode *node) {
 }
 
 ///////////////////////////////////////////////////////////////
-#define MCL_LINK_FOR_EACH(link, node)						\
+#define MCL_LINK_FOREACH(link, node)						\
 	for ((node) = MclLink_GetFirst(link);					\
 		(MclLinkNode*)NULL != (node);						\
 		(node) = MclLink_GetNextOf((link), (node)))
 
 ///////////////////////////////////////////////////////////////
-#define MCL_LINK_FOR_EACH_SAFE(link, node, tmpNode)			\
+#define MCL_LINK_FOREACH_SAFE(link, node, tmpNode)			\
 	for ((node) = MclLink_GetFirst(link), (tmpNode) = MclLink_GetNextOf((link), (node));\
 		(MclLinkNode*)NULL != (node);						\
 		(node) = (tmpNode), (tmpNode) = MclLink_GetNextOf((link), (node)))
 
 ///////////////////////////////////////////////////////////////
-#define MCL_LINK_FOR_EACH_CALL(link, type, visitor, ...)	\
+#define MCL_LINK_FOREACH_CALL(link, type, visitor, ...)	    \
 	do {													\
 		MclLinkNode *node = NULL;							\
-		MCL_LINK_FOR_EACH((link), (node)) {					\
+		MCL_LINK_FOREACH((link), (node)) {					\
 			(void)visitor((type*)((node)->data), ##__VA_ARGS__);\
 		}													\
 	} while(0)
 
 ///////////////////////////////////////////////////////////////
-#define MCL_LINK_FOR_EACH_CALL_ASSERT(link, type, visitor, ...)\
+#define MCL_LINK_FOREACH_CALL_ASSERT(link, type, visitor, ...)\
 	do {													\
 		MclLinkNode *node = NULL;							\
-		MCL_LINK_FOR_EACH((link), (node)) {					\
+		MCL_LINK_FOREACH((link), (node)) {					\
 			MCL_ASSERT_SUCC_CALL(visitor((type*)((node)->data), ##__VA_ARGS__));\
 		}													\
 	} while(0)

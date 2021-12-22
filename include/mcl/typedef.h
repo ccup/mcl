@@ -12,6 +12,6 @@ struct TYPE
 
 #define MCL_TYPE_REDUCT(ptr, type, member) ({ \
 	const typeof( ((type *)0)->member ) *__mptr = (ptr); \
-	(type *)( (char *)__mptr - offsetof(type,member) );})
+	(type *)( (char *)__mptr - offsetof(type, member));})
 
 #endif

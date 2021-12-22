@@ -46,7 +46,7 @@ MCL_PRIVATE void TaskQueue_ResetPoppedCount(TaskQueue *queue) {
 MCL_PRIVATE void TaskQueue_Remove(TaskQueue *queue, MclTaskKey key) {
 	MclLinkNode *taskNode = NULL;
 	MclLinkNode *tmpNode = NULL;
-	MCL_LINK_FOR_EACH_SAFE(&queue->tasks, taskNode, tmpNode) {
+	MCL_LINK_FOREACH_SAFE(&queue->tasks, taskNode, tmpNode) {
 		MclTask *task = (MclTask*)MclLinkNode_GetData(taskNode);
 		if (task && task->key != key) continue;
 		return MclLink_RemoveNode(&queue->tasks, taskNode, &taskDeleter);

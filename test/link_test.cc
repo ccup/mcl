@@ -191,7 +191,7 @@ FIXTURE(LinkTest)
 		int sum = 0;
 
 		MclLinkNode *node = NULL;
-		MCL_LINK_FOR_EACH(link, node) {
+		MCL_LINK_FOREACH(link, node) {
 			sum += ((Foo*)node->data)->x;
 		}
 
@@ -214,7 +214,7 @@ FIXTURE(LinkTest)
 
 		MclLinkNode *node = NULL;
 		MclLinkNode *tmpNode = NULL;
-		MCL_LINK_FOR_EACH_SAFE(link, node, tmpNode) {
+		MCL_LINK_FOREACH_SAFE(link, node, tmpNode) {
 			if (node->data == foo2) {
 				MclLink_RemoveNode(link, node, &fooDeleter);
 				continue;
@@ -239,7 +239,7 @@ FIXTURE(LinkTest)
 
 		int sum = 0;
 
-		MCL_LINK_FOR_EACH_CALL(link, Foo, Foo_Sum, &sum);
+		MCL_LINK_FOREACH_CALL(link, Foo, Foo_Sum, &sum);
 		ASSERT_EQ(6, sum);
 
 		MclLink_Clear(link, &fooDeleter);

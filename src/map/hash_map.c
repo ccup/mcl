@@ -70,7 +70,7 @@ MclStatus MclHashMap_Get(const MclHashMap *self, MclHashKey key, MclHashValue *v
     uint32_t bucketId = MclHashMap_GetBucketId(self, key);
 
     MclLinkNode *node = NULL;
-    MCL_LINK_FOR_EACH(self->buckets[bucketId], node) {
+    MCL_LINK_FOREACH(self->buckets[bucketId], node) {
         MclHashNode *hashNode = (MclHashNode*)(node->data);
         if (hashNode->key == key) {
             *value = hashNode->value;

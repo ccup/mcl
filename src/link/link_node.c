@@ -3,19 +3,16 @@
 #include "mcl/assert.h"
 
 MclLinkNode* MclLinkNode_Create(MclLinkData data, MclLinkNodeAllocator *allocator) {
-	MCL_ASSERT_VALID_PTR_NIL(allocator);
-	MCL_ASSERT_VALID_PTR_NIL(allocator->alloc);
-
-	MclLinkNode* self = allocator->alloc();
+	MclLinkNode* self = MclLinkNodeAllocator_Alloc(allocator);
 	MCL_ASSERT_VALID_PTR_NIL(self);
 
 	MclLinkNode_Init(self, data);
 	return self;
 }
 
-void MclLinkNode_Delete(MclLinkNode *self, MclLinkNodeAllocator *allocator, MclLinkDataDeleter dataDeleter, void *delArg) {
+void MclLinkNode_Delete(MclLinkNode *self, MclLinkNodeAllocator *allocator, MclLinkDataDeleter *dataDeleter) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
-    if (dataDeleter && self->data) dataDeleter(self->data, delArg);
-    if (allocator && allocator->release) allocator->release(self);
+    MclLinkDataDeleter_Destroy(dataDeleter, self->data);
+    MclLinkNodeAllocator_Release(allocator, self);
 }

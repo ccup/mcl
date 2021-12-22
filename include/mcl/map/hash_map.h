@@ -9,20 +9,20 @@ MCL_STDC_BEGIN
 MCL_TYPE_FWD(MclHashMap);
 
 MclHashMap* MclHashMap_Create(uint32_t bucketCount);
-void MclHashMap_Delete(MclHashMap*, MclHashValueDeleter);
+void MclHashMap_Delete(MclHashMap*, MclHashValueDeleter, void *delArg);
 
 uint32_t MclHashMap_GetCount(const MclHashMap*);
 bool MclHashMap_IsEmpty(const MclHashMap*);
 
-void MclHashMap_Clear(MclHashMap*, MclHashValueDeleter);
+void MclHashMap_Clear(MclHashMap*, MclHashValueDeleter, void *delArg);
 
 MclStatus MclHashMap_Get(const MclHashMap*, MclHashKey, MclHashValue*);
 MclStatus MclHashMap_Set(MclHashMap*, MclHashKey, MclHashValue);
 
-void MclHashMap_Remove(MclHashMap*, MclHashKey, MclHashValueDeleter);
+void MclHashMap_Remove(MclHashMap*, MclHashKey, MclHashValueDeleter, void *delArg);
 
 typedef bool (*MclHashNodePred)(MclHashNode, void *arg);
-void MclHashMap_RemoveBy(MclHashMap*, MclHashNodePred, void *arg, MclHashValueDeleter);
+void MclHashMap_RemoveBy(MclHashMap*, MclHashNodePred, void *predArg, MclHashValueDeleter, void *delArg);
 
 typedef MclStatus (*MclHashNodeVisitor)(MclHashNode, void *arg);
 MclStatus MclHashMap_Accept(const MclHashMap*, MclHashNodeVisitor, void *arg);

@@ -26,18 +26,24 @@ namespace
     void Foo_Sum(const Foo *foo, int *sum) {
     	(*sum) += foo->x;
     }
+
+    void LinkDataDeleter_DeleteFoo(MclLinkDataDeleter *deleter, MclLinkData data) {
+        auto f = (Foo*)data;
+        Foo_Delete(f);
+    }
 }
 
 FIXTURE(LinkTest)
 {
 	MclLink *link;
+    MclLinkDataDeleter fooDeleter{.destroy = LinkDataDeleter_DeleteFoo};
 
 	BEFORE {
 		link = MclLink_Create(MclLinkNodeAllocator_GetDefault());
 	}
 
 	AFTER {
-		MclLink_Delete(link, (MclLinkDataDeleter)Foo_Delete, NULL);
+		MclLink_Delete(link, &fooDeleter);
 		ASSERT_EQ(0, UNRELEASED_FOO_COUNT);
 	}
 
@@ -89,7 +95,7 @@ FIXTURE(LinkTest)
 		auto foo = Foo_Create();
 
 		MclLink_PushFront(link, foo);
-        MclLink_RemoveData(link, foo, NULL, NULL);
+        MclLink_RemoveData(link, foo, NULL);
 
 		ASSERT_TRUE(MclLink_IsEmpty(link));
 		ASSERT_EQ(0, MclLink_GetCount(link));
@@ -108,18 +114,18 @@ FIXTURE(LinkTest)
 		MclLink_PushFront(link, foo2);
 		MclLink_PushFront(link, foo3);
 
-        MclLink_RemoveData(link, foo2, NULL, NULL);
+        MclLink_RemoveData(link, foo2, NULL);
 		Foo_Delete(foo2);
 
 		ASSERT_FALSE(MclLink_IsEmpty(link));
 		ASSERT_EQ(2, MclLink_GetCount(link));
 
-        MclLink_RemoveData(link, foo1, NULL, NULL);
+        MclLink_RemoveData(link, foo1, NULL);
 
 		ASSERT_FALSE(MclLink_IsEmpty(link));
 		ASSERT_EQ(1, MclLink_GetCount(link));
 
-        MclLink_RemoveData(link, foo3, NULL, NULL);
+        MclLink_RemoveData(link, foo3, NULL);
 
 		ASSERT_TRUE(MclLink_IsEmpty(link));
 		ASSERT_EQ(0, MclLink_GetCount(link));
@@ -133,7 +139,8 @@ FIXTURE(LinkTest)
 		auto foo = Foo_Create();
 
 		MclLink_PushBack(link, foo);
-        MclLink_RemoveData(link, foo, (MclLinkDataDeleter)Foo_Delete, NULL);
+
+        MclLink_RemoveData(link, foo, &fooDeleter);
 
 		ASSERT_TRUE(MclLink_IsEmpty(link));
 	}
@@ -148,13 +155,13 @@ FIXTURE(LinkTest)
 		MclLink_PushFront(link, foo2);
 		MclLink_PushFront(link, foo3);
 
-        MclLink_RemoveData(link, foo3, (MclLinkDataDeleter) Foo_Delete, NULL);
-        MclLink_RemoveData(link, foo2, (MclLinkDataDeleter) Foo_Delete, NULL);
+        MclLink_RemoveData(link, foo3, &fooDeleter);
+        MclLink_RemoveData(link, foo2, &fooDeleter);
 
 		ASSERT_FALSE(MclLink_IsEmpty(link));
 		ASSERT_EQ(1, MclLink_GetCount(link));
 
-        MclLink_RemoveData(link, foo1, (MclLinkDataDeleter) Foo_Delete, NULL);
+        MclLink_RemoveData(link, foo1, &fooDeleter);
 
 		ASSERT_TRUE(MclLink_IsEmpty(link));
 		ASSERT_EQ(0, MclLink_GetCount(link));
@@ -166,7 +173,7 @@ FIXTURE(LinkTest)
 
 		MclLink_PushBack(link, foo);
 
-		MclLink_Clear(link,  (MclLinkDataDeleter)Foo_Delete, NULL);
+		MclLink_Clear(link, &fooDeleter);
 
 		ASSERT_TRUE(MclLink_IsEmpty(link));
 	}
@@ -190,7 +197,7 @@ FIXTURE(LinkTest)
 
 		ASSERT_EQ(6, sum);
 
-		MclLink_Clear(link, (MclLinkDataDeleter)Foo_Delete, NULL);
+		MclLink_Clear(link, &fooDeleter);
 	}
 
 	TEST("should travel each node safe on link")
@@ -209,7 +216,7 @@ FIXTURE(LinkTest)
 		MclLinkNode *tmpNode = NULL;
 		MCL_LINK_FOR_EACH_SAFE(link, node, tmpNode) {
 			if (node->data == foo2) {
-				MclLink_RemoveNode(link, node, (MclLinkDataDeleter)Foo_Delete, NULL);
+				MclLink_RemoveNode(link, node, &fooDeleter);
 				continue;
 			}
 			sum += ((Foo*)node->data)->x;
@@ -217,7 +224,7 @@ FIXTURE(LinkTest)
 
 		ASSERT_EQ(4, sum);
 
-		MclLink_Clear(link, (MclLinkDataDeleter)Foo_Delete, NULL);
+		MclLink_Clear(link, &fooDeleter);
 	}
 
 	TEST("should visit each node on link")
@@ -235,7 +242,7 @@ FIXTURE(LinkTest)
 		MCL_LINK_FOR_EACH_CALL(link, Foo, Foo_Sum, &sum);
 		ASSERT_EQ(6, sum);
 
-		MclLink_Clear(link, (MclLinkDataDeleter)Foo_Delete, NULL);
+		MclLink_Clear(link, &fooDeleter);
 	}
 
 	TEST("should insert before node")
@@ -255,7 +262,7 @@ FIXTURE(LinkTest)
 		auto secondNode = MclLinkNode_GetNext(MclLink_GetFirst(link));
 		ASSERT_EQ(MclLinkNode_GetData(secondNode), foo2);
 
-		MclLink_Clear(link, (MclLinkDataDeleter)Foo_Delete, NULL);
+		MclLink_Clear(link, &fooDeleter);
 	}
 
 	TEST("should insert after node")
@@ -275,22 +282,45 @@ FIXTURE(LinkTest)
 		auto secondNode = MclLinkNode_GetNext(MclLink_GetFirst(link));
 		ASSERT_EQ(MclLinkNode_GetData(secondNode), foo2);
 
-		MclLink_Clear(link, (MclLinkDataDeleter)Foo_Delete, NULL);
+		MclLink_Clear(link, &fooDeleter);
 	}
 };
 
 namespace {
 	const long INVALID_DATA = 0xFFFFFFFF;
 
-	MclStatus Data_Visit(MclLinkData data, void *arg) {
-		long value = (long)data;
-		if (value == INVALID_DATA) return MCL_STATUS_DONE;
-		(*(long*)arg) += value;
-		return MCL_SUCCESS;
+	struct DataVisitor {
+	    MclLinkDataVisitor visitor;
+	    long sum;
+	};
+
+    MclStatus DataVisitor_Sum(MclLinkDataVisitor *visitor, MclLinkData data) {
+        auto v = (long)data;
+        if (v == INVALID_DATA) return MCL_STATUS_DONE;
+        DataVisitor *self = MCL_TYPE_OF(visitor, DataVisitor, visitor);
+        self->sum += v;
+        return MCL_SUCCESS;
+    }
+
+    DataVisitor DataVisitor_Create() {
+        DataVisitor visitor = {.visitor = MCL_LINK_DATA_VISITOR(DataVisitor_Sum), .sum = 0};
+        return visitor;
+    }
+
+	struct DataPred {
+	    MclLinkDataPred pred;
+        long arg;
+	};
+
+	bool DataPred_IsLargerThan(MclLinkDataPred *pred, MclLinkData data) {
+	    auto v = (long)data;
+        DataPred *self = MCL_TYPE_OF(pred, DataPred, pred);
+        return v > self->arg;
 	}
 
-	bool Data_IsLargerThan(MclLinkData data, void *arg) {
-		return data > arg;
+    DataPred DataPred_Create(long arg) {
+        DataPred pred = {.pred = MCL_LINK_DATA_PRED(DataPred_IsLargerThan), .arg = arg};
+        return pred;
 	}
 }
 
@@ -310,7 +340,7 @@ FIXTURE(LinkAdvanceTest)
 	}
 
 	AFTER {
-		MclLink_Clear(&link, NULL, NULL);
+		MclLink_Clear(&link, NULL);
 	}
 
 	TEST("find all valid data")
@@ -320,9 +350,10 @@ FIXTURE(LinkAdvanceTest)
 		MclLink_PushBackNode(&link, &nodes[5]);
 		MclLink_PushBackNode(&link, &nodes[2]);
 
-        MclLink result = MCL_LINK_INITIALIZE(result, MclLinkNodeAllocator_GetDefault());
-//        MclLink_Init(&result, MclLinkNodeAllocator_GetDefault());
-		MclLink_FindBy(&link, Data_IsLargerThan, (MclLinkData)2, &result);
+        MclLink result = MCL_LINK(result, MclLinkNodeAllocator_GetDefault());
+
+        auto isLargerThan = DataPred_Create(2);
+		MclLink_FindBy(&link, &isLargerThan.pred, &result);
 
 		ASSERT_EQ(2, MclLink_GetCount(&result));
 
@@ -332,7 +363,7 @@ FIXTURE(LinkAdvanceTest)
 		auto secondNode = MclLinkNode_GetNext(firstNode);
 		ASSERT_EQ(5, (long)MclLinkNode_GetData(secondNode));
 
-        MclLink_Clear(&result, NULL, NULL);
+        MclLink_Clear(&result, NULL);
 	}
 
 	TEST("should remove all matched nodes in link")
@@ -342,7 +373,8 @@ FIXTURE(LinkAdvanceTest)
         MclLink_PushBackNode(&link, &nodes[5]);
         MclLink_PushBackNode(&link, &nodes[2]);
 
-        MclLink_RemoveBy(&link, Data_IsLargerThan, (MclLinkData)2, NULL, NULL);
+        auto isLargerThan = DataPred_Create(2);
+        MclLink_RemoveBy(&link, &isLargerThan.pred, NULL);
 
         ASSERT_EQ(2, MclLink_GetCount(&link));
 
@@ -359,9 +391,9 @@ FIXTURE(LinkAdvanceTest)
         MclLink_PushBackNode(&link, &nodes[3]);
         MclLink_PushBackNode(&link, &nodes[5]);
 
-		long sum = 0;
-		ASSERT_EQ(MCL_SUCCESS, MclLink_Accept(&link, Data_Visit, &sum));
-		ASSERT_EQ(9, sum);
+        auto sumVisitor = DataVisitor_Create();
+		ASSERT_EQ(MCL_SUCCESS, MclLink_Accept(&link, &sumVisitor.visitor));
+		ASSERT_EQ(9, sumVisitor.sum);
 	}
 
 	TEST("should visit nodes until invalid")
@@ -374,8 +406,8 @@ FIXTURE(LinkAdvanceTest)
         MclLink_PushBackNode(&link, &invalidNode);
         MclLink_PushBackNode(&link, &nodes[5]);
 
-		long sum = 0;
-		ASSERT_EQ(MCL_SUCCESS, MclLink_Accept(&link, Data_Visit, &sum));
-		ASSERT_EQ(4, sum);
+        auto sumVisitor = DataVisitor_Create();
+		ASSERT_EQ(MCL_SUCCESS, MclLink_Accept(&link, &sumVisitor.visitor));
+		ASSERT_EQ(4, sumVisitor.sum);
 	}
 };

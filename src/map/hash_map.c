@@ -39,10 +39,10 @@ MclHashMap* MclHashMap_Create(uint32_t bucketCount) {
     return self;
 }
 
-void MclHashMap_Delete(MclHashMap *self, MclHashValueDeleter valueDeleter) {
+void MclHashMap_Delete(MclHashMap *self, MclHashValueDeleter valueDeleter, void *delArg) {
     MCL_ASSERT_VALID_PTR_VOID(self);
 
-    MclHashMap_Clear(self, valueDeleter);
+    MclHashMap_Clear(self, valueDeleter, delArg);
     MCL_FREE(self);
 }
 
@@ -54,7 +54,7 @@ bool MclHashMap_IsEmpty(const MclHashMap *self) {
     return MclHashMap_GetCount(self) == 0;
 }
 
-void MclHashMap_Clear(MclHashMap *self, MclHashValueDeleter valueDeleter) {
+void MclHashMap_Clear(MclHashMap *self, MclHashValueDeleter valueDeleter, void *delArg) {
     MCL_ASSERT_VALID_PTR_VOID(self);
 
     for (uint32_t i = 0; i < self->bucketCount; i++) {
@@ -99,14 +99,14 @@ MCL_PRIVATE bool MclHashMap_IsKeyEqual(MclLinkData data, void *arg) {
 
 //MCL_PRIVATE void MclHashMap_DeleteHashNode()
 
-void MclHashMap_Remove(MclHashMap *self, MclHashKey key, MclHashValueDeleter valueDeleter) {
+void MclHashMap_Remove(MclHashMap *self, MclHashKey key, MclHashValueDeleter valueDeleter, void *delArg) {
     MCL_ASSERT_VALID_PTR_VOID(self);
 
     uint32_t bucketId = MclHashMap_GetBucketId(self, key);
-    MclLink_RemoveBy(self->buckets[bucketId], MclHashMap_IsKeyEqual, &key, valueDeleter, NULL);
+    MclLink_RemoveBy(self->buckets[bucketId], MclHashMap_IsKeyEqual, NULL);
 }
 
-void MclHashMap_RemoveBy(MclHashMap *self, MclHashNodePred pred, void *arg, MclHashValueDeleter valueDeleter) {
+void MclHashMap_RemoveBy(MclHashMap *self, MclHashNodePred pred, void *predArg, MclHashValueDeleter valueDeleter, void *delArg) {
 
 }
 

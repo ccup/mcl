@@ -16,6 +16,8 @@ MCL_TYPE_DEF(MclTask) {
 MclStatus MclTask_Execute(MclTask*);
 void MclTask_Destroy(MclTask*);
 
+#define MCL_TASK(KEY, EXECUTE, DESTROY) {.key = KEY, .execute = EXEVUTE, .destroy = DESTROY}
+
 MCL_STDC_END
 
 #endif

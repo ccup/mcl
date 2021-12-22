@@ -2,7 +2,6 @@
 #define H8E11CCEE_05CA_4E3E_BF3C_1E19204214E5
 
 #include "mcl/link/link_node.h"
-#include "mcl/status.h"
 
 MCL_STDC_BEGIN
 
@@ -18,10 +17,10 @@ MCL_TYPE_DEF(MclLink) {
 
 MclLink* MclLink_CreateDefault();
 MclLink* MclLink_Create(MclLinkNodeAllocator*);
-void MclLink_Delete(MclLink*, MclLinkDataDeleter, void *delArg);
+void MclLink_Delete(MclLink*, MclLinkDataDeleter*);
 
 void MclLink_Init(MclLink*, MclLinkNodeAllocator*);
-void MclLink_Clear(MclLink*, MclLinkDataDeleter, void *delArg);
+void MclLink_Clear(MclLink*, MclLinkDataDeleter*);
 
 MclStatus MclLink_PushFrontNode(MclLink*, MclLinkNode*);
 MclStatus MclLink_PushBackNode(MclLink*, MclLinkNode*);
@@ -35,17 +34,15 @@ MclStatus MclLink_PushBack(MclLink*, MclLinkData);
 MclStatus MclLink_InsertBefore(MclLink*, MclLinkNode* nextNode, MclLinkData);
 MclStatus MclLink_InsertAfter(MclLink*, MclLinkNode* prevNode, MclLinkData);
 
-void MclLink_RemoveNode(MclLink*, MclLinkNode*, MclLinkDataDeleter, void *delArg);
-void MclLink_RemoveData(MclLink*, MclLinkData, MclLinkDataDeleter, void *delArg);
+void MclLink_RemoveNode(MclLink*, MclLinkNode*, MclLinkDataDeleter*);
+void MclLink_RemoveData(MclLink*, MclLinkData, MclLinkDataDeleter*);
 
-typedef bool (*MclLinkPred)(MclLinkData, void *arg);
-void MclLink_RemoveBy(MclLink*, MclLinkPred, void *arg, MclLinkDataDeleter, void *delArg);
+void MclLink_RemoveBy(MclLink *, MclLinkDataPred*, MclLinkDataDeleter *);
 
 MclLinkNode* MclLink_FindNode(MclLink*, MclLinkData);
-void MclLink_FindBy(const MclLink*, MclLinkPred, void *arg, MclLink *result);
+void MclLink_FindBy(const MclLink*, MclLinkDataPred*, MclLink *result);
 
-typedef MclStatus (*MclLinkVisitor)(MclLinkData, void *arg);
-MclStatus MclLink_Accept(const MclLink*, MclLinkVisitor, void *arg);
+MclStatus MclLink_Accept(const MclLink*, MclLinkDataVisitor*);
 
 ///////////////////////////////////////////////////////////////
 MCL_INLINE uint32_t MclLink_GetCount(const MclLink *self) {
@@ -102,7 +99,7 @@ MCL_INLINE MclLinkNode* MclLink_GetPrevOf(MclLink *self, MclLinkNode *node) {
 		}													\
 	} while(0)
 
-#define MCL_LINK_INITIALIZE(LIST, ALLOCATOR)                \
+#define MCL_LINK(LIST, ALLOCATOR)                           \
 {.head.next = &((LIST).head), .head.prev = &((LIST).head), .count = 0, .allocator = (ALLOCATOR)}
 
 MCL_STDC_END

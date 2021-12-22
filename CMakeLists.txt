@@ -10,7 +10,7 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
 endif()
 
 option(ENABLE_TEST "Build tests" ON)
-option(ENABLE_ASON "Enable AddressSanitizer" OFF)
+option(ENABLE_ASON "Enable AddressSanitizer" ON)
 option(ENABLE_TSAN "Enable ThreadSanitizer" OFF)
 
 include(${PROJECT_SOURCE_DIR}/cmake/CPM.cmake)

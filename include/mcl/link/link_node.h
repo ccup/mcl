@@ -1,13 +1,10 @@
 #ifndef H22383929_F96E_447A_9D78_780E12E969AD
 #define H22383929_F96E_447A_9D78_780E12E969AD
 
-#include "mcl/keyword.h"
+#include "mcl/link/link_data.h"
 #include "mcl/stdtype.h"
 
 MCL_STDC_BEGIN
-
-typedef void* MclLinkData;
-typedef void (*MclLinkDataDeleter)(MclLinkData, void*);
 
 MCL_TYPE_DEF(MclLinkNode) {
 	MclLinkNode *next;
@@ -50,9 +47,9 @@ MCL_INLINE void MclLinkNode_RemoveFromLink(MclLinkNode *self) {
 MCL_TYPE_FWD(MclLinkNodeAllocator);
 
 MclLinkNode* MclLinkNode_Create(MclLinkData, MclLinkNodeAllocator*);
-void MclLinkNode_Delete(MclLinkNode*, MclLinkNodeAllocator*, MclLinkDataDeleter, void *delArg);
+void MclLinkNode_Delete(MclLinkNode*, MclLinkNodeAllocator*, MclLinkDataDeleter*);
 
-#define MCL_LINK_NODE_INITIALIZE(DATA) {.next = NULL, .prev = NULL, .data = (DATA)}
+#define MCL_LINK_NODE(DATA) {.next = NULL, .prev = NULL, .data = (DATA)}
 
 MCL_STDC_END
 

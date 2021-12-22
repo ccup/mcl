@@ -14,6 +14,5 @@ void MclTask_Destroy(MclTask *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
 	MCL_LOG_DBG("Destroy task %u", self->key);
-
 	if (self->destroy) self->destroy(self);
 }

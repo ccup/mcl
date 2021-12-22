@@ -2,11 +2,11 @@
 #include "mcl/link/link_node.h"
 #include "mcl/mem/malloc.h"
 
-MclLinkNode* MclLinkNodeAllocator_AllocDefault() {
+MCL_PRIVATE MclLinkNode* MclLinkNodeAllocator_AllocDefault(MclLinkNodeAllocator *self) {
     return MCL_MALLOC(sizeof(MclLinkNode));
 }
 
-void MclLinkNodeAllocator_ReleaseDefault(MclLinkNode *node) {
+MCL_PRIVATE void MclLinkNodeAllocator_ReleaseDefault(MclLinkNodeAllocator *self, MclLinkNode *node) {
     MCL_FREE(node);
 }
 

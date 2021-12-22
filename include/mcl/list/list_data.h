@@ -10,7 +10,7 @@ MCL_STDC_BEGIN
 typedef void* MclListData;
 
 MCL_TYPE(MclListDataPred) {
-    bool (*pred)(MclListDataPred*, MclListData data);
+    bool (*pred)(MclListDataPred*, MclListData);
 };
 
 MCL_INLINE bool MclListDataPred_Predicate(MclListDataPred *pred, MclListData data) {
@@ -30,7 +30,7 @@ MCL_INLINE MclStatus MclListDataVisitor_Visit(MclListDataVisitor *visitor, MclLi
 #define MCL_LIST_DATA_VISITOR(VISITOR) {.visit = VISITOR}
 
 MCL_TYPE(MclListDataDeleter) {
-    void (*destroy)(MclListDataDeleter*, MclListData data);
+    void (*destroy)(MclListDataDeleter*, MclListData);
 };
 
 MCL_INLINE void MclListDataDeleter_Destroy(MclListDataDeleter *deleter, MclListData data) {

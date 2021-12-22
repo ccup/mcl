@@ -1,19 +1,25 @@
 #include "mcl/map/hash_node.h"
-#include "mcl/mem/malloc.h"
+#include "mcl/map/hash_node_allocator.h"
 #include "mcl/assert.h"
 
-MclHashNode* MclHashNode_Create(MclHashKey key, MclHashValue value) {
-    MclHashNode* self = MCL_MALLOC(sizeof(MclHashNode));
-    MCL_ASSERT_VALID_PTR_NIL(self);
-
+MCL_PRIVATE void MclHashNode_Init(MclHashNode *self, MclHashKey key, MclHashValue value) {
+    self->link.prev = NULL;
+    self->link.next = NULL;
     self->key = key;
     self->value = value;
-    return self;
 }
 
-void MclHashNode_Delete(MclHashNode *self, MclHashValueDeleter valueDeleter, void *delArg) {
-    MCL_ASSERT_VALID_PTR_VOID(self);
+MclHashNode* MclHashNode_Create(MclHashKey key, MclHashValue value, MclHashNodeAllocator *allocator) {
+	MclHashNode* self = MclHashNodeAllocator_Alloc(allocator);
+	MCL_ASSERT_VALID_PTR_NIL(self);
 
-    if (valueDeleter && self->value) valueDeleter(self->value, delArg);
-    MCL_FREE(self);
+	MclHashNode_Init(self, key, value);
+	return self;
+}
+
+void MclHashNode_Delete(MclHashNode *self, MclHashNodeAllocator *allocator, MclHashValueDeleter *valueDeleter) {
+	MCL_ASSERT_VALID_PTR_VOID(self);
+
+    MclHashValueDeleter_Destroy(valueDeleter, self->value);
+    MclHashNodeAllocator_Release(allocator, self);
 }

@@ -3,7 +3,7 @@
 
 namespace
 {
-    struct Foo{
+    struct Foo {
 		MCL_LINK_NODE(Foo) link;
 		int x;
 	};

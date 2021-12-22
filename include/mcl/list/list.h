@@ -7,10 +7,8 @@ MCL_STDC_BEGIN
 
 MCL_TYPE_DECL(MclListNodeAllocator);
 
-typedef MclListNode MclListHead;
-
 MCL_TYPE(MclList) {
-	MclListHead head;
+	MclListNode head;
 	uint32_t count;
     MclListNodeAllocator *allocator;
 };

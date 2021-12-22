@@ -6,6 +6,8 @@
 
 MCL_STDC_BEGIN
 
+MCL_TYPE_DECL(MclListNodeAllocator);
+
 MCL_TYPE(MclListNode) {
 	MclListNode *next;
 	MclListNode *prev;
@@ -43,8 +45,6 @@ MCL_INLINE void MclListNode_RemoveFromList(MclListNode *self) {
     prevNode->next = nextNode;
     nextNode->prev = prevNode;
 }
-
-MCL_TYPE_DECL(MclListNodeAllocator);
 
 MclListNode* MclListNode_Create(MclListData, MclListNodeAllocator*);
 void MclListNode_Delete(MclListNode*, MclListNodeAllocator*, MclListDataDeleter*);

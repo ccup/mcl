@@ -11,9 +11,9 @@ MCL_PRIVATE void MclListNodeAllocator_ReleaseDefault(MclListNodeAllocator *self,
 }
 
 MclListNodeAllocator* MclListNodeAllocator_GetDefault() {
-    static MclListNodeAllocator defaultListNodeAllocator = {
+    static MclListNodeAllocator defaultAllocator = {
             .alloc = MclListNodeAllocator_AllocDefault,
             .release = MclListNodeAllocator_ReleaseDefault
     };
-    return &defaultListNodeAllocator;
+    return &defaultAllocator;
 }

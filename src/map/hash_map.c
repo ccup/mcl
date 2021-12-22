@@ -78,6 +78,7 @@ MclStatus MclHashMap_RemoveNode(MclHashMap *self, MclHashNode *node, MclHashValu
 
     uint32_t bucketId = MclHashMap_GetBucketId(self, node->key);
     MclHashBucket_RemoveNode(&self->buckets[bucketId], node, self->allocator, valueDeleter);
+//    self->elementCount--;
     return MCL_SUCCESS;
 }
 

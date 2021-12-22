@@ -20,6 +20,14 @@ MCL_TYPE(MclHashNode) {
 MclHashNode* MclHashNode_Create(MclHashKey, MclHashValue, MclHashNodeAllocator*);
 void MclHashNode_Delete(MclHashNode*, MclHashNodeAllocator*, MclHashValueDeleter*);
 
+MCL_INLINE void MclHashNode_Init(MclHashNode *self, MclHashKey key, MclHashValue value) {
+	if (!self) return;
+    self->link.prev = NULL;
+    self->link.next = NULL;
+    self->key = key;
+    self->value = value;
+}
+
 //////////////////////////////////////////////////////////////
 MCL_TYPE(MclHashNodePred) {
     bool (*pred)(MclHashNodePred*, const MclHashNode*);

@@ -61,7 +61,8 @@ namespace {
     MclStatus HashNodeVisitor_Sum(MclHashNodeVisitor *visitor, MclHashNode *node) {
     	HashNodeVisitor *self = MCL_TYPE_REDUCT(visitor, HashNodeVisitor, visitor);
     	auto foo = (Foo*)(node->value);
-    	self->sum += (INVALID_ID == foo->id) ? 0 : foo->id;
+    	if (INVALID_ID == foo->id) return MCL_STATUS_DONE;
+    	self->sum += foo->id;
     	return MCL_SUCCESS;
     }
 
@@ -73,41 +74,41 @@ namespace {
 
 
 FIXTURE(HashMapTest) {
-    MclHashMap *map {nullptr};
+    MclHashMap *foos {nullptr};
     MclHashValueDeleter fooDeleter;
     HashNodePred fooIdPred;
     HashNodeVisitor fooVisitor;
 
     BEFORE {
-    	map = MclHashMap_CreateDefault();
+    	foos = MclHashMap_CreateDefault();
     	HashValueDeleter_Init(&fooDeleter);
     	HashNodePred_Init(&fooIdPred);
     	HashNodeVisitor_Init(&fooVisitor);
     }
 
     AFTER {
-		MclHashMap_Delete(map, &fooDeleter);
+		MclHashMap_Delete(foos, &fooDeleter);
 		ASSERT_EQ(0, UNRELEASED_FOO_COUNT);
     }
 
 
 	TEST("should be empty when initialized")
 	{
-		ASSERT_TRUE(MclHashMap_IsEmpty(map));
-		ASSERT_EQ(0, MclHashMap_GetCount(map));
-		ASSERT_TRUE(MCL_FAILED(MclHashMap_Get(map, 0, NULL)));
+		ASSERT_TRUE(MclHashMap_IsEmpty(foos));
+		ASSERT_EQ(0, MclHashMap_GetCount(foos));
+		ASSERT_TRUE(MCL_FAILED(MclHashMap_Get(foos, 0, NULL)));
 	}
 
 	TEST("should add element to map")
 	{
 		auto foo = Foo_Create(1);
 
-		MclHashMap_Set(map, 1, foo);
-		ASSERT_FALSE(MclHashMap_IsEmpty(map));
-		ASSERT_EQ(1, MclHashMap_GetCount(map));
+		MclHashMap_Set(foos, 1, foo);
+		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
+		ASSERT_EQ(1, MclHashMap_GetCount(foos));
 
 		Foo *f {nullptr};
-		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(map, 1, (MclHashValue*)(&f))));
+		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(foos, 1, (MclHashValue*)(&f))));
 		ASSERT_TRUE(f != nullptr);
 
 		ASSERT_EQ(1, f->id);
@@ -119,24 +120,24 @@ FIXTURE(HashMapTest) {
 		auto foo2 = Foo_Create(2);
 		auto foo3 = Foo_Create(3);
 
-		MclHashMap_Set(map, 1, foo1);
-		MclHashMap_Set(map, 2, foo2);
-		MclHashMap_Set(map, 3, foo3);
+		MclHashMap_Set(foos, 1, foo1);
+		MclHashMap_Set(foos, 2, foo2);
+		MclHashMap_Set(foos, 3, foo3);
 
-		ASSERT_FALSE(MclHashMap_IsEmpty(map));
-		ASSERT_EQ(3, MclHashMap_GetCount(map));
+		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
+		ASSERT_EQ(3, MclHashMap_GetCount(foos));
 
 		Foo *f {nullptr};
 
-		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(map, 1, (MclHashValue*)(&f))));
+		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(foos, 1, (MclHashValue*)(&f))));
 		ASSERT_TRUE(f != nullptr);
 		ASSERT_EQ(1, f->id);
 
-		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(map, 2, (MclHashValue*)(&f))));
+		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(foos, 2, (MclHashValue*)(&f))));
 		ASSERT_TRUE(f != nullptr);
 		ASSERT_EQ(2, f->id);
 
-		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(map, 3, (MclHashValue*)(&f))));
+		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(foos, 3, (MclHashValue*)(&f))));
 		ASSERT_TRUE(f != nullptr);
 		ASSERT_EQ(3, f->id);
 	}
@@ -145,15 +146,15 @@ FIXTURE(HashMapTest) {
 	{
 		auto foo = Foo_Create(1);
 
-		MclHashMap_Set(map, 1, foo);
+		MclHashMap_Set(foos, 1, foo);
 
-        MclHashMap_Remove(map, 1, NULL);
+        MclHashMap_Remove(foos, 1, NULL);
 
-		ASSERT_TRUE(MclHashMap_IsEmpty(map));
-		ASSERT_EQ(0, MclHashMap_GetCount(map));
+		ASSERT_TRUE(MclHashMap_IsEmpty(foos));
+		ASSERT_EQ(0, MclHashMap_GetCount(foos));
 
 		Foo *f {nullptr};
-		ASSERT_TRUE(MCL_FAILED(MclHashMap_Get(map, 1, (MclHashValue*)(&f))));
+		ASSERT_TRUE(MCL_FAILED(MclHashMap_Get(foos, 1, (MclHashValue*)(&f))));
 
 		Foo_Delete(foo);
 	}
@@ -164,25 +165,25 @@ FIXTURE(HashMapTest) {
 		auto foo2 = Foo_Create(2);
 		auto foo3 = Foo_Create(3);
 
-		MclHashMap_Set(map, 1, foo1);
-		MclHashMap_Set(map, 2, foo2);
-		MclHashMap_Set(map, 3, foo3);
+		MclHashMap_Set(foos, 1, foo1);
+		MclHashMap_Set(foos, 2, foo2);
+		MclHashMap_Set(foos, 3, foo3);
 
-		MclHashMap_Remove(map, 2, NULL);
+		MclHashMap_Remove(foos, 2, NULL);
 		Foo_Delete(foo2);
 
-		ASSERT_FALSE(MclHashMap_IsEmpty(map));
-		ASSERT_EQ(2, MclHashMap_GetCount(map));
+		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
+		ASSERT_EQ(2, MclHashMap_GetCount(foos));
 
-		MclHashMap_Remove(map, 1, NULL);
+		MclHashMap_Remove(foos, 1, NULL);
 
-		ASSERT_FALSE(MclHashMap_IsEmpty(map));
-		ASSERT_EQ(1, MclHashMap_GetCount(map));
+		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
+		ASSERT_EQ(1, MclHashMap_GetCount(foos));
 
-		MclHashMap_Remove(map, 3, NULL);
+		MclHashMap_Remove(foos, 3, NULL);
 
-		ASSERT_TRUE(MclHashMap_IsEmpty(map));
-		ASSERT_EQ(0, MclHashMap_GetCount(map));
+		ASSERT_TRUE(MclHashMap_IsEmpty(foos));
+		ASSERT_EQ(0, MclHashMap_GetCount(foos));
 
 		Foo_Delete(foo1);
 		Foo_Delete(foo3);
@@ -192,10 +193,10 @@ FIXTURE(HashMapTest) {
 	{
 		auto foo = Foo_Create(1);
 
-		MclHashMap_Set(map, 1, foo);
-		MclHashMap_Remove(map, 1, &fooDeleter);
+		MclHashMap_Set(foos, 1, foo);
+		MclHashMap_Remove(foos, 1, &fooDeleter);
 
-		ASSERT_TRUE(MclHashMap_IsEmpty(map));
+		ASSERT_TRUE(MclHashMap_IsEmpty(foos));
 	}
 
 	TEST("should delete elements from map")
@@ -204,31 +205,31 @@ FIXTURE(HashMapTest) {
 		auto foo2 = Foo_Create(2);
 		auto foo3 = Foo_Create(3);
 
-		MclHashMap_Set(map, 1, foo1);
-		MclHashMap_Set(map, 2, foo2);
-		MclHashMap_Set(map, 3, foo3);
+		MclHashMap_Set(foos, 1, foo1);
+		MclHashMap_Set(foos, 2, foo2);
+		MclHashMap_Set(foos, 3, foo3);
 
-		MclHashMap_Remove(map, 3, &fooDeleter);
-		MclHashMap_Remove(map, 2, &fooDeleter);
+		MclHashMap_Remove(foos, 3, &fooDeleter);
+		MclHashMap_Remove(foos, 2, &fooDeleter);
 
-		ASSERT_FALSE(MclHashMap_IsEmpty(map));
-		ASSERT_EQ(1, MclHashMap_GetCount(map));
+		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
+		ASSERT_EQ(1, MclHashMap_GetCount(foos));
 
-		MclHashMap_Remove(map, 1, &fooDeleter);
+		MclHashMap_Remove(foos, 1, &fooDeleter);
 
-		ASSERT_TRUE(MclHashMap_IsEmpty(map));
-		ASSERT_EQ(0, MclHashMap_GetCount(map));
+		ASSERT_TRUE(MclHashMap_IsEmpty(foos));
+		ASSERT_EQ(0, MclHashMap_GetCount(foos));
 	}
 
 	TEST("should clear elements in map")
 	{
 		auto foo = Foo_Create(1);
 
-		MclHashMap_Set(map, 1, foo);
+		MclHashMap_Set(foos, 1, foo);
 
-		MclHashMap_Clear(map, &fooDeleter);
+		MclHashMap_Clear(foos, &fooDeleter);
 
-		ASSERT_TRUE(MclHashMap_IsEmpty(map));
+		ASSERT_TRUE(MclHashMap_IsEmpty(foos));
 	}
 
 	TEST("should remove nodes in map by condition")
@@ -237,41 +238,36 @@ FIXTURE(HashMapTest) {
 		auto foo2 = Foo_Create(2);
 		auto foo3 = Foo_Create(3);
 
-		MclHashMap_Set(map, 1, foo1);
-		MclHashMap_Set(map, 2, foo2);
-		MclHashMap_Set(map, 3, foo3);
+		MclHashMap_Set(foos, 1, foo1);
+		MclHashMap_Set(foos, 2, foo2);
+		MclHashMap_Set(foos, 3, foo3);
 
 		fooIdPred.id = 2;
-		MclHashMap_RemoveBy(map, &fooIdPred.pred, &fooDeleter);
+		MclHashMap_RemoveBy(foos, &fooIdPred.pred, &fooDeleter);
 
-		ASSERT_FALSE(MclHashMap_IsEmpty(map));
-		ASSERT_EQ(2, MclHashMap_GetCount(map));
+		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
+		ASSERT_EQ(2, MclHashMap_GetCount(foos));
 
 		Foo *f {nullptr};
-		ASSERT_TRUE(MCL_FAILED(MclHashMap_Get(map, 2, (MclHashValue*)(&f))));
+		ASSERT_TRUE(MCL_FAILED(MclHashMap_Get(foos, 2, (MclHashValue*)(&f))));
 
-		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(map, 1, (MclHashValue*)(&f))));
-		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(map, 3, (MclHashValue*)(&f))));
+		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(foos, 1, (MclHashValue*)(&f))));
+		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(foos, 3, (MclHashValue*)(&f))));
 
-		MclHashMap_Clear(map, &fooDeleter);
+		MclHashMap_Clear(foos, &fooDeleter);
 	}
 
 	TEST("should visit nodes in map by condition")
 	{
-		auto foo1 = Foo_Create(1);
-		auto foo2 = Foo_Create(2);
-		auto foo3 = Foo_Create(3);
-		auto foo4 = Foo_Create(4);
+		MclHashMap_Set(foos, 12, Foo_Create(12));
+		MclHashMap_Set(foos, 13, Foo_Create(13));
+		MclHashMap_Set(foos, 14, Foo_Create(14));
+		MclHashMap_Set(foos, INVALID_ID, Foo_Create(INVALID_ID));
+		MclHashMap_Set(foos, 15, Foo_Create(15));
 
-		MclHashMap_Set(map, 1, foo1);
-		MclHashMap_Set(map, 2, foo2);
-		MclHashMap_Set(map, 3, foo3);
-		MclHashMap_Set(map, INVALID_ID, Foo_Create(INVALID_ID));
-		MclHashMap_Set(map, 4, foo4);
+		MclHashMap_Accept(foos, &fooVisitor.visitor);
+		ASSERT_EQ(39, fooVisitor.sum);
 
-		MclHashMap_Accept(map, &fooVisitor.visitor);
-		ASSERT_EQ(10, fooVisitor.sum);
-
-		MclHashMap_Clear(map, &fooDeleter);
+		MclHashMap_Clear(foos, &fooDeleter);
 	}
 };

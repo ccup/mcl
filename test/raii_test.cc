@@ -39,7 +39,7 @@ FIXTURE(RaiiTest)
 		ASSERT_EQ(1, cleanCount);
 	}
 
-	TEST("should auto free aster exit scope, checking by ason")
+	TEST("should auto free after exit scope, checking by ason")
 	{
         MCL_AUTO_FREE void *pf = MCL_MALLOC(sizeof(Foo));
         ASSERT_TRUE(pf != nullptr);

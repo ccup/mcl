@@ -15,6 +15,9 @@ MCL_TYPE_DEF(MclLink) {
     MclLinkNodeAllocator *allocator;
 };
 
+#define MCL_LINK(LINK, ALLOCATOR)   \
+{.head.next = &((LINK).head), .head.prev = &((LINK).head), .count = 0, .allocator = (ALLOCATOR)}
+
 MclLink* MclLink_CreateDefault();
 MclLink* MclLink_Create(MclLinkNodeAllocator*);
 void MclLink_Delete(MclLink*, MclLinkDataDeleter*);
@@ -98,9 +101,6 @@ MCL_INLINE MclLinkNode* MclLink_GetPrevOf(MclLink *self, MclLinkNode *node) {
 			MCL_ASSERT_SUCC_CALL(visitor((type*)((node)->data), ##__VA_ARGS__));\
 		}													\
 	} while(0)
-
-#define MCL_LINK(LINK, ALLOCATOR)                           \
-{.head.next = &((LINK).head), .head.prev = &((LINK).head), .count = 0, .allocator = (ALLOCATOR)}
 
 MCL_STDC_END
 

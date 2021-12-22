@@ -23,11 +23,15 @@ MclHashMap* MclHashMap_CreateDefault();
 MclHashMap* MclHashMap_Create(uint32_t bucketCount, MclHashNodeAllocator*);
 void MclHashMap_Delete(MclHashMap*, MclHashValueDeleter*);
 
+uint32_t MclHashMap_GetCount(const MclHashMap*);
+bool MclHashMap_IsEmpty(const MclHashMap*);
+
 void MclHashMap_Init(MclHashMap*, uint32_t bucketCount, MclHashNodeAllocator*);
 void MclHashMap_Clear(MclHashMap*, MclHashValueDeleter*);
 
-uint32_t MclHashMap_GetCount(const MclHashMap*);
-bool MclHashMap_IsEmpty(const MclHashMap*);
+MclHashNode* MclHashMap_FindNode(const MclHashMap*, MclHashKey);
+MclStatus MclHashMap_InsertNode(MclHashMap*, MclHashNode*);
+MclStatus MclHashMap_RemoveNode(MclHashMap*, MclHashNode*, MclHashValueDeleter*);
 
 MclStatus MclHashMap_Get(const MclHashMap*, MclHashKey, MclHashValue*);
 MclStatus MclHashMap_Set(MclHashMap*, MclHashKey, MclHashValue);

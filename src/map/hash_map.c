@@ -55,13 +55,37 @@ bool MclHashMap_IsEmpty(const MclHashMap *self) {
     return MclHashMap_GetCount(self) == 0;
 }
 
+MclHashNode* MclHashMap_FindNode(const MclHashMap *self, MclHashKey key) {
+    MCL_ASSERT_VALID_PTR_NIL(self);
+
+	uint32_t bucketId = MclHashMap_GetBucketId(self, key);
+	return MclHashBucket_FindNode(&self->buckets[bucketId], key);
+}
+
+MclStatus MclHashMap_InsertNode(MclHashMap *self, MclHashNode *node) {
+    MCL_ASSERT_VALID_PTR(self);
+    MCL_ASSERT_VALID_PTR(node);
+
+    uint32_t bucketId = MclHashMap_GetBucketId(self, node->key);
+    MCL_ASSERT_SUCC_CALL(MclHashBucket_PushBackNode(&self->buckets[bucketId], node));
+    self->elementCount++;
+    return MCL_SUCCESS;
+}
+
+MclStatus MclHashMap_RemoveNode(MclHashMap *self, MclHashNode *node, MclHashValueDeleter *valueDeleter) {
+    MCL_ASSERT_VALID_PTR(self);
+    MCL_ASSERT_VALID_PTR(node);
+
+    uint32_t bucketId = MclHashMap_GetBucketId(self, node->key);
+    MclHashBucket_RemoveNode(&self->buckets[bucketId], node, self->allocator, valueDeleter);
+    return MCL_SUCCESS;
+}
+
 MclStatus MclHashMap_Get(const MclHashMap *self, MclHashKey key, MclHashValue *value) {
     MCL_ASSERT_VALID_PTR(self);
     MCL_ASSERT_VALID_PTR(value);
 
-    uint32_t bucketId = MclHashMap_GetBucketId(self, key);
-
-    MclHashNode *node = MclHashBucket_Find(&self->buckets[bucketId], key);
+    const MclHashNode *node = MclHashMap_FindNode(self, key);
     if (!node) return MCL_FAILURE;
 
     (*value) = node->value;
@@ -71,15 +95,20 @@ MclStatus MclHashMap_Get(const MclHashMap *self, MclHashKey key, MclHashValue *v
 MclStatus MclHashMap_Set(MclHashMap *self, MclHashKey key, MclHashValue value) {
     MCL_ASSERT_VALID_PTR(self);
 
-    uint32_t bucketId = MclHashMap_GetBucketId(self, key);
-
-    MclHashNode *node = MclHashBucket_Find(&self->buckets[bucketId], key);
+    MclHashNode *node = MclHashMap_FindNode(self, key);
     if (node) {
-    	node->value = value;
-    } else {
-		MCL_ASSERT_SUCC_CALL(MclHashBucket_PushBack(&self->buckets[bucketId], key, value, self->allocator));
-		self->elementCount++;
+		node->value = value;
+    	return MCL_SUCCESS;
     }
+
+    node = MclHashNode_Create(key, value, self->allocator);
+	MCL_ASSERT_VALID_PTR(node);
+
+	if (MCL_FAILED(MclHashMap_InsertNode(self, node))) {
+		MCL_LOG_ERR("Add node (%llu) to map failed when setting!", key);
+		MclHashNode_Delete(node, self->allocator, NULL);
+		return MCL_FAILURE;
+	}
     return MCL_SUCCESS;
 }
 

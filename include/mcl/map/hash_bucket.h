@@ -16,12 +16,12 @@ void MclHashBucket_Clear(MclHashBucket*, MclHashNodeAllocator*, MclHashValueDele
 uint32_t MclHashBucket_GetCount(const MclHashBucket*);
 bool MclHashBucket_IsEmpty(const MclHashBucket*);
 
-MclStatus MclHashBucket_PushBack(MclHashBucket*, MclHashKey, MclHashValue, MclHashNodeAllocator*);
+MclHashNode* MclHashBucket_FindNode(const MclHashBucket*, MclHashKey);
+MclStatus MclHashBucket_PushBackNode(MclHashBucket*, MclHashNode*);
+void MclHashBucket_RemoveNode(MclHashBucket*, MclHashNode*, MclHashNodeAllocator*, MclHashValueDeleter*);
 
 uint32_t MclHashBucket_Remove(MclHashBucket*, MclHashKey, MclHashNodeAllocator*, MclHashValueDeleter*);
 uint32_t MclHashBucket_RemoveBy(MclHashBucket*, MclHashNodePred*, MclHashNodeAllocator*, MclHashValueDeleter*);
-
-MclHashNode* MclHashBucket_Find(const MclHashBucket*, MclHashKey);
 
 MclStatus MclHashBucket_Accept(const MclHashBucket*, MclHashNodeVisitor*);
 

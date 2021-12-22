@@ -270,4 +270,33 @@ FIXTURE(HashMapTest) {
 
 		MclHashMap_Clear(foos, &fooDeleter);
 	}
+
+	TEST("should add more elements")
+	{
+		constexpr uint32_t MAX_ELEMS = 10000;
+
+		for (uint32_t i = 0; i < MAX_ELEMS; i++) {
+			MclHashMap_Set(foos, i, Foo_Create(i));
+		}
+
+		ASSERT_EQ(MAX_ELEMS, MclHashMap_GetCount(foos));
+
+		for (uint32_t i = 0; i < MAX_ELEMS; i++) {
+			Foo *f {nullptr};
+			ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(foos, i, (MclHashValue*)(&f))));
+			ASSERT_TRUE(f != nullptr);
+			ASSERT_EQ(i, f->id);
+		}
+
+		for (uint32_t i = 0; i < MAX_ELEMS - 2; i++) {
+			MclHashMap_Remove(foos, i, &fooDeleter);
+		}
+
+		ASSERT_EQ(2, MclHashMap_GetCount(foos));
+
+		MclHashMap_Accept(foos, &fooVisitor.visitor);
+		ASSERT_EQ(MAX_ELEMS + MAX_ELEMS - 3, fooVisitor.sum);
+
+		MclHashMap_Clear(foos, &fooDeleter);
+	}
 };

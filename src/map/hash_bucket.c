@@ -1,13 +1,6 @@
 #include "mcl/map/hash_bucket.h"
 #include "mcl/assert.h"
 
-MCL_PRIVATE void MclHashBucket_RemoveNode(MclHashBucket *self,
-		MclHashNode *node, MclHashNodeAllocator *allocator, MclHashValueDeleter *valueDeleter) {
-	MCL_LINK_REMOVE(node, link);
-	MclHashNode_Delete(node, allocator, valueDeleter);
-	self->count--;
-}
-
 void MclHashBucket_Init(MclHashBucket *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
@@ -33,15 +26,32 @@ bool MclHashBucket_IsEmpty(const MclHashBucket *self) {
 	return MclHashBucket_GetCount(self) == 0;
 }
 
-MclStatus MclHashBucket_PushBack(MclHashBucket *self, MclHashKey key, MclHashValue value, MclHashNodeAllocator *allocator) {
-	MCL_ASSERT_VALID_PTR(self);
-	MCL_ASSERT_TRUE(!MclHashBucket_Find(self, key));
+MclHashNode* MclHashBucket_FindNode(const MclHashBucket *self, MclHashKey key) {
+	MCL_ASSERT_VALID_PTR_NIL(self);
 
-	MclHashNode *node = MclHashNode_Create(key, value, allocator);
+	MclHashNode *node;
+	MCL_LINK_FOREACH(&self->nodes, MclHashNode, link, node) {
+		if (node->key == key) {
+			return node;
+		}
+	}
+	return NULL;
+}
+
+MclStatus MclHashBucket_PushBackNode(MclHashBucket *self, MclHashNode *node) {
+	MCL_ASSERT_VALID_PTR(self);
 	MCL_ASSERT_VALID_PTR(node);
+	MCL_ASSERT_TRUE(!MclHashBucket_FindNode(self, node->key));
 
 	MCL_LINK_INSERT_TAIL(&self->nodes, node, MclHashNode, link);
+	self->count++;
 	return MCL_SUCCESS;
+}
+
+void MclHashBucket_RemoveNode(MclHashBucket *self, MclHashNode *node, MclHashNodeAllocator *allocator, MclHashValueDeleter *valueDeleter) {
+	MCL_LINK_REMOVE(node, link);
+	MclHashNode_Delete(node, allocator, valueDeleter);
+	self->count--;
 }
 
 uint32_t MclHashBucket_RemoveBy(MclHashBucket *self, MclHashNodePred *pred, MclHashNodeAllocator *allocator, MclHashValueDeleter *valueDeleter) {
@@ -72,18 +82,6 @@ MCL_PRIVATE bool TargetKeyPred_IsEqual(MclHashNodePred *pred, const MclHashNode 
 uint32_t MclHashBucket_Remove(MclHashBucket *self, MclHashKey key, MclHashNodeAllocator *allocator, MclHashValueDeleter *valueDeleter) {
 	TargetKeyPred pred = {.pred = MCL_HASH_NODE_PRED(TargetKeyPred_IsEqual), .targetKey = key};
 	return MclHashBucket_RemoveBy(self, &pred.pred, allocator, valueDeleter);
-}
-
-MclHashNode* MclHashBucket_Find(const MclHashBucket *self, MclHashKey key) {
-	MCL_ASSERT_VALID_PTR_NIL(self);
-
-	MclHashNode *node;
-	MCL_LINK_FOREACH(&self->nodes, MclHashNode, link, node) {
-		if (node->key == key) {
-			return node;
-		}
-	}
-	return NULL;
 }
 
 MclStatus MclHashBucket_Accept(const MclHashBucket *self, MclHashNodeVisitor *visitor) {

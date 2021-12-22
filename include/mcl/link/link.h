@@ -23,10 +23,14 @@
 #define MCL_LINK_EMPTY(head, NodeType, link)        \
     (MCL_LINK_FIRST((head)) == MCL_LINK_SENTINEL((head), NodeType, link))
 
-#define MCL_LINK_ELEM_INIT(ep, link) do {           \
+#define MCL_LINK_NODE_INIT(ep, link) do {           \
     MCL_LINK_NEXT((ep), link) = (ep);               \
     MCL_LINK_PREV((ep), link) = (ep);               \
 } while (0)
+
+
+#define MCL_LINK_NODE_IS_IN_LINK(ep, link)                \
+    (ep && (ep->link.next) && (ep->link.prev) && (ep->link.next->link.prev == ep) && (ep->link.prev->link.next == ep))
 
 #define MCL_LINK_SPLICE_BEFORE(le, e1, en, link) do {       \
     MCL_LINK_NEXT((en), link) = (le);                       \

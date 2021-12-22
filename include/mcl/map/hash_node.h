@@ -15,15 +15,15 @@ MCL_TYPE(MclHashNode) {
     MclHashValue value;
 };
 
-#define MCL_HASH_NODE(KEY, VALUE) {.key = KEY, .value = VALUE}
+#define MCL_NODE(KEY, VALUE) {.link.prev = NULL, .link.next = NULL, .key = KEY, .value = VALUE};
 
 MclHashNode* MclHashNode_Create(MclHashKey, MclHashValue, MclHashNodeAllocator*);
 void MclHashNode_Delete(MclHashNode*, MclHashNodeAllocator*, MclHashValueDeleter*);
 
 MCL_INLINE void MclHashNode_Init(MclHashNode *self, MclHashKey key, MclHashValue value) {
 	if (!self) return;
-    self->link.prev = NULL;
     self->link.next = NULL;
+    self->link.prev = NULL;
     self->key = key;
     self->value = value;
 }

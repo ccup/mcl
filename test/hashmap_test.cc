@@ -329,7 +329,6 @@ FIXTURE(HashMapAdvanceTest) {
 		MclHashMap_Clear(foos, NULL);
     }
 
-
 	TEST("find all valid data")
 	{
 		MclHashMap_InsertNode(foos, &nodes[1]);
@@ -361,7 +360,9 @@ FIXTURE(HashMapAdvanceTest) {
 		ASSERT_TRUE(MclHashMap_FindNode(foos, 5) == NULL);
 		ASSERT_EQ(3, MclHashMap_GetCount(foos));
 
-		MclHashNode node = MCL_HASH_NODE(6, (MclHashValue)6);
+		MclHashNode node = MCL_NODE(6, (MclHashValue)6);
 		ASSERT_TRUE(MCL_FAILED(MclHashMap_RemoveNode(foos, &node, NULL)));
+
+        ASSERT_EQ(3, MclHashMap_GetCount(foos));
 	}
 };

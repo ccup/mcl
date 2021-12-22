@@ -13,7 +13,7 @@ void MclHashBucket_Clear(MclHashBucket *self, MclHashNodeAllocator *allocator, M
 
 	MclHashNode *node, *tmpNode;
 	MCL_LINK_FOREACH_SAFE(&self->nodes, MclHashNode, link, node, tmpNode) {
-		MclHashBucket_RemoveNode(self, node, allocator, valueDeleter);
+        (void)MclHashBucket_RemoveNode(self, node, allocator, valueDeleter);
 	}
 	self->count = 0;
 }
@@ -48,10 +48,12 @@ MclStatus MclHashBucket_PushBackNode(MclHashBucket *self, MclHashNode *node) {
 	return MCL_SUCCESS;
 }
 
-void MclHashBucket_RemoveNode(MclHashBucket *self, MclHashNode *node, MclHashNodeAllocator *allocator, MclHashValueDeleter *valueDeleter) {
+MclStatus MclHashBucket_RemoveNode(MclHashBucket *self, MclHashNode *node, MclHashNodeAllocator *allocator, MclHashValueDeleter *valueDeleter) {
+    MCL_ASSERT_TRUE(MCL_LINK_NODE_IS_IN_LINK(node, link));
 	MCL_LINK_REMOVE(node, link);
 	MclHashNode_Delete(node, allocator, valueDeleter);
 	self->count--;
+	return MCL_SUCCESS;
 }
 
 uint32_t MclHashBucket_RemoveBy(MclHashBucket *self, MclHashNodePred *pred, MclHashNodeAllocator *allocator, MclHashValueDeleter *valueDeleter) {
@@ -62,8 +64,9 @@ uint32_t MclHashBucket_RemoveBy(MclHashBucket *self, MclHashNodePred *pred, MclH
 	MclHashNode *node, *tmpNode;
 	MCL_LINK_FOREACH_SAFE(&self->nodes, MclHashNode, link, node, tmpNode) {
 		if (MclHashNodePred_Predicate(pred, node)) {
-			MclHashBucket_RemoveNode(self, node, allocator, valueDeleter);
-			removedCount++;
+			if (!MCL_FAILED(MclHashBucket_RemoveNode(self, node, allocator, valueDeleter))) {
+			    removedCount++;
+			}
 		}
 	}
 	return removedCount;

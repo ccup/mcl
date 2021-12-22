@@ -1,80 +1,107 @@
-#ifndef HE44FCF65_514D_42A5_AF8D_7445F0D43BCF
-#define HE44FCF65_514D_42A5_AF8D_7445F0D43BCF
+#ifndef H8E11CCEE_05CA_4E3E_BF3C_1E19204214E5
+#define H8E11CCEE_05CA_4E3E_BF3C_1E19204214E5
 
-#include "mcl/stdtype.h"
+#include "mcl/list/list_node.h"
 
-#define MCL_LIST_NODE(NodeType) struct { NodeType* next; NodeType* prev; }
-#define MCL_LIST(NodeType)  MCL_LIST_NODE(NodeType)
+MCL_STDC_BEGIN
 
-#define MCL_LIST_SENTINEL(list, elem, link)         \
-    (elem*)((char*)(&(list)->next) - offsetof(elem, link))
+MCL_TYPE_DECL(MclListNodeAllocator);
 
-#define MCL_LIST_FIRST(list) (list)->next
-#define MCL_LIST_LAST(list)  (list)->prev
+typedef MclListNode MclListHead;
 
-#define MCL_LIST_NEXT(ep, link)  (ep)->link.next
-#define MCL_LIST_PREV(ep, link)  (ep)->link.prev
+MCL_TYPE(MclList) {
+	MclListHead head;
+	uint32_t count;
+    MclListNodeAllocator *allocator;
+};
 
-#define MCL_LIST_INIT(list, NodeType, link) do {    \
-    MCL_LIST_FIRST((list)) = MCL_LIST_SENTINEL((list), NodeType, link); \
-    MCL_LIST_LAST((list))  = MCL_LIST_SENTINEL((list), NodeType, link); \
-} while (0)
+#define MCL_LIST(LIST, ALLOCATOR)   		\
+{.head.next = &((LIST).head), .head.prev = &((LIST).head), .count = 0, .allocator = (ALLOCATOR)}
 
-#define MCL_LIST_EMPTY(list, NodeType, link)        \
-    (MCL_LIST_FIRST((list)) == MCL_LIST_SENTINEL((list), NodeType, link))
+MclList* MclList_CreateDefault();
+MclList* MclList_Create(MclListNodeAllocator*);
+void MclList_Delete(MclList*, MclListDataDeleter*);
 
-#define MCL_LIST_ELEM_INIT(ep, link) do {           \
-    MCL_LIST_NEXT((ep), link) = (ep);               \
-    MCL_LIST_PREV((ep), link) = (ep);               \
-} while (0)
+void MclList_Init(MclList*, MclListNodeAllocator*);
+void MclList_Clear(MclList*, MclListDataDeleter*);
 
-#define MCL_LIST_SPLICE_BEFORE(le, e1, en, link) do {       \
-    MCL_LIST_NEXT((en), link) = (le);                       \
-    MCL_LIST_PREV((e1), link) = MCL_LIST_PREV((le), link);  \
-    MCL_LIST_NEXT(MCL_LIST_PREV((le), link), link) = (e1);  \
-    MCL_LIST_PREV((le), link) = (en);                       \
-} while (0)
+MclStatus MclList_PushFrontNode(MclList*, MclListNode*);
+MclStatus MclList_PushBackNode(MclList*, MclListNode*);
 
-#define MCL_LIST_SPLICE_AFTER(le, e1, en, link) do {        \
-    MCL_LIST_PREV((e1), link) = (le);                       \
-    MCL_LIST_NEXT((en), link) = MCL_LIST_NEXT((le), link);  \
-    MCL_LIST_PREV(MCL_LIST_NEXT((le), link), link) = (en);  \
-    MCL_LIST_NEXT((le), link) = (e1);                       \
-} while (0)
+MclStatus MclList_InsertNodeBefore(MclList*, MclListNode* nextNode, MclListNode*);
+MclStatus MclList_InsertNodeAfter(MclList*, MclListNode* prevNode, MclListNode*);
 
-#define MCL_LIST_INSERT_BEFORE(le, ne, link) \
-    MCL_LIST_SPLICE_BEFORE((le), (ne), (ne), link)
+MclStatus MclList_PushFront(MclList*, MclListData);
+MclStatus MclList_PushBack(MclList*, MclListData);
 
-#define MCL_LIST_INSERT_AFTER(le, ne, link)  \
-    MCL_LIST_SPLICE_AFTER((le), (ne), (ne), link)
+MclStatus MclList_InsertBefore(MclList*, MclListNode* nextNode, MclListData);
+MclStatus MclList_InsertAfter(MclList*, MclListNode* prevNode, MclListData);
 
-#define MCL_LIST_SPLICE_HEAD(list, e1, en, elem, link)  \
-    MCL_LIST_SPLICE_AFTER(MCL_LIST_SENTINEL((list), elem, link), (e1), (en), link)
+void MclList_RemoveNode(MclList*, MclListNode*, MclListDataDeleter*);
+void MclList_RemoveData(MclList*, MclListData, MclListDataDeleter*);
 
-#define MCL_LIST_SPLICE_TAIL(list, e1, en, elem, link)  \
-    MCL_LIST_SPLICE_BEFORE(MCL_LIST_SENTINEL((list), elem, link), (e1), (en), link)
+void MclList_RemoveBy(MclList *, MclListDataPred*, MclListDataDeleter *);
 
-#define MCL_LIST_INSERT_HEAD(list, ne, NodeType, link)  \
-    MCL_LIST_SPLICE_HEAD((list), (ne), (ne), NodeType, link)
+MclListNode* MclList_FindNode(MclList*, MclListData);
+void MclList_FindBy(const MclList*, MclListDataPred*, MclList *result);
 
-#define MCL_LIST_INSERT_TAIL(list, ne, NodeType, link)  \
-    MCL_LIST_SPLICE_TAIL((list), (ne), (ne), NodeType, link)
+MclStatus MclList_Accept(const MclList*, MclListDataVisitor*);
 
-#define MCL_LIST_UNSPLICE(e1, en, link) do {            \
-    MCL_LIST_NEXT(MCL_LIST_PREV((e1), link), link) = MCL_LIST_NEXT((en), link);\
-    MCL_LIST_PREV(MCL_LIST_NEXT((en), link), link) = MCL_LIST_PREV((e1), link);\
-} while (0)
+///////////////////////////////////////////////////////////////
+MCL_INLINE uint32_t MclList_GetCount(const MclList *self) {
+	return self ? self->count : 0;
+}
 
-#define MCL_LIST_REMOVE(ep, link) MCL_LIST_UNSPLICE((ep), (ep), link)
+MCL_INLINE bool MclList_IsEmpty(const MclList *self) {
+	return MclList_GetCount(self) == 0;
+}
 
-#define MCL_LIST_FOREACH(list, NodeType, link, ep)      \
-    for (ep  = MCL_LIST_FIRST(list);                    \
-         ep != MCL_LIST_SENTINEL(list, NodeType, link); \
-         ep  = MCL_LIST_NEXT(ep, link))
+MCL_INLINE MclListNode* MclList_GetFirst(MclList *self) {
+	return MclList_IsEmpty(self) ? NULL : self->head.next;
+}
 
-#define MCL_LIST_FOREACH_SAFE(list, NodeType, link, e1, ep2)        \
-    for (e1  = MCL_LIST_FIRST(list), ep2 = MCL_LIST_NEXT(e1, link); \
-         e1 != MCL_LIST_SENTINEL(list, NodeType, link);             \
-         e1 = ep2, ep2 = MCL_LIST_NEXT(e1, link))
+MCL_INLINE MclListNode* MclList_GetLast(MclList *self) {
+	return MclList_IsEmpty(self) ? NULL : self->head.prev;
+}
+
+MCL_INLINE MclListNode* MclList_GetNextOf(MclList *self, MclListNode *node) {
+	return node ? ((node->next == &self->head) ? NULL : node->next) : MclList_GetFirst(self);
+}
+
+MCL_INLINE MclListNode* MclList_GetPrevOf(MclList *self, MclListNode *node) {
+	return node ? ((node->prev == &self->head) ? NULL : node->prev) : MclList_GetFirst(self);
+}
+
+///////////////////////////////////////////////////////////////
+#define MCL_LIST_FOREACH(list, node)						\
+	for ((node) = MclList_GetFirst(list);					\
+		(MclListNode*)NULL != (node);						\
+		(node) = MclList_GetNextOf((list), (node)))
+
+///////////////////////////////////////////////////////////////
+#define MCL_LIST_FOREACH_SAFE(list, node, tmpNode)			\
+	for ((node) = MclList_GetFirst(list), (tmpNode) = MclList_GetNextOf((list), (node));\
+		(MclListNode*)NULL != (node);						\
+		(node) = (tmpNode), (tmpNode) = MclList_GetNextOf((list), (node)))
+
+///////////////////////////////////////////////////////////////
+#define MCL_LIST_FOREACH_CALL(list, type, visitor, ...)	    \
+	do {													\
+		MclListNode *node = NULL;							\
+		MCL_LIST_FOREACH((list), (node)) {					\
+			(void)visitor((type*)((node)->data), ##__VA_ARGS__);\
+		}													\
+	} while(0)
+
+///////////////////////////////////////////////////////////////
+#define MCL_LIST_FOREACH_CALL_ASSERT(list, type, visitor, ...)\
+	do {													\
+		MclListNode *node = NULL;							\
+		MCL_LIST_FOREACH((list), (node)) {					\
+			MCL_ASSERT_SUCC_CALL(visitor((type*)((node)->data), ##__VA_ARGS__));\
+		}													\
+	} while(0)
+
+MCL_STDC_END
 
 #endif

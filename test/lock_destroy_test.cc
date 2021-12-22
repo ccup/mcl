@@ -1,8 +1,8 @@
 #include <cctest/cctest.h>
 #include "mcl/task/mutex.h"
 #include "mcl/task/thread.h"
-#include "mcl/link/link.h"
-#include "mcl/link/link_node_allocator.h"
+#include "mcl/list/list.h"
+#include "mcl/list/list_node_allocator.h"
 #include <string>
 #include <unistd.h>
 
@@ -50,77 +50,77 @@ namespace {
         }
     };
 
-    void Foo_Delete(MclLinkDataDeleter *deleter, MclLinkData data) {
+    void Foo_Delete(MclListDataDeleter *deleter, MclListData data) {
         auto f = (Foo*)data;
         FooFactory::release(f);
     }
 
     struct FooIdPred {
-        MclLinkDataPred pred;
+        MclListDataPred pred;
         int id;
     };
 
-    bool FooIdPred_IsEqual(MclLinkDataPred *pred, MclLinkData data) {
+    bool FooIdPred_IsEqual(MclListDataPred *pred, MclListData data) {
         Foo *foo = (Foo*)data;
         FooIdPred *self = MCL_TYPE_REDUCT(pred, FooIdPred, pred);
         return foo->getId() == self->id;
     }
 
     FooIdPred FooIdPred_Create(int id) {
-        FooIdPred pred = {.pred = MCL_LINK_DATA_PRED(FooIdPred_IsEqual), .id = id};
+        FooIdPred pred = {.pred = MCL_LIST_DATA_PRED(FooIdPred_IsEqual), .id = id};
         return pred;
     }
 
     struct FooRepo {
         FooRepo() {
-            foos = MclLink_Create(MclLinkNodeAllocator_GetDefault());
+            foos = MclList_Create(MclListNodeAllocator_GetDefault());
             MCL_MUTEX_INIT(mutex);
         }
 
         ~FooRepo() {
-            MclLink_Delete(foos, &fooDeleter);
+            MclList_Delete(foos, &fooDeleter);
             MclMutex_Destroy(&mutex);
         }
 
         void insert(int id) {
             MCL_LOCK_AUTO(mutex);
             auto foo = FooFactory::create(id);
-            MclLink_PushBack(foos, foo);
+            MclList_PushBack(foos, foo);
         }
 
         void insert(Foo *f) {
             MCL_LOCK_AUTO(mutex);
             MCL_LOG_INFO("insert foo of id %d", f->getId());
-            MclLink_PushBack(foos, f);
+            MclList_PushBack(foos, f);
         }
 
         void remove(int id) {
             MCL_LOCK_AUTO(mutex);
             auto fooEqual = FooIdPred_Create(id);
-            MclLink_RemoveBy(foos, &fooEqual.pred, &fooDeleter);
+            MclList_RemoveBy(foos, &fooEqual.pred, &fooDeleter);
         }
 
         void remove(Foo *f) {
             MCL_LOCK_AUTO(mutex);
             MCL_LOG_INFO("remove foo of id %d", f->getId());
-            MclLink_RemoveData(foos, f, NULL);
+            MclList_RemoveData(foos, f, NULL);
         }
 
         Foo* get(int id) {
             MCL_LOCK_AUTO(mutex);
-            MclLink result;
-            MclLink_Init(&result, NULL);
+            MclList result;
+            MclList_Init(&result, NULL);
             auto fooEqual = FooIdPred_Create(id);
-            MclLink_FindBy(foos, &fooEqual.pred, &result);
-            Foo *f = MclLink_IsEmpty(&result)? NULL : (Foo*)MclLinkNode_GetData(MclLink_GetFirst(&result));
-            MclLink_Clear(&result, NULL);
+            MclList_FindBy(foos, &fooEqual.pred, &result);
+            Foo *f = MclList_IsEmpty(&result)? NULL : (Foo*)MclListNode_GetData(MclList_GetFirst(&result));
+            MclList_Clear(&result, NULL);
             return f;
         }
 
         Foo* getFirst() {
             MCL_LOCK_AUTO(mutex);
-            auto n = MclLink_GetFirst(foos);
-            auto f = (Foo*)MclLinkNode_GetData(n);
+            auto n = MclList_GetFirst(foos);
+            auto f = (Foo*)MclListNode_GetData(n);
             MCL_LOG_INFO("get foo of id %d", f->getId());
             return f;
         }
@@ -128,9 +128,9 @@ namespace {
         std::string toString() const {
             MCL_LOCK_AUTO(mutex);
             auto result = ""s;
-            MclLinkNode *node = NULL;
-            MCL_LINK_FOREACH(foos, node) {
-                result += std::to_string(((Foo*)MclLinkNode_GetData(node))->getId());
+            MclListNode *node = NULL;
+            MCL_LIST_FOREACH(foos, node) {
+                result += std::to_string(((Foo*)MclListNode_GetData(node))->getId());
                 result += ";";
             }
             return result;
@@ -138,12 +138,12 @@ namespace {
 
         bool isEmpty() const {
             MCL_LOCK_AUTO(mutex);
-            return MclLink_IsEmpty(foos);
+            return MclList_IsEmpty(foos);
         }
 
     private:
-        MclLink *foos;
-        MclLinkDataDeleter fooDeleter{.destroy = Foo_Delete};
+        MclList *foos;
+        MclListDataDeleter fooDeleter{.destroy = Foo_Delete};
         MclMutex mutex;
     };
 

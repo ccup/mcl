@@ -1,5 +1,5 @@
 #include <cctest/cctest.h>
-#include "mcl/list/list.h"
+#include "mcl/link/link.h"
 
 namespace
 {

@@ -1,107 +1,80 @@
-#ifndef H8E11CCEE_05CA_4E3E_BF3C_1E19204214E5
-#define H8E11CCEE_05CA_4E3E_BF3C_1E19204214E5
+#ifndef HE44FCF65_514D_42A5_AF8D_7445F0D43BCF
+#define HE44FCF65_514D_42A5_AF8D_7445F0D43BCF
 
-#include "mcl/link/link_node.h"
+#include "mcl/stdtype.h"
 
-MCL_STDC_BEGIN
+#define MCL_LIST_NODE(NodeType) struct { NodeType* next; NodeType* prev; }
+#define MCL_LIST(NodeType)  MCL_LIST_NODE(NodeType)
 
-MCL_TYPE_DECL(MclLinkNodeAllocator);
+#define MCL_LIST_SENTINEL(list, elem, link)         \
+    (elem*)((char*)(&(list)->next) - offsetof(elem, link))
 
-typedef MclLinkNode MclLinkHead;
+#define MCL_LIST_FIRST(list) (list)->next
+#define MCL_LIST_LAST(list)  (list)->prev
 
-MCL_TYPE(MclLink) {
-	MclLinkHead head;
-	uint32_t count;
-    MclLinkNodeAllocator *allocator;
-};
+#define MCL_LIST_NEXT(ep, link)  (ep)->link.next
+#define MCL_LIST_PREV(ep, link)  (ep)->link.prev
 
-#define MCL_LINK(LINK, ALLOCATOR)   \
-{.head.next = &((LINK).head), .head.prev = &((LINK).head), .count = 0, .allocator = (ALLOCATOR)}
+#define MCL_LIST_INIT(list, NodeType, link) do {    \
+    MCL_LIST_FIRST((list)) = MCL_LIST_SENTINEL((list), NodeType, link); \
+    MCL_LIST_LAST((list))  = MCL_LIST_SENTINEL((list), NodeType, link); \
+} while (0)
 
-MclLink* MclLink_CreateDefault();
-MclLink* MclLink_Create(MclLinkNodeAllocator*);
-void MclLink_Delete(MclLink*, MclLinkDataDeleter*);
+#define MCL_LIST_EMPTY(list, NodeType, link)        \
+    (MCL_LIST_FIRST((list)) == MCL_LIST_SENTINEL((list), NodeType, link))
 
-void MclLink_Init(MclLink*, MclLinkNodeAllocator*);
-void MclLink_Clear(MclLink*, MclLinkDataDeleter*);
+#define MCL_LIST_ELEM_INIT(ep, link) do {           \
+    MCL_LIST_NEXT((ep), link) = (ep);               \
+    MCL_LIST_PREV((ep), link) = (ep);               \
+} while (0)
 
-MclStatus MclLink_PushFrontNode(MclLink*, MclLinkNode*);
-MclStatus MclLink_PushBackNode(MclLink*, MclLinkNode*);
+#define MCL_LIST_SPLICE_BEFORE(le, e1, en, link) do {       \
+    MCL_LIST_NEXT((en), link) = (le);                       \
+    MCL_LIST_PREV((e1), link) = MCL_LIST_PREV((le), link);  \
+    MCL_LIST_NEXT(MCL_LIST_PREV((le), link), link) = (e1);  \
+    MCL_LIST_PREV((le), link) = (en);                       \
+} while (0)
 
-MclStatus MclLink_InsertNodeBefore(MclLink*, MclLinkNode* nextNode, MclLinkNode*);
-MclStatus MclLink_InsertNodeAfter(MclLink*, MclLinkNode* prevNode, MclLinkNode*);
+#define MCL_LIST_SPLICE_AFTER(le, e1, en, link) do {        \
+    MCL_LIST_PREV((e1), link) = (le);                       \
+    MCL_LIST_NEXT((en), link) = MCL_LIST_NEXT((le), link);  \
+    MCL_LIST_PREV(MCL_LIST_NEXT((le), link), link) = (en);  \
+    MCL_LIST_NEXT((le), link) = (e1);                       \
+} while (0)
 
-MclStatus MclLink_PushFront(MclLink*, MclLinkData);
-MclStatus MclLink_PushBack(MclLink*, MclLinkData);
+#define MCL_LIST_INSERT_BEFORE(le, ne, link) \
+    MCL_LIST_SPLICE_BEFORE((le), (ne), (ne), link)
 
-MclStatus MclLink_InsertBefore(MclLink*, MclLinkNode* nextNode, MclLinkData);
-MclStatus MclLink_InsertAfter(MclLink*, MclLinkNode* prevNode, MclLinkData);
+#define MCL_LIST_INSERT_AFTER(le, ne, link)  \
+    MCL_LIST_SPLICE_AFTER((le), (ne), (ne), link)
 
-void MclLink_RemoveNode(MclLink*, MclLinkNode*, MclLinkDataDeleter*);
-void MclLink_RemoveData(MclLink*, MclLinkData, MclLinkDataDeleter*);
+#define MCL_LIST_SPLICE_HEAD(list, e1, en, elem, link)  \
+    MCL_LIST_SPLICE_AFTER(MCL_LIST_SENTINEL((list), elem, link), (e1), (en), link)
 
-void MclLink_RemoveBy(MclLink *, MclLinkDataPred*, MclLinkDataDeleter *);
+#define MCL_LIST_SPLICE_TAIL(list, e1, en, elem, link)  \
+    MCL_LIST_SPLICE_BEFORE(MCL_LIST_SENTINEL((list), elem, link), (e1), (en), link)
 
-MclLinkNode* MclLink_FindNode(MclLink*, MclLinkData);
-void MclLink_FindBy(const MclLink*, MclLinkDataPred*, MclLink *result);
+#define MCL_LIST_INSERT_HEAD(list, ne, NodeType, link)  \
+    MCL_LIST_SPLICE_HEAD((list), (ne), (ne), NodeType, link)
 
-MclStatus MclLink_Accept(const MclLink*, MclLinkDataVisitor*);
+#define MCL_LIST_INSERT_TAIL(list, ne, NodeType, link)  \
+    MCL_LIST_SPLICE_TAIL((list), (ne), (ne), NodeType, link)
 
-///////////////////////////////////////////////////////////////
-MCL_INLINE uint32_t MclLink_GetCount(const MclLink *self) {
-	return self ? self->count : 0;
-}
+#define MCL_LIST_UNSPLICE(e1, en, link) do {            \
+    MCL_LIST_NEXT(MCL_LIST_PREV((e1), link), link) = MCL_LIST_NEXT((en), link);\
+    MCL_LIST_PREV(MCL_LIST_NEXT((en), link), link) = MCL_LIST_PREV((e1), link);\
+} while (0)
 
-MCL_INLINE bool MclLink_IsEmpty(const MclLink *self) {
-	return MclLink_GetCount(self) == 0;
-}
+#define MCL_LIST_REMOVE(ep, link) MCL_LIST_UNSPLICE((ep), (ep), link)
 
-MCL_INLINE MclLinkNode* MclLink_GetFirst(MclLink *self) {
-	return MclLink_IsEmpty(self) ? NULL : self->head.next;
-}
+#define MCL_LIST_FOREACH(list, NodeType, link, ep)      \
+    for (ep  = MCL_LIST_FIRST(list);                    \
+         ep != MCL_LIST_SENTINEL(list, NodeType, link); \
+         ep  = MCL_LIST_NEXT(ep, link))
 
-MCL_INLINE MclLinkNode* MclLink_GetLast(MclLink *self) {
-	return MclLink_IsEmpty(self) ? NULL : self->head.prev;
-}
-
-MCL_INLINE MclLinkNode* MclLink_GetNextOf(MclLink *self, MclLinkNode *node) {
-	return node ? ((node->next == &self->head) ? NULL : node->next) : MclLink_GetFirst(self);
-}
-
-MCL_INLINE MclLinkNode* MclLink_GetPrevOf(MclLink *self, MclLinkNode *node) {
-	return node ? ((node->prev == &self->head) ? NULL : node->prev) : MclLink_GetFirst(self);
-}
-
-///////////////////////////////////////////////////////////////
-#define MCL_LINK_FOREACH(link, node)						\
-	for ((node) = MclLink_GetFirst(link);					\
-		(MclLinkNode*)NULL != (node);						\
-		(node) = MclLink_GetNextOf((link), (node)))
-
-///////////////////////////////////////////////////////////////
-#define MCL_LINK_FOREACH_SAFE(link, node, tmpNode)			\
-	for ((node) = MclLink_GetFirst(link), (tmpNode) = MclLink_GetNextOf((link), (node));\
-		(MclLinkNode*)NULL != (node);						\
-		(node) = (tmpNode), (tmpNode) = MclLink_GetNextOf((link), (node)))
-
-///////////////////////////////////////////////////////////////
-#define MCL_LINK_FOREACH_CALL(link, type, visitor, ...)	    \
-	do {													\
-		MclLinkNode *node = NULL;							\
-		MCL_LINK_FOREACH((link), (node)) {					\
-			(void)visitor((type*)((node)->data), ##__VA_ARGS__);\
-		}													\
-	} while(0)
-
-///////////////////////////////////////////////////////////////
-#define MCL_LINK_FOREACH_CALL_ASSERT(link, type, visitor, ...)\
-	do {													\
-		MclLinkNode *node = NULL;							\
-		MCL_LINK_FOREACH((link), (node)) {					\
-			MCL_ASSERT_SUCC_CALL(visitor((type*)((node)->data), ##__VA_ARGS__));\
-		}													\
-	} while(0)
-
-MCL_STDC_END
+#define MCL_LIST_FOREACH_SAFE(list, NodeType, link, e1, ep2)        \
+    for (e1  = MCL_LIST_FIRST(list), ep2 = MCL_LIST_NEXT(e1, link); \
+         e1 != MCL_LIST_SENTINEL(list, NodeType, link);             \
+         e1 = ep2, ep2 = MCL_LIST_NEXT(e1, link))
 
 #endif

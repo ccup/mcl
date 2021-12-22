@@ -99,8 +99,8 @@ MCL_INLINE MclLinkNode* MclLink_GetPrevOf(MclLink *self, MclLinkNode *node) {
 		}													\
 	} while(0)
 
-#define MCL_LINK(LIST, ALLOCATOR)                           \
-{.head.next = &((LIST).head), .head.prev = &((LIST).head), .count = 0, .allocator = (ALLOCATOR)}
+#define MCL_LINK(LINK, ALLOCATOR)                           \
+{.head.next = &((LINK).head), .head.prev = &((LINK).head), .count = 0, .allocator = (ALLOCATOR)}
 
 MCL_STDC_END
 

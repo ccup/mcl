@@ -40,7 +40,7 @@ do {                                    \
     (PTR) = NULL;                       \
 } while(0)
 
-#define MCL_AUTO_PTR    MCL_RAII(Mcl_AutoFree)
+#define MCL_AUTO_FREE    MCL_RAII(Mcl_AutoFree)
 
 MCL_STDC_END
 

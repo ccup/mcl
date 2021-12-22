@@ -30,7 +30,7 @@ FIXTURE(RaiiTest)
 		cleanCount = 0;
 	}
 
-	TEST("should auto clean aster exit scope")
+	TEST("should auto clean after exit scope")
 	{
 		ASSERT_EQ(0, cleanCount);
 		{
@@ -39,15 +39,9 @@ FIXTURE(RaiiTest)
 		ASSERT_EQ(1, cleanCount);
 	}
 
-	TEST("should auto free aster exit scope")
+	TEST("should auto free aster exit scope, checking by ason")
 	{
-		void **p = nullptr;
-
-		{
-			MCL_AUTO_PTR auto *pf = MCL_MALLOC(sizeof(Foo));
-			p = &pf;
-			ASSERT_TRUE(*p != nullptr);
-		}
-		ASSERT_TRUE(*p == NULL);
+        MCL_AUTO_FREE void *pf = MCL_MALLOC(sizeof(Foo));
+        ASSERT_TRUE(pf != nullptr);
 	}
 };

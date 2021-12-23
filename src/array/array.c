@@ -48,13 +48,11 @@ void MclArray_Clear(MclArray *self) {
     memset(self->buff, 0, MclArray_GetBuffSize(self->count, self->elemBytes));
 }
 
-MclStatus MclArray_Get(MclArray *self, uint16_t index, uint8_t **value) {
-    MCL_ASSERT_VALID_PTR(self);
-    MCL_ASSERT_VALID_PTR(value);
-    MCL_ASSERT_TRUE(index < self->count);
+uint8_t* MclArray_Get(MclArray *self, uint16_t index) {
+    MCL_ASSERT_VALID_PTR_NIL(self);
+    MCL_ASSERT_TRUE_NIL(index < self->count);
 
-    (*value) = MclArray_GetAddr(self, index);
-    return MCL_SUCCESS;
+    return MclArray_GetAddr(self, index);
 }
 
 MclStatus MclArray_Set(MclArray *self, uint16_t index, uint8_t *value) {

@@ -31,12 +31,14 @@ FIXTURE(ArrayTest) {
         Foo f{.id = 1, .value = 10};
         ASSERT_TRUE(!MCL_FAILED(MclArray_Set(array, 0, (uint8_t*)&f)));
 
-        Foo *result {nullptr};
-
-        ASSERT_TRUE(!MCL_FAILED(MclArray_Get(array, 0, (uint8_t**)&result)));
+        auto result = (Foo*)MclArray_Get(array, 0);
         ASSERT_TRUE(result != NULL);
         ASSERT_EQ(1, result->id);
         ASSERT_EQ(10, result->value);
+
+        MclArray_Reset(array, 0);
+        ASSERT_EQ(0, result->id);
+        ASSERT_EQ(0, result->value);
     }
 
     TEST("should not set value to array when index overflow") {
@@ -45,9 +47,7 @@ FIXTURE(ArrayTest) {
         Foo f{.id = 1, .value = 10};
         ASSERT_TRUE(MCL_FAILED(MclArray_Set(array, ARRAY_SIZE, (uint8_t*)&f)));
 
-        Foo *result {nullptr};
-
-        ASSERT_TRUE(!MCL_FAILED(MclArray_Get(array, 0, (uint8_t**)&result)));
+        auto result = (Foo*)MclArray_Get(array, 0);
         ASSERT_TRUE(result != NULL);
         ASSERT_EQ(0, result->id);
         ASSERT_EQ(0, result->value);
@@ -56,9 +56,7 @@ FIXTURE(ArrayTest) {
     TEST("should not get value from array when index overflow") {
         MclArray_Clear(array);
 
-        Foo *result {nullptr};
-
-        ASSERT_TRUE(MCL_FAILED(MclArray_Get(array, ARRAY_SIZE, (uint8_t**)&result)));
+        auto result = (Foo*)MclArray_Get(array, ARRAY_SIZE);
         ASSERT_TRUE(result == NULL);
     }
 

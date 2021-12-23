@@ -18,7 +18,7 @@ void MclArray_Delete(MclArray*);
 void MclArray_Init(MclArray*, uint16_t count, uint16_t elemBytes, uint8_t* buff);
 void MclArray_Clear(MclArray*);
 
-MclStatus MclArray_Get(MclArray*, uint16_t index, uint8_t **value);
+uint8_t*  MclArray_Get(MclArray*, uint16_t index);
 MclStatus MclArray_Set(MclArray*, uint16_t index, uint8_t *value);
 
 void MclArray_Reset(MclArray*, uint16_t index);

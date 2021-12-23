@@ -318,7 +318,7 @@ FIXTURE(HashMapAdvanceTest) {
 
     HashMapAdvanceTest() {
     	foos = &foomap.map;
-		MclHashMap_Init(foos, MCL_HASHMAP_BUCKET_COUNT_DEFAULT, NULL);
+		MclHashMap_Init(foos, MCL_HASHMAP_BUCKET_COUNT_DEFAULT, foomap.buckets, NULL);
 
 		for (long i = 0; i < NODE_NUM; i++) {
 		    MclHashNode_Init(&nodes[i], (MclHashKey)i, (MclHashValue)i);

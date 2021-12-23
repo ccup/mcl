@@ -15,10 +15,17 @@ MclHashMap* MclHashMap_CreateDefault() {
 MclHashMap* MclHashMap_Create(uint32_t bucketCount, MclHashNodeAllocator *allocator) {
     MCL_ASSERT_TRUE_NIL(bucketCount > 0);
 
-    MclHashMap *self = MCL_MALLOC(sizeof(MclHashMap) + sizeof(MclHashBucket*) * bucketCount);
+    MclHashMap *self = MCL_MALLOC(sizeof(MclHashMap));
     MCL_ASSERT_VALID_PTR_NIL(self);
 
-    MclHashMap_Init(self, bucketCount, allocator);
+    MclHashBucket *buckets = MCL_MALLOC(sizeof(MclHashBucket*) * bucketCount);
+    if (!buckets) {
+        MCL_LOG_ERR("Malloc for buckets failed!");
+        MCL_FREE(self);
+        return NULL;
+    }
+
+    MclHashMap_Init(self, bucketCount, buckets, allocator);
     return self;
 }
 
@@ -29,12 +36,14 @@ void MclHashMap_Delete(MclHashMap *self, MclHashValueDeleter *valueDeleter) {
     MCL_FREE(self);
 }
 
-void MclHashMap_Init(MclHashMap *self, uint32_t bucketCount, MclHashNodeAllocator *allocator) {
+void MclHashMap_Init(MclHashMap *self, uint32_t bucketCount, MclHashBucket *buckets, MclHashNodeAllocator *allocator) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
+	MCL_ASSERT_VALID_PTR_VOID(buckets);
 
     self->bucketCount = bucketCount;
     self->elementCount = 0;
     self->allocator = allocator;
+    self->buckets = buckets;
     for (uint32_t i = 0; i < bucketCount; i++) {
         MclHashBucket_Init(&self->buckets[i]);
     }

@@ -11,13 +11,13 @@ MCL_TYPE(MclHashMap) {
 	MclHashNodeAllocator *allocator;
     uint32_t elementCount;
     uint32_t bucketCount;
-    MclHashBucket buckets[];
+    MclHashBucket *buckets;
 };
 
 #define MCL_HASHMAP_BUCKET_COUNT_DEFAULT (uint32_t)127
 
-#define MCL_HASHMAP(MAP, BUCKET_COUNT, ALLOCATOR)   			\
-{.allocator = ALLOCATOR, .elementCount = 0, .bucketCount = BUCKET_COUNT}
+#define MCL_HASHMAP(MAP, BUCKET_COUNT, BUCKETS, ALLOCATOR)   			\
+{.allocator = ALLOCATOR, .elementCount = 0, .bucketCount = BUCKET_COUNT, .buckets = BUCKETS}
 
 MclHashMap* MclHashMap_CreateDefault();
 MclHashMap* MclHashMap_Create(uint32_t bucketCount, MclHashNodeAllocator*);
@@ -26,7 +26,7 @@ void MclHashMap_Delete(MclHashMap*, MclHashValueDeleter*);
 uint32_t MclHashMap_GetCount(const MclHashMap*);
 bool MclHashMap_IsEmpty(const MclHashMap*);
 
-void MclHashMap_Init(MclHashMap*, uint32_t bucketCount, MclHashNodeAllocator*);
+void MclHashMap_Init(MclHashMap*, uint32_t bucketCount, MclHashBucket*, MclHashNodeAllocator*);
 void MclHashMap_Clear(MclHashMap*, MclHashValueDeleter*);
 
 MclHashNode* MclHashMap_FindNode(const MclHashMap*, MclHashKey);

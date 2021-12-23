@@ -1,6 +1,6 @@
 #include <cctest/cctest.h>
 #include "mcl/macro.h"
-#include "mcl/array.h"
+#include "mcl/array/array_size.h"
 
 FIXTURE(VaArgsNumTest) {
 	TEST("should count the parameter count of VA_ARGS") {

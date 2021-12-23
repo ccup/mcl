@@ -27,25 +27,25 @@ do {                                        \
     }                                       \
 } while (0)
 
-#define MCL_EXPECT_TRUE_R(exp, status)  \
+#define MCL_EXPECT_TRUE_R(exp, status)      \
     __MCL_EXPECT_TRUE(exp, __MCL_RESULT_ACTION(status))
 
-#define MCL_EXPECT_TRUE(exp)            \
+#define MCL_EXPECT_TRUE(exp)                \
   __MCL_EXPECT_TRUE(exp, __MCL_FAILED_STATUS_ACTION)
 
-#define MCL_EXPECT_FALSE(exp)           \
+#define MCL_EXPECT_FALSE(exp)               \
     __MCL_EXPECT_TRUE(!(exp), __MCL_FAILED_STATUS_ACTION)
 
-#define MCL_EXPECT_FALSE_R(exp, status) \
+#define MCL_EXPECT_FALSE_R(exp, status)     \
     __MCL_EXPECT_TRUE(!(exp), __MCL_RESULT_ACTION(status))
 
-#define MCL_EXPECT_TRUE_NIL(exp)        \
+#define MCL_EXPECT_TRUE_NIL(exp)            \
   __MCL_EXPECT_TRUE(exp, __MCL_NIL_ACTION)
 
-#define MCL_EXPECT_TRUE_VOID(exp)       \
+#define MCL_EXPECT_TRUE_VOID(exp)           \
   __MCL_EXPECT_TRUE(exp, __MCL_VOID_ACTION)
 
-#define MCL_EXPECT_TRUE_BOOL(exp)       \
+#define MCL_EXPECT_TRUE_BOOL(exp)           \
   __MCL_EXPECT_TRUE(exp, __MCL_FAILED_BOOL_ACTION)
 
 ///////////////////////////////////////////////////////////////
@@ -61,28 +61,28 @@ do {                                        \
     }                                       \
 } while (0)
 
-#define MCL_ASSERT_TRUE_R(exp, status)  \
+#define MCL_ASSERT_TRUE_R(exp, status)      \
     __MCL_ASSERT_TRUE(exp, __MCL_RESULT_ACTION(status))
 
-#define MCL_ASSERT_TRUE(exp)            \
+#define MCL_ASSERT_TRUE(exp)                \
   __MCL_ASSERT_TRUE(exp, __MCL_FAILED_STATUS_ACTION)
 
-#define MCL_ASSERT_FALSE(exp)           \
+#define MCL_ASSERT_FALSE(exp)               \
     __MCL_ASSERT_TRUE(!(exp), __MCL_FAILED_STATUS_ACTION)
 
-#define MCL_ASSERT_FALSE_R(exp, status) \
+#define MCL_ASSERT_FALSE_R(exp, status)     \
     __MCL_ASSERT_TRUE(!(exp), __MCL_RESULT_ACTION(status))
 
-#define MCL_ASSERT_TRUE_NIL(exp)        \
+#define MCL_ASSERT_TRUE_NIL(exp)            \
   __MCL_ASSERT_TRUE(exp, __MCL_NIL_ACTION)
 
-#define MCL_PEEK_TRUE(exp)              \
+#define MCL_PEEK_TRUE(exp)                  \
   __MCL_ASSERT_TRUE(exp, __MCL_PEEK_ACTION)
 
-#define MCL_ASSERT_TRUE_VOID(exp)       \
+#define MCL_ASSERT_TRUE_VOID(exp)           \
   __MCL_ASSERT_TRUE(exp, __MCL_VOID_ACTION)
 
-#define MCL_ASSERT_TRUE_BOOL(exp)       \
+#define MCL_ASSERT_TRUE_BOOL(exp)           \
   __MCL_ASSERT_TRUE(exp, __MCL_FAILED_BOOL_ACTION)
 
 //////////////////////////////////////////////////////////////////////////

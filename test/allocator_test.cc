@@ -7,33 +7,46 @@ namespace {
 		const char* name;
 	} Object;
 
-	MCL_ALLOCATOR_DEF(Object, 2);
+    constexpr uint16_t OBJECT_SIZE = 2;
 
-	MCL_ALLOCATOR_DEF(char, 2);
+    MCL_ALLOCATOR_TYPE_DEF(Object, OBJECT_SIZE);
+
+    MCL_ALLOCATOR_TYPE_DEF(char, OBJECT_SIZE);
 }
 
 FIXTURE(AllocatorTest) {
 	TEST("alloc object from allocator") {
-		Object* obj1 = MCL_ALLOCATOR(Object).alloc();
+        MCL_ALLOCATOR(Object) allocator;
+        ObjectAllocator_Init(&allocator);
+
+		Object* obj1 = ObjectAllocator_Alloc(&allocator);
 		ASSERT_NE(0, obj1);
-		Object* obj2 = MCL_ALLOCATOR(Object).alloc();
+
+		Object* obj2 = ObjectAllocator_Alloc(&allocator);
 		ASSERT_NE(0, obj2);
-		Object* obj3 = MCL_ALLOCATOR(Object).alloc();
+
+		Object* obj3 = ObjectAllocator_Alloc(&allocator);
 		ASSERT_EQ(NULL, obj3);
-		MCL_ALLOCATOR(Object).free(obj1);
-		obj3 = MCL_ALLOCATOR(Object).alloc();
+
+        ObjectAllocator_Free(&allocator, obj1);
+
+        obj3 = ObjectAllocator_Alloc(&allocator);
 		ASSERT_EQ(obj1, obj3);
 	}
 
 	TEST("alloc char from allocator") {
-		char* a = MCL_ALLOCATOR(char).alloc();
+        MCL_ALLOCATOR(char) allocator;
+        charAllocator_Init(&allocator);
+
+		char* a = charAllocator_Alloc(&allocator);
 		*a = 'a';
-		char* b = MCL_ALLOCATOR(char).alloc();
+		char* b = charAllocator_Alloc(&allocator);
 		*b = 'b';
-		char* c = MCL_ALLOCATOR(char).alloc();
+		char* c = charAllocator_Alloc(&allocator);
 		ASSERT_EQ(NULL, c);
-		MCL_ALLOCATOR(char).free(a);
-		c = MCL_ALLOCATOR(char).alloc();
+
+        charAllocator_Free(&allocator, a);
+		c = charAllocator_Alloc(&allocator);
 		ASSERT_EQ(a, c);
 	}
 };

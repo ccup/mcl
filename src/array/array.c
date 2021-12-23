@@ -1,5 +1,7 @@
+#include <mcl/assert.h>
 #include "mcl/array/array.h"
 #include "mcl/mem/malloc.h"
+#include "mcl/assert.h"
 
 MCL_PRIVATE uint8_t* MclArray_GetAddr(MclArray *self, uint16_t index) {
     return self->buff + self->elemBytes * index;
@@ -48,14 +50,14 @@ void MclArray_Clear(MclArray *self) {
     memset(self->buff, 0, MclArray_GetBuffSize(self->count, self->elemBytes));
 }
 
-uint8_t* MclArray_Get(MclArray *self, uint16_t index) {
+void* MclArray_Get(MclArray *self, uint16_t index) {
     MCL_ASSERT_VALID_PTR_NIL(self);
     MCL_ASSERT_TRUE_NIL(index < self->count);
 
     return MclArray_GetAddr(self, index);
 }
 
-MclStatus MclArray_Set(MclArray *self, uint16_t index, uint8_t *value) {
+MclStatus MclArray_Set(MclArray *self, uint16_t index, void *value) {
     MCL_ASSERT_VALID_PTR(self);
     MCL_ASSERT_VALID_PTR(value);
     MCL_ASSERT_TRUE(index < self->count);

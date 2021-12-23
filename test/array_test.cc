@@ -29,7 +29,7 @@ FIXTURE(ArrayTest) {
 
     TEST("should set value to array") {
         Foo f{.id = 1, .value = 10};
-        ASSERT_TRUE(!MCL_FAILED(MclArray_Set(array, 0, (uint8_t*)&f)));
+        ASSERT_TRUE(!MCL_FAILED(MclArray_Set(array, 0, &f)));
 
         auto result = (Foo*)MclArray_Get(array, 0);
         ASSERT_TRUE(result != NULL);
@@ -45,7 +45,7 @@ FIXTURE(ArrayTest) {
         MclArray_Clear(array);
 
         Foo f{.id = 1, .value = 10};
-        ASSERT_TRUE(MCL_FAILED(MclArray_Set(array, ARRAY_SIZE, (uint8_t*)&f)));
+        ASSERT_TRUE(MCL_FAILED(MclArray_Set(array, ARRAY_SIZE, &f)));
 
         auto result = (Foo*)MclArray_Get(array, 0);
         ASSERT_TRUE(result != NULL);
@@ -64,10 +64,10 @@ FIXTURE(ArrayTest) {
         MclArray_Clear(array);
 
         Foo f1{.id = 1, .value = 10};
-        ASSERT_TRUE(!MCL_FAILED(MclArray_Set(array, 3, (uint8_t*)&f1)));
+        ASSERT_TRUE(!MCL_FAILED(MclArray_Set(array, 3, &f1)));
 
         Foo f2{.id = 2, .value = 20};
-        ASSERT_TRUE(!MCL_FAILED(MclArray_Set(array, 9, (uint8_t*)&f2)));
+        ASSERT_TRUE(!MCL_FAILED(MclArray_Set(array, 9, &f2)));
 
         int sum = 0;
         Foo *foo {nullptr};

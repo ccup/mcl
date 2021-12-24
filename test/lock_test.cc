@@ -1,5 +1,6 @@
 #include <cctest/cctest.h>
 #include "mcl/task/mutex.h"
+#include "mcl/task/rwlock.h"
 #include "mcl/task/thread.h"
 #include "mcl/list/list.h"
 #include "mcl/list/list_node_allocator.h"
@@ -19,10 +20,12 @@ namespace {
         }
 
         int getId() const {
+//            MCL_LOCK_AUTO(mutex);
             return id;
         }
 
         std::string toString() const {
+//            MCL_LOCK_AUTO(mutex);
             auto result = ""s;
             result += std::to_string(id);
             return result;
@@ -59,62 +62,64 @@ namespace {
 
     class FooRepo {
         MclList *foos;
-        MclMutex mutex;
+        MclRwLock rwlock;
 
         MclListDataDeleter fooDeleter{.destroy = Foo_Delete};
 
     public:
         FooRepo() {
             foos = MclList_Create(MclListNodeAllocator_GetDefault());
-            MCL_MUTEX_INIT(mutex);
+            MCL_RWLOCK_INIT(rwlock);
         }
 
         ~FooRepo() {
             MclList_Delete(foos, &fooDeleter);
-            MclMutex_Destroy(&mutex);
+            MclRwLock_Destroy(&rwlock);
         }
 
         void insert(int id) {
-            MCL_LOCK_AUTO(mutex);
+            MCL_WRLOCK_AUTO(rwlock);
             auto foo = new Foo{id};
             MclList_PushBack(foos, foo);
         }
 
         void remove(int id) {
-            MCL_LOCK_AUTO(mutex);
+            MCL_WRLOCK_AUTO(rwlock);
             FooIdPred fooEqual = {.pred = MCL_LIST_DATA_PRED(FooIdPred_IsEqual), .id = id};
+
             MclList_RemoveBy(foos, &fooEqual.pred, &fooDeleter);
         }
 
         Foo* get(int id) {
-            MCL_LOCK_AUTO(mutex);
-            MclList result;
-            MclList_Init(&result, NULL);
-            FooIdPred fooEqual = {.pred = MCL_LIST_DATA_PRED(FooIdPred_IsEqual), .id = id};
-            MclList_FindBy(foos, &fooEqual.pred, &result);
-            Foo *f = MclList_IsEmpty(&result)? NULL : (Foo*)MclListNode_GetData(MclList_GetFirst(&result));
-            MclList_Clear(&result, NULL);
-            return f;
+            MCL_RDLOCK_AUTO(rwlock);
+            MclListNode *node = NULL;
+            MCL_LIST_FOREACH(foos, node) {
+                auto f = (Foo*)MclListNode_GetData(node);
+                if (id == f->getId()) {
+                    return f;
+                }
+            }
+            return nullptr;
         }
 
         Foo* getFirst() {
-            MCL_LOCK_AUTO(mutex);
-            auto n = MclList_GetFirst(foos);
-            auto f = (Foo*)MclListNode_GetData(n);
+            MCL_RDLOCK_AUTO(rwlock);
+            auto node = MclList_GetFirst(foos);
+            auto f = (Foo*)MclListNode_GetData(node);
             MCL_LOG_INFO("get foo of id %d", f->getId());
             return f;
         }
 
         int getFirstId() {
-            MCL_LOCK_AUTO(mutex);
-            auto n = MclList_GetFirst(foos);
-            auto f = (Foo*)MclListNode_GetData(n);
+            MCL_RDLOCK_AUTO(rwlock);
+            auto node = MclList_GetFirst(foos);
+            auto f = (Foo*)MclListNode_GetData(node);
             MCL_LOG_INFO("get foo of id %d", f->getId());
             return f->getId();
         }
 
         std::string toString() const {
-            MCL_LOCK_AUTO(mutex);
+            MCL_RDLOCK_AUTO(rwlock);
             auto result = ""s;
             MclListNode *node = NULL;
             MCL_LIST_FOREACH(foos, node) {
@@ -125,7 +130,7 @@ namespace {
         }
 
         bool isEmpty() const {
-            MCL_LOCK_AUTO(mutex);
+            MCL_RDLOCK_AUTO(rwlock);
             return MclList_IsEmpty(foos);
         }
     } fooRepo;
@@ -151,10 +156,10 @@ namespace {
 
     void* FooVisitService(void*) {
         while (!fooRepo.isEmpty()) {
-//            auto f = fooRepo.getFirst();
-//            sleep(2);
-//            auto id = f->getId();
-            auto id = fooRepo.getFirstId();
+            auto f = fooRepo.getFirst();
+            sleep(2);
+            auto id = f->getId();
+//            auto id = fooRepo.getFirstId();
             if ((id < 0) || (id >= MAX_ID)) {
                 throw std::runtime_error("thread error");
             }

@@ -262,7 +262,7 @@ void* MclTaskQueue_ThreadExecute(void *data) {
 	while (MclTaskQueue_IsReady(self)) {
 		MclTask *task = NULL;
 		MCL_LOCK_SCOPE(self->mutex) {
-			MCL_LOG_DBG("Task queue get mutex.");
+			MCL_LOG_DBG("Task queue get lock.");
 			while (MclTaskQueue_NeedWaiting(self)) {
 				MCL_LOG_DBG("Task queue begin waiting...");
 				MclCond_Wait(&self->cond, &self->mutex);

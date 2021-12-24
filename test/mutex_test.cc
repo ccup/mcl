@@ -54,6 +54,14 @@ FIXTURE(MutexTest)
 		MclMutex_InitRecursive(&obj.mutex);
 	}
 
+    TEST("should not dead lock when double lock recursive mutex in same thread")
+    {
+        MclMutex_Lock(&obj.mutex);
+        MclMutex_Lock(&obj.mutex);
+        MclMutex_Unlock(&obj.mutex);
+        MclMutex_Unlock(&obj.mutex);
+    }
+
 	TEST("should auto lock")
 	{
 		MclThread t1, t2;

@@ -81,4 +81,8 @@
          e1 != MCL_LINK_SENTINEL(head, NodeType, link);             \
          e1 = ep2, ep2 = MCL_LINK_NEXT(e1, link))
 
+#define MCL_LINK_INITIALIZER(head, NodeType, link)   		        \
+{.next = MCL_LINK_SENTINEL((head), NodeType, link), .prev = MCL_LINK_SENTINEL((head), NodeType, link)}
+
+
 #endif

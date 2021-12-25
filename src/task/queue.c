@@ -166,7 +166,7 @@ MclTaskQueue* MclTaskQueue_Create(uint32_t priorities, uint32_t *thresholds) {
 	return self;
 }
 
-/* IMPORTANT: SHOULD INVOKE AFTER ALL OTHER USER THREADS STOPPED!!! */
+/* IMPORTANT: SHOULD INVOKE AFTER ALL CONSUMER THREADS STOPPED!!! */
 void MclTaskQueue_Delete(MclTaskQueue *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 

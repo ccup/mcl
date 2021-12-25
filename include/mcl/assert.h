@@ -5,13 +5,13 @@
 #include "mcl/log/log.h"
 #include "mcl/stdtype.h"
 
-#define __MCL_FAILED_BOOL_ACTION      return false;
-#define __MCL_FAILED_STATUS_ACTION    return MCL_FAILURE;
-#define __MCL_STATUS_ACTION           return __status;
-#define __MCL_VOID_ACTION             return;
-#define __MCL_NIL_ACTION              return 0;
+#define __MCL_FAILED_BOOL_ACTION      return false
+#define __MCL_FAILED_STATUS_ACTION    return MCL_FAILURE
+#define __MCL_STATUS_ACTION           return __status
+#define __MCL_VOID_ACTION             return
+#define __MCL_NIL_ACTION              return 0
 #define __MCL_PEEK_ACTION
-#define __MCL_RESULT_ACTION(status)   return status;
+#define __MCL_RESULT_ACTION(status)   return status
 
 //////////////////////////////////////////////////////////////////////////
 #define __MCL_WARNING_NOT_TRUE(exp)         \

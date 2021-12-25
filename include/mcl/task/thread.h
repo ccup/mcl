@@ -11,7 +11,11 @@ typedef pthread_t MclThread;
 typedef pthread_attr_t MclThreadAttr;
 
 MCL_INLINE MclStatus MclThread_Create(MclThread *thread, const MclThreadAttr *attr, void *(*func)(void*), void *args) {
-	return pthread_create(thread, attr, func, args) ? MCL_FAILURE : MCL_SUCCESS;
+    int ret = pthread_create(thread, attr, func, args);
+    if (ret) {
+        MCL_LOG_ERR("pthread_create fail %d!", ret);
+    }
+	return ret ? MCL_FAILURE : MCL_SUCCESS;
 }
 
 MCL_INLINE MclStatus MclThread_Detach(MclThread thread) {
@@ -19,7 +23,11 @@ MCL_INLINE MclStatus MclThread_Detach(MclThread thread) {
 }
 
 MCL_INLINE MclStatus MclThread_Join(MclThread thread, void **ext) {
-	return pthread_join(thread, ext) ? MCL_FAILURE : MCL_SUCCESS;
+    int ret = pthread_join(thread, ext);
+    if (ret) {
+        MCL_LOG_ERR("pthread_join fail %d!", ret);
+    }
+    return ret ? MCL_FAILURE : MCL_SUCCESS;
 }
 
 MCL_INLINE void MclThread_Exit(MclThread *thread) {
@@ -28,6 +36,10 @@ MCL_INLINE void MclThread_Exit(MclThread *thread) {
 
 MCL_INLINE void MclThread_Yield() {
 	pthread_yield_np();
+}
+
+MCL_INLINE uintptr_t MclThread_GetId() {
+    return (uintptr_t)pthread_self();
 }
 
 MCL_STDC_END

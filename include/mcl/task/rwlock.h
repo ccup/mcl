@@ -81,14 +81,14 @@ MCL_INLINE bool MclRwLock_IsLocked(const MclAutoRwLock *lock) {
     return (lock && lock->rwlock);
 }
 
-#define MCL_RDLOCK_AUTO(RWLOCK) MCL_RAII(MclRwLock_AutoUnlock) MclAutoRwLock MCL_SYMBOL_UNIQUE(MCL_RDLOCK) = MclRwLock_AutoRdLock((MclRwLock*)&RWLOCK)
+#define MCL_LOCK_READ_AUTO(RWLOCK) MCL_RAII(MclRwLock_AutoUnlock) MclAutoRwLock MCL_SYMBOL_UNIQUE(MCL_RDLOCK) = MclRwLock_AutoRdLock((MclRwLock*)&RWLOCK)
 
-#define MCL_WRLOCK_AUTO(RWLOCK) MCL_RAII(MclRwLock_AutoUnlock) MclAutoRwLock MCL_SYMBOL_UNIQUE(MCL_WRLOCK) = MclRwLock_AutoWrLock((MclRwLock*)&RWLOCK)
+#define MCL_LOCK_WRITE_AUTO(RWLOCK) MCL_RAII(MclRwLock_AutoUnlock) MclAutoRwLock MCL_SYMBOL_UNIQUE(MCL_WRLOCK) = MclRwLock_AutoWrLock((MclRwLock*)&RWLOCK)
 
-#define MCL_RDLOCK_SCOPE(RWLOCK)           \
+#define MCL_LOCK_READ_SCOPE(RWLOCK)           \
 for (MCL_RAII(MclRwLock_AutoUnlock) MclAutoRwLock mclRdLock=MclRwLock_AutoRdLock((MclRwLock*)&RWLOCK); MclRwLock_IsLocked(&mclRdLock); MclRwLock_AutoUnlock(&mclRdLock))
 
-#define MCL_WRLOCK_SCOPE(RWLOCK)           \
+#define MCL_LOCK_WRITE_SCOPE(RWLOCK)           \
 for (MCL_RAII(MclRwLock_AutoUnlock) MclAutoRwLock mclWrLock=MclRwLock_AutoWrLock((MclRwLock*)&RWLOCK); MclRwLock_IsLocked(&mclWrLock); MclRwLock_AutoUnlock(&mclWrLock))
 
 MCL_STDC_END

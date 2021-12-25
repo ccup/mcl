@@ -14,7 +14,7 @@ if (ENABLE_THREAD)
 else()
     message(STATUS "Thread tests disabled!")
     list(REMOVE_ITEM SOURCES
-            "${CMAKE_CURRENT_SOURCE_DIR}/lock_test.cc"
+#            "${CMAKE_CURRENT_SOURCE_DIR}/lock_test.cc"
             "${CMAKE_CURRENT_SOURCE_DIR}/mutex_test.cc"
             "${CMAKE_CURRENT_SOURCE_DIR}/scheduler_test.cc"
     )

@@ -71,7 +71,7 @@ namespace {
             MCL_LOG_DBG("FooRepo: enter insert foo of id %d", f->getId());
             MCL_LOCK_WRITE_SCOPE(rwlock) {
                 MCL_LOG_DBG("FooRepo: begin insert foo of id %d", f->getId());
-                MclLockPtr *fptr = MclLockPtr_Create(f, (MclLockPtrDeleter)FooFactory::destroy);
+                MclLockPtr *fptr = MclLockPtr_Create(f);
                 MCL_ASSERT_VALID_PTR_VOID(fptr);
                 MclList_PushBack(foos, fptr);
                 MCL_LOG_DBG("FooRepo: end insert foo of id %d", f->getId());
@@ -86,7 +86,7 @@ namespace {
                 auto result = removeById(id);
                 MCL_ASSERT_VALID_PTR_VOID(result);
                 MCL_LOG_DBG("FooRepo: begin delete foo of id %d", id);
-                MclLockPtr_Delete(result);
+                MclLockPtr_Delete(result, (MclLockPtrDeleter)FooFactory::destroy);
                 MCL_LOG_DBG("FooRepo: end delete foo of id %d", id);
                 MCL_LOG_DBG("FooRepo: end remove foo of id %d", id);
             }

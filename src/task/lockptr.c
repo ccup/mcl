@@ -11,38 +11,37 @@ MclStatus MclLockPtr_Unlock(MclLockPtr *self) {
     return MclMutex_Unlock(&self->mutex);
 }
 
-MclStatus MclLockPtr_Init(MclLockPtr *self, void *ptr, MclLockPtrDeleter ptrDeleter) {
+MclStatus MclLockPtr_Init(MclLockPtr *self, void *ptr) {
     MCL_ASSERT_VALID_PTR(self);
     MCL_ASSERT_VALID_PTR(ptr);
     MCL_ASSERT_SUCC_CALL(MclMutex_InitRecursive(&self->mutex));
     self->ptr = ptr;
-    self->deleter = ptrDeleter;
     return MCL_SUCCESS;
 }
 
-void MclLockPtr_Destroy(MclLockPtr *self) {
+void MclLockPtr_Destroy(MclLockPtr *self, MclLockPtrDeleter ptrDeleter) {
     MCL_ASSERT_VALID_PTR_VOID(self);
     MCL_ASSERT_SUCC_CALL_VOID(MclMutex_Destroy(&self->mutex));
-    if (self->deleter && self->ptr) self->deleter(self->ptr);
+    if (ptrDeleter && self->ptr) ptrDeleter(self->ptr);
     self->ptr = NULL;
 }
 
-void MclLockPtr_UniqueDestroy(MclLockPtr *self) {
+void MclLockPtr_UniqueDestroy(MclLockPtr *self, MclLockPtrDeleter ptrDeleter) {
     MCL_ASSERT_VALID_PTR_VOID(self);
     MCL_ASSERT_SUCC_CALL_VOID(MclLockPtr_Lock(self));
     MCL_ASSERT_SUCC_CALL_VOID(MclLockPtr_Unlock(self));
-    MclLockPtr_Destroy(self);
+    MclLockPtr_Destroy(self, ptrDeleter);
 }
 
-MclLockPtr* MclLockPtr_Create(void *ptr, MclLockPtrDeleter ptrDeleter) {
+MclLockPtr* MclLockPtr_Create(void *ptr) {
     MclLockPtr *self = MCL_MALLOC(sizeof(MclLockPtr));
     MCL_ASSERT_VALID_PTR_NIL(self);
-    MclLockPtr_Init(self, ptr, ptrDeleter);
+    MclLockPtr_Init(self, ptr);
     return self;
 }
 
-void MclLockPtr_Delete(MclLockPtr *self) {
+void MclLockPtr_Delete(MclLockPtr *self, MclLockPtrDeleter ptrDeleter) {
     MCL_ASSERT_VALID_PTR_VOID(self);
-    MclLockPtr_UniqueDestroy(self);
+    MclLockPtr_UniqueDestroy(self, ptrDeleter);
     MCL_FREE(self);
 }

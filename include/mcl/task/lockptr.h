@@ -5,12 +5,9 @@
 
 MCL_STDC_BEGIN
 
-typedef void (*MclLockPtrDeleter)(void*);
-
 MCL_TYPE(MclLockPtr) {
     void *ptr;
     MclMutex mutex;
-    MclLockPtrDeleter deleter;
 };
 
 MCL_INLINE void* MclLockPtr_Get(MclLockPtr *self) {
@@ -21,12 +18,13 @@ MCL_INLINE bool MclLockPtr_IsValid(const MclLockPtr *self) {
     return self && self->ptr;
 }
 
-MclLockPtr* MclLockPtr_Create(void *ptr, MclLockPtrDeleter);
-void MclLockPtr_Delete(MclLockPtr*);
+typedef void (*MclLockPtrDeleter)(void*);
+MclLockPtr* MclLockPtr_Create(void *ptr);
+void MclLockPtr_Delete(MclLockPtr*, MclLockPtrDeleter);
 
-MclStatus MclLockPtr_Init(MclLockPtr*, void *ptr, MclLockPtrDeleter);
-void MclLockPtr_Destroy(MclLockPtr*);
-void MclLockPtr_UniqueDestroy(MclLockPtr*);
+MclStatus MclLockPtr_Init(MclLockPtr*, void *ptr);
+void MclLockPtr_Destroy(MclLockPtr*, MclLockPtrDeleter);
+void MclLockPtr_UniqueDestroy(MclLockPtr*, MclLockPtrDeleter);
 
 MclStatus MclLockPtr_Lock(MclLockPtr*);
 MclStatus MclLockPtr_Unlock(MclLockPtr*);

@@ -6,8 +6,8 @@
 MCL_STDC_BEGIN
 
 MCL_TYPE(MclLockPtr) {
-    void *ptr;
     MclMutex mutex;
+    void *ptr;
 };
 
 MCL_INLINE void* MclLockPtr_Get(MclLockPtr *self) {

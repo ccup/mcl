@@ -18,13 +18,13 @@ MCL_INLINE bool MclLockPtr_IsValid(const MclLockPtr *self) {
     return self && self->ptr;
 }
 
-typedef void (*MclLockPtrDeleter)(void*);
+typedef void (*MclLockPtr_PtrDeleter)(void*);
 MclLockPtr* MclLockPtr_Create(void *ptr);
-void MclLockPtr_Delete(MclLockPtr*, MclLockPtrDeleter);
+void MclLockPtr_Delete(MclLockPtr*, MclLockPtr_PtrDeleter);
 
 MclStatus MclLockPtr_Init(MclLockPtr*, void *ptr);
-void MclLockPtr_Destroy(MclLockPtr*, MclLockPtrDeleter);
-void MclLockPtr_UniqueDestroy(MclLockPtr*, MclLockPtrDeleter);
+void MclLockPtr_Destroy(MclLockPtr*, MclLockPtr_PtrDeleter);
+void MclLockPtr_UniqueDestroy(MclLockPtr*, MclLockPtr_PtrDeleter);
 
 MclStatus MclLockPtr_Lock(MclLockPtr*);
 MclStatus MclLockPtr_Unlock(MclLockPtr*);

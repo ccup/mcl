@@ -2,7 +2,7 @@
 #include "mcl/mem/malloc.h"
 #include "mcl/assert.h"
 
-static const uint16_t INVALID_INDEX = 0xFFFF;
+static const uint16_t MCL_LINK_ARRAY_INDEX_INVALID = 0xFFFF;
 
 MCL_PRIVATE void MclLinkArray_InitLink(MclLinkArray *self) {
     uint16_t count = MclArray_GetCount(&self->array);
@@ -12,7 +12,7 @@ MCL_PRIVATE void MclLinkArray_InitLink(MclLinkArray *self) {
     uint16_t i = 0;
     MCL_ARRAY_FOREACH_INDEX(&self->array, i) {
         uint16_t *p = (uint16_t*)MclArray_Get(&self->array, i);
-        (*p) = (i < (count - 1)) ? (i + 1) : INVALID_INDEX;
+        (*p) = (i < (count - 1)) ? (i + 1) : MCL_LINK_ARRAY_INDEX_INVALID;
     }
 }
 
@@ -60,34 +60,41 @@ void MclLinkArray_Delete(MclLinkArray *self) {
 
 void* MclLinkArray_Take(MclLinkArray *self) {
     MCL_ASSERT_VALID_PTR_NIL(self);
-    if (self->freeHead == INVALID_INDEX) return NULL;
+    if (self->freeHead == MCL_LINK_ARRAY_INDEX_INVALID) return NULL;
 
     uint16_t *p = (uint16_t*)MclArray_Get(&self->array, self->freeHead);
     MCL_ASSERT_VALID_PTR_NIL(p);
 
 	self->freeHead = (*p);
-    if(self->freeHead == INVALID_INDEX) {
-    	self->freeTail = INVALID_INDEX;
+    if(self->freeHead == MCL_LINK_ARRAY_INDEX_INVALID) {
+    	self->freeTail = MCL_LINK_ARRAY_INDEX_INVALID;
     }
     self->freeCount--;
     return p;
 }
 
-void MclLinkArray_Give(MclLinkArray *self, void *p) {
-    if(p == NULL) return;
+MCL_PRIVATE uint16_t MclLinkArray_GetIndexOf(MclLinkArray *self, const void* p) {
+    if(p == NULL) return MCL_LINK_ARRAY_INDEX_INVALID;
 
     uint8_t *begin = MclArray_Begin(&self->array);
 
     if (( (p < (void*)begin) || (p >= (void*)MclArray_End(&self->array))
         || (((uint8_t*)p - begin) % self->array.elemBytes) != 0)) {
-    	MCL_LOG_ERR("Give invalid pointer(%p)!", p);
-		return;
+		return MCL_LINK_ARRAY_INDEX_INVALID;
     }
 
     uint16_t index = (((uint8_t*)p - begin) / self->array.elemBytes);
-    MCL_ASSERT_TRUE_VOID(index < MclArray_GetCount(&self->array));
+    if (index >= MclArray_GetCount(&self->array)) return MCL_LINK_ARRAY_INDEX_INVALID;
 
-    if(self->freeHead == INVALID_INDEX) {
+    return index;
+}
+
+void MclLinkArray_Give(MclLinkArray *self, void *p) {
+
+    uint16_t index = MclLinkArray_GetIndexOf(self, p);
+    MCL_ASSERT_TRUE_VOID(index != MCL_LINK_ARRAY_INDEX_INVALID);
+
+    if(self->freeHead == MCL_LINK_ARRAY_INDEX_INVALID) {
     	self->freeHead = index;
     }
     else {
@@ -97,7 +104,7 @@ void MclLinkArray_Give(MclLinkArray *self, void *p) {
     }
     uint16_t *next = (uint16_t*)MclArray_Get(&self->array, index);
     MCL_ASSERT_VALID_PTR_VOID(next);
-    (*next) = INVALID_INDEX;
+    (*next) = MCL_LINK_ARRAY_INDEX_INVALID;
     self->freeTail = index;
     self->freeCount++;
 }

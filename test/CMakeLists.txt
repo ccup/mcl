@@ -8,16 +8,17 @@ CPMAddPackage(
 
 file(GLOB_RECURSE SOURCES 
   "*.c" "*.C" "*.cc" "*.CC" "*.cpp" "*.CPP" "*.c++")
-
+  
+file(GLOB_RECURSE TASK_SOURCES "task/*_test.cc")
+  
 if (ENABLE_THREAD)
     message(STATUS "Thread tests enabled!")
 else()
-    message(STATUS "Thread tests disabled!")
-    list(REMOVE_ITEM SOURCES
-#            "${CMAKE_CURRENT_SOURCE_DIR}/lock_test.cc"
-            "${CMAKE_CURRENT_SOURCE_DIR}/mutex_test.cc"
-            "${CMAKE_CURRENT_SOURCE_DIR}/scheduler_test.cc"
+    list(REMOVE_ITEM TASK_SOURCES 
+        ${CMAKE_CURRENT_SOURCE_DIR}/task/lockobj_test.cc
     )
+    list(REMOVE_ITEM SOURCES ${TASK_SOURCES})
+    message(STATUS "Thread tests disabled, removed tests in sources : ${TASK_SOURCES}!")
 endif()
 
 add_executable(${TEST_TARGET} ${SOURCES})

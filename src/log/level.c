@@ -25,6 +25,9 @@ const char* MclLogLevel_GetColorFmt(MclLogLevel level) {
 	    case MCL_LOG_LEVEL_FATAL :
             color = MCL_LOG_COLOR_RED;
             break;
+	    case MCL_LOG_LEVEL_DEFAULT :
+            color = MCL_LOG_COLOR_WHITE;
+            break;
         default:
             color = MCL_LOG_COLOR_WHITE;
 	}

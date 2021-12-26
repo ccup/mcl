@@ -1,9 +1,10 @@
 #ifndef H09F794ED_B8FC_4A49_A88A_5A8DA7B6FCE8
 #define H09F794ED_B8FC_4A49_A88A_5A8DA7B6FCE8
 
-#include "task/foo_utils/foo.h"
-#include "mcl/list/list_data.h"
+#include "foo_utils/foo.h"
 #include "mcl/task/lockobj.h"
+#include "mcl/list/list_data.h"
+#include "mcl/map/hash_value.h"
 
 enum class FooCreateType {
 	NORMAL, LOCKOBJ,
@@ -11,7 +12,7 @@ enum class FooCreateType {
 
 template<FooCreateType type = FooCreateType::NORMAL>
 struct FooFactory {
-    static Foo* create(int id) {
+    static Foo* create(FooId id = FOO_ID_INVALID) {
         return new Foo{id};
     }
 
@@ -22,7 +23,7 @@ struct FooFactory {
 
 template<>
 struct FooFactory<FooCreateType::LOCKOBJ> {
-    static Foo* create(int id) {
+    static Foo* create(FooId id) {
         return (Foo*)MclLockObj_Create(sizeof(Foo), FooFactory::fooInit, &id);
     }
 
@@ -49,5 +50,12 @@ void Foo_ListDelete(MclListDataDeleter *deleter, MclListData data) {
     auto f = (Foo*)data;
     if (f) FooFactory<type>::destroy(f);
 }
+
+template<FooCreateType type>
+void Foo_HashDelete(MclHashValueDeleter *deleter, MclHashValue value) {
+    auto f = (Foo*)value;
+    if (f) FooFactory<type>::destroy(f);
+}
+
 
 #endif

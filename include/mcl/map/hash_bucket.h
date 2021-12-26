@@ -7,13 +7,11 @@ MCL_STDC_BEGIN
 
 MCL_TYPE(MclHashBucket) {
 	MCL_LINK(MclHashNode) nodes;
-	uint32_t count;
 };
 
 void MclHashBucket_Init(MclHashBucket*);
 void MclHashBucket_Clear(MclHashBucket*, MclHashNodeAllocator*, MclHashValueDeleter*);
 
-uint32_t MclHashBucket_GetCount(const MclHashBucket*);
 bool MclHashBucket_IsEmpty(const MclHashBucket*);
 
 MclHashNode* MclHashBucket_FindNode(const MclHashBucket*, MclHashKey);
@@ -24,6 +22,8 @@ uint32_t MclHashBucket_Remove(MclHashBucket*, MclHashKey, MclHashNodeAllocator*,
 uint32_t MclHashBucket_RemoveBy(MclHashBucket*, MclHashNodePred*, MclHashNodeAllocator*, MclHashValueDeleter*);
 
 MclStatus MclHashBucket_Accept(const MclHashBucket*, MclHashNodeVisitor*);
+
+void MclHashBucket_Dump(const MclHashBucket*);
 
 MCL_STDC_END
 

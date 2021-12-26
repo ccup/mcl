@@ -1,5 +1,5 @@
 #include <cctest/cctest.h>
-#include "task/foo_utils/foo_factory.h"
+#include "foo_utils/foo_factory.h"
 #include "mcl/task/lockptr.h"
 #include "mcl/task/rwlock.h"
 #include "mcl/task/thread.h"

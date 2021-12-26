@@ -8,13 +8,10 @@ MCL_STDC_BEGIN
 MCL_TYPE_DECL(MclListNodeAllocator);
 
 MCL_TYPE(MclList) {
-	MclListNode head;
+	MCL_LINK(MclListNode) nodes;
 	uint32_t count;
     MclListNodeAllocator *allocator;
 };
-
-#define MCL_LIST(LIST, ALLOCATOR)   		\
-{.head.next = &((LIST).head), .head.prev = &((LIST).head), .count = 0, .allocator = (ALLOCATOR)}
 
 MclList* MclList_CreateDefault();
 MclList* MclList_Create(MclListNodeAllocator*);
@@ -55,50 +52,54 @@ MCL_INLINE bool MclList_IsEmpty(const MclList *self) {
 }
 
 MCL_INLINE MclListNode* MclList_GetFirst(MclList *self) {
-	return MclList_IsEmpty(self) ? NULL : self->head.next;
+	return MclList_IsEmpty(self) ? NULL : MCL_LINK_FIRST(&self->nodes);
 }
 
 MCL_INLINE MclListNode* MclList_GetLast(MclList *self) {
-	return MclList_IsEmpty(self) ? NULL : self->head.prev;
+	return MclList_IsEmpty(self) ? NULL : MCL_LINK_LAST(&self->nodes);
+}
+
+MCL_INLINE MclListNode* MclList_GetHead(MclList *self) {
+	return self ? (MclListNode*)(&self->nodes) : NULL;
 }
 
 MCL_INLINE MclListNode* MclList_GetNextOf(MclList *self, MclListNode *node) {
-	return node ? ((node->next == &self->head) ? NULL : node->next) : MclList_GetFirst(self);
+	return node ? ((MclListNode_GetNext(node) == MclList_GetHead(self)) ? NULL : MclListNode_GetNext(node)) : MclList_GetFirst(self);
 }
 
 MCL_INLINE MclListNode* MclList_GetPrevOf(MclList *self, MclListNode *node) {
-	return node ? ((node->prev == &self->head) ? NULL : node->prev) : MclList_GetFirst(self);
+	return node ? ((MclListNode_GetPrev(node) == MclList_GetHead(self)) ? NULL : MclListNode_GetPrev(node)) : MclList_GetFirst(self);
 }
 
-///////////////////////////////////////////////////////////////
-#define MCL_LIST_FOREACH(list, node)						\
-	for ((node) = MclList_GetFirst(list);					\
-		(MclListNode*)NULL != (node);						\
-		(node) = MclList_GetNextOf((list), (node)))
+/////////////////////////////////////////////////////////////////
+#define MCL_LIST_FOREACH(list, node)							\
+	MCL_LINK_FOREACH((&(list)->nodes), MclListNode, link, node)
 
 ///////////////////////////////////////////////////////////////
-#define MCL_LIST_FOREACH_SAFE(list, node, tmpNode)			\
-	for ((node) = MclList_GetFirst(list), (tmpNode) = MclList_GetNextOf((list), (node));\
-		(MclListNode*)NULL != (node);						\
-		(node) = (tmpNode), (tmpNode) = MclList_GetNextOf((list), (node)))
+#define MCL_LIST_FOREACH_SAFE(list, node, tmpNode)				\
+	MCL_LINK_FOREACH_SAFE((&(list)->nodes), MclListNode, link, node, tmpNode)
 
-///////////////////////////////////////////////////////////////
-#define MCL_LIST_FOREACH_CALL(list, type, visitor, ...)	    \
-	do {													\
-		MclListNode *node = NULL;							\
-		MCL_LIST_FOREACH((list), (node)) {					\
+/////////////////////////////////////////////////////////////////
+#define MCL_LIST_FOREACH_CALL(list, type, visitor, ...)	    	\
+	do {														\
+		MclListNode *node = NULL;								\
+		MCL_LIST_FOREACH((list), (node)) {						\
 			(void)visitor((type*)((node)->data), ##__VA_ARGS__);\
-		}													\
+		}														\
 	} while(0)
 
-///////////////////////////////////////////////////////////////
-#define MCL_LIST_FOREACH_CALL_ASSERT(list, type, visitor, ...)\
-	do {													\
-		MclListNode *node = NULL;							\
-		MCL_LIST_FOREACH((list), (node)) {					\
+/////////////////////////////////////////////////////////////////
+#define MCL_LIST_FOREACH_CALL_ASSERT(list, type, visitor, ...)	\
+	do {														\
+		MclListNode *node = NULL;								\
+		MCL_LIST_FOREACH((list), (node)) {						\
 			MCL_ASSERT_SUCC_CALL(visitor((type*)((node)->data), ##__VA_ARGS__));\
-		}													\
+		}														\
 	} while(0)
+
+/////////////////////////////////////////////////////////////////
+#define MCL_LIST(LIST, ALLOCATOR)   							\
+	{.nodes = MCL_LINK_INITIALIZER(&LIST.nodes, MclListNode, link), .count = 0, .allocator = (ALLOCATOR)}
 
 MCL_STDC_END
 

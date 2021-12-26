@@ -156,3 +156,14 @@ MclStatus MclHashMap_Accept(const MclHashMap *self, MclHashNodeVisitor *visitor)
     }
     return MCL_SUCCESS;
 }
+
+void MclHashMap_Dump(const MclHashMap *self) {
+	MCL_ASSERT_VALID_PTR_VOID(self);
+
+    for (uint32_t i = 0; i < self->bucketCount; i++) {
+    	if (!MclHashBucket_IsEmpty(&self->buckets[i])) {
+    		MCL_LOG("HashMap dump : bucket %u \n", i);
+    		MclHashBucket_Dump(&self->buckets[i]);
+    	}
+    }
+}

@@ -17,6 +17,7 @@ MCL_INLINE void MclHashValueDeleter_Destroy(MclHashValueDeleter *deleter, MclHas
     if (deleter && deleter->destroy) deleter->destroy(deleter, value);
 }
 
+///////////////////////////////////////////////////////////////
 #define MCL_HASH_VALUE_DELETER(DESTROY) {.destroy = DESTROY}
 
 MCL_STDC_END

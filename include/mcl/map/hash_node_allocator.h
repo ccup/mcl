@@ -22,6 +22,7 @@ MCL_INLINE void MclHashNodeAllocator_Release(MclHashNodeAllocator *self, MclHash
 
 MclHashNodeAllocator* MclHashNodeAllocator_GetDefault();
 
+///////////////////////////////////////////////////////////////
 #define MCL_HASH_NODE_ALLOCATOR(ALLOC, RELEASE) {.alloc = ALLOC, .release = RELEASE}
 
 MCL_STDC_END

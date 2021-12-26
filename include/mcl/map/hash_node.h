@@ -15,11 +15,6 @@ MCL_TYPE(MclHashNode) {
     MclHashValue value;
 };
 
-#define MCL_NODE(KEY, VALUE) {.link.prev = NULL, .link.next = NULL, .key = KEY, .value = VALUE};
-
-MclHashNode* MclHashNode_Create(MclHashKey, MclHashValue, MclHashNodeAllocator*);
-void MclHashNode_Delete(MclHashNode*, MclHashNodeAllocator*, MclHashValueDeleter*);
-
 MCL_INLINE void MclHashNode_Init(MclHashNode *self, MclHashKey key, MclHashValue value) {
 	if (!self) return;
     self->link.next = NULL;
@@ -27,6 +22,9 @@ MCL_INLINE void MclHashNode_Init(MclHashNode *self, MclHashKey key, MclHashValue
     self->key = key;
     self->value = value;
 }
+
+MclHashNode* MclHashNode_Create(MclHashKey, MclHashValue, MclHashNodeAllocator*);
+void MclHashNode_Delete(MclHashNode*, MclHashNodeAllocator*, MclHashValueDeleter*);
 
 //////////////////////////////////////////////////////////////
 MCL_TYPE(MclHashNodePred) {
@@ -49,6 +47,9 @@ MCL_INLINE MclStatus MclHashNodeVisitor_Visit(MclHashNodeVisitor *visitor, MclHa
 }
 
 #define MCL_HASH_NODE_VISITOR(VISITOR) {.visit = VISITOR}
+
+//////////////////////////////////////////////////////////////
+#define MCL_HASH_NODE(KEY, VALUE) {.link.prev = NULL, .link.next = NULL, .key = KEY, .value = VALUE};
 
 MCL_STDC_END
 

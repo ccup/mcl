@@ -16,9 +16,13 @@ extern "C" void MclLog_Customer(int level , const char* levelstr , const char* f
 
 #define MCL_LOG_PRINTF(level, levelstr, file, line, fmt, ...)	\
 do {															\
-	printf("%s", MclLogLevel_GetColorFmt(level));			 	\
-	printf("[%s:0x%x] %s:%u: " #fmt "\n", levelstr, level, MclLog_GetBaseFile(file), line, ##__VA_ARGS__);\
-	printf("%s", MclLogLevel_GetColorFmt(MCL_LOG_LEVEL_NONE));	\
+	if (level == MCL_LOG_LEVEL_DEFAULT) {						\
+		printf(fmt, ##__VA_ARGS__);								\
+	} else {													\
+		printf("%s", MclLogLevel_GetColorFmt(level));			\
+		printf("[%s:0x%x] %s:%u: " #fmt "\n", levelstr, level, MclLog_GetBaseFile(file), line, ##__VA_ARGS__);\
+		printf("%s", MclLogLevel_GetColorFmt(MCL_LOG_LEVEL_NONE));\
+	}															\
 } while(0)
 
 #define MCL_LOG_OUTPUT MCL_LOG_PRINTF

@@ -13,11 +13,13 @@ FIXTURE(LinkTest)
 {
 	MCL_LINK(Foo) foos;
 
-	BEFORE {
+	BEFORE
+	{
 		MCL_LINK_INIT(&foos, Foo, link);
 	}
 
-	AFTER {
+	AFTER
+	{
 		Foo *f1, *f2;
 		MCL_LINK_FOREACH_SAFE(&foos, Foo, link, f1, f2) {
 			MCL_LINK_REMOVE(f1, link);

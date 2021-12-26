@@ -1,6 +1,6 @@
 #include <cctest/cctest.h>
-#include "task/foo_utils/foo.h"
-#include "task/foo_utils/foo_factory.h"
+#include "foo_utils/foo.h"
+#include "foo_utils/foo_factory.h"
 #include "mcl/task/lockobj.h"
 #include "mcl/task/rwlock.h"
 #include "mcl/task/thread.h"

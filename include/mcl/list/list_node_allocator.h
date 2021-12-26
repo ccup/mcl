@@ -22,6 +22,7 @@ MCL_INLINE void MclListNodeAllocator_Release(MclListNodeAllocator *self, MclList
 
 MclListNodeAllocator* MclListNodeAllocator_GetDefault();
 
+/////////////////////////////////////////////////////////
 #define MCL_LIST_NODE_ALLOCATOR(ALLOC, RELEASE) {.alloc = ALLOC, .release = RELEASE}
 
 MCL_STDC_END

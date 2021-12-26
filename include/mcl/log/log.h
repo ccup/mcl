@@ -28,4 +28,7 @@ do {													\
 #define MCL_LOG_DBG(fmt, ...) \
 	__MCL_LOG_TITLE(MCL_LOG_LEVEL_DEBUG, "DEBUG", fmt, ##__VA_ARGS__)
 
+#define MCL_LOG(fmt, ...) \
+	__MCL_LOG_TITLE(MCL_LOG_LEVEL_DEFAULT, "DEFAULT", fmt, ##__VA_ARGS__)
+
 #endif

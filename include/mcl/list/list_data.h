@@ -1,5 +1,5 @@
-#ifndef MCL_F2A54BFBC3EF41079397B09166E3F21A
-#define MCL_F2A54BFBC3EF41079397B09166E3F21A
+#ifndef MCL_F2A54BFBC3EF41079397B09166E3F21B
+#define MCL_F2A54BFBC3EF41079397B09166E3F21B
 
 #include "mcl/status.h"
 #include "mcl/typedef.h"
@@ -9,6 +9,7 @@ MCL_STDC_BEGIN
 
 typedef void* MclListData;
 
+/////////////////////////////////////////////////////////
 MCL_TYPE(MclListDataPred) {
     bool (*pred)(MclListDataPred*, MclListData);
 };
@@ -19,6 +20,7 @@ MCL_INLINE bool MclListDataPred_Predicate(MclListDataPred *pred, MclListData dat
 
 #define MCL_LIST_DATA_PRED(PRED) {.pred = PRED}
 
+/////////////////////////////////////////////////////////
 MCL_TYPE(MclListDataVisitor) {
     MclStatus (*visit)(MclListDataVisitor*, MclListData);
 };
@@ -29,6 +31,7 @@ MCL_INLINE MclStatus MclListDataVisitor_Visit(MclListDataVisitor *visitor, MclLi
 
 #define MCL_LIST_DATA_VISITOR(VISITOR) {.visit = VISITOR}
 
+/////////////////////////////////////////////////////////
 MCL_TYPE(MclListDataDeleter) {
     void (*destroy)(MclListDataDeleter*, MclListData);
 };

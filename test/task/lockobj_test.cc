@@ -1,4 +1,6 @@
 #include <cctest/cctest.h>
+#include "task/foo_utils/foo.h"
+#include "task/foo_utils/foo_factory.h"
 #include "mcl/task/lockobj.h"
 #include "mcl/task/rwlock.h"
 #include "mcl/task/thread.h"
@@ -7,60 +9,6 @@
 #include <string>
 
 namespace {
-    constexpr int INVALID_ID = 0xFFFFFFFF;
-
-    std::atomic<uint16_t> FOO_COUNT {0};
-
-    struct Foo {
-        Foo(int id) : id{id} {
-            FOO_COUNT++;
-        }
-
-        ~Foo() {
-            id = INVALID_ID;
-            FOO_COUNT--;
-        }
-
-        int getId() const {
-            return id;
-        }
-
-        std::string toString() const {
-            return std::to_string(id);
-        }
-
-    private:
-        int id {INVALID_ID};
-    };
-
-    struct FooFactory {
-        static Foo* create(int id) {
-            return (Foo*)MclLockObj_Create(sizeof(Foo), FooFactory::fooInit, &id);
-        }
-
-        static void destroy(Foo *f) {
-        	MclLockObj_Delete(f, FooFactory::fooDestroy, NULL);
-        }
-
-    private:
-        static MclStatus fooInit(void *p, void *arg) {
-        	if (!p) return MCL_FAILURE;
-        	auto id = (int*)arg;
-        	auto result = new(p) Foo(*id);
-        	return result ? MCL_SUCCESS : MCL_FAILURE;
-        }
-
-        static void fooDestroy(void *p, void *arg) {
-        	auto foo = (Foo*)p;
-        	foo->~Foo();
-        }
-    };
-
-    void Foo_Delete(MclListDataDeleter *deleter, MclListData data) {
-        auto f = (Foo*)data;
-        if (f) FooFactory::destroy(f);
-    }
-
     class FooRepo {
         MclList *foos;
         MclRwLock rwlock;
@@ -72,7 +20,7 @@ namespace {
         }
 
         ~FooRepo() {
-            MclListDataDeleter fooDeleter{.destroy = Foo_Delete};
+            MclListDataDeleter fooDeleter{.destroy = Foo_ListDelete<FooCreateType::LOCKOBJ>};
             MclList_Delete(foos, &fooDeleter);
             MclRwLock_Destroy(&rwlock);
         }
@@ -88,7 +36,7 @@ namespace {
         }
 
         void remove(int id) {
-            MCL_ASSERT_TRUE_VOID(id != INVALID_ID);
+            MCL_ASSERT_TRUE_VOID(id != FOO_ID_INVALID);
             MCL_LOG_DBG("FooRepo: enter remove foo of id %d", id);
             MCL_LOCK_WRITE_SCOPE(rwlock) {
                 MCL_LOG_DBG("FooRepo: begin remove foo of id %d", id);
@@ -97,7 +45,7 @@ namespace {
                 MCL_LOG_DBG("FooRepo: begin delete foo of id %d", id);
                 MclLockObj_Lock(foo);
                 MclLockObj_Unlock(foo);
-                FooFactory::destroy(foo);
+                FooFactory<FooCreateType::LOCKOBJ>::destroy(foo);
                 MCL_LOG_DBG("FooRepo: end delete foo of id %d", id);
                 MCL_LOG_DBG("FooRepo: end remove foo of id %d", id);
             }
@@ -125,7 +73,7 @@ namespace {
             MCL_LOG_DBG("FooRepo: begin get first foo");
             auto node = MclList_GetFirst(foos);
             auto foo = (Foo*)MclListNode_GetData(node);
-            MCL_ASSERT_VALID_PTR_R(foo, NULL);
+            MCL_ASSERT_VALID_PTR_NIL(foo);
             MCL_LOG_DBG("FooRepo: begin lock first foo %d", foo->getId());
             MclLockObj_Lock(foo);
             MCL_LOG_DBG("FooRepo: end lock first foo %d", foo->getId());
@@ -138,6 +86,7 @@ namespace {
             MCL_LOCK_READ_AUTO(rwlock);
             MCL_LOG_DBG("FooRepo: begin get first foo id");
             auto node = MclList_GetFirst(foos);
+            MCL_ASSERT_VALID_PTR_R(node, FOO_ID_INVALID);
             auto foo = (Foo*)MclListNode_GetData(node);
             MCL_LOG_DBG("FooRepo: end get first foo id %d", foo->getId());
             return foo->getId();
@@ -182,32 +131,52 @@ namespace {
     void* FooCreateService(void*) {
         for (int id = 0; id < MAX_ID; id++) {
             MCL_LOG_INFO("service begin insert foo of id %d", id);
-            auto f = FooFactory::create(id);
+            auto f = FooFactory<FooCreateType::LOCKOBJ>::create(id);
             MCL_ASSERT_VALID_PTR_NIL(f);
             fooRepo.insert(f);
             MCL_LOG_INFO("service end insert foo of id %d", id);
             sleep(1);
         }
+        MCL_LOG_SUCC("Create service exit!");
         return NULL;
     }
 
     void* FooDeleteService(void*) {
-        while (!fooRepo.isEmpty()) {
+    	uint16_t tryCount = 0;
+        while (true) {
             MCL_LOG_INFO("service begin remove foo");
             auto id = fooRepo.getFirstId();
+			if (id == FOO_ID_INVALID) {
+				sleep(1);
+				if (++tryCount >= 3) {
+					break;
+				}
+				continue;
+			}
+			sleep(1);
+			uint16_t tryCount = 0;
             fooRepo.remove(id);
             MCL_LOG_INFO("service end remove foo of id %d", id);
             sleep(2);
         }
+        MCL_LOG_SUCC("Delete service exit!");
         return NULL;
     }
 
     void* FooVisitService1(void*) {
-        while (!fooRepo.isEmpty()) {
+        uint16_t tryCount = 0;
+        while (true) {
             MCL_LOG_INFO("service 1 begin visit foo");
             auto foo = fooRepo.getFirst();
-            if (!foo) continue;
-            sleep(2);
+            if (!foo) {
+            	sleep(1);
+            	if (++tryCount >= 3) {
+            		break;
+            	}
+            	continue;
+            }
+            sleep(1);
+            uint16_t tryCount = 0;
             auto id = foo->getId();
             if ((id < 0) || (id >= MAX_ID)) {
                 MclLockObj_Unlock(foo);
@@ -216,6 +185,7 @@ namespace {
             MCL_LOG_INFO("service 1 end visit foo of id %d", id);
             MclLockObj_Unlock(foo);
         }
+        MCL_LOG_SUCC("Visit Service 1 exit!");
         return NULL;
     }
 
@@ -223,7 +193,10 @@ namespace {
         for (int i = 0; i < MAX_ID; i++)  {
             MCL_LOG_INFO("service 2 begin visit foo");
             auto foo = fooRepo.get(i);
-            if (!foo) continue;
+            if (!foo) {
+            	sleep(1);
+            	continue;
+            }
             sleep(1);
             auto id = foo->getId();
             if ((id < 0) || (id >= MAX_ID)) {
@@ -233,17 +206,18 @@ namespace {
             MCL_LOG_INFO("service 2 end visit foo of id %d", id);
             MclLockObj_Unlock(foo);
         }
+        MCL_LOG_SUCC("Visit Service 2 exit!");
         return NULL;
     }
 }
 
 FIXTURE(LockObjTest) {
     BEFORE {
-        FOO_COUNT = 0;
+        Foo::FOO_COUNT = 0;
     }
 
     AFTER {
-        ASSERT_EQ(0, FOO_COUNT.load());
+        ASSERT_EQ(0, Foo::FOO_COUNT.load());
     }
 
     TEST("should not crash when multi-threads running") {
@@ -251,9 +225,7 @@ FIXTURE(LockObjTest) {
 
         MclThread_Create(&t1, NULL, FooCreateService, NULL);
         MclThread_Create(&t2, NULL, FooVisitService1, NULL);
-    	sleep(1);
         MclThread_Create(&t3, NULL, FooDeleteService, NULL);
-    	sleep(1);
         MclThread_Create(&t4, NULL, FooVisitService2, NULL);
 
         MclThread_Join(t1, NULL);

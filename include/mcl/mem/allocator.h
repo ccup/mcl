@@ -10,7 +10,7 @@ MCL_STDC_BEGIN
 #define MCL_ALLOCATOR_ELEM(TYPE) 	  TYPE##AllocatorElemType
 
 #define MCL_ALLOCATOR_TYPE_DEF(TYPE, SIZE)                      \
-typedef struct MCL_ALLOCATOR_ELEM(TYPE) {                       \
+typedef union MCL_ALLOCATOR_ELEM(TYPE) {                        \
     uint8_t obj[sizeof(TYPE)];                                  \
     void *p;                                                    \
 } MCL_ALLOCATOR_ELEM(TYPE);                                     \

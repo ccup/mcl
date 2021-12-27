@@ -5,6 +5,7 @@
 #include "mcl/task/lockobj.h"
 #include "mcl/list/list_data.h"
 #include "mcl/map/hash_value.h"
+#include "mcl/assert.h"
 
 enum class FooCreateType {
 	NORMAL, LOCKOBJ,
@@ -24,7 +25,10 @@ struct FooFactory {
 template<>
 struct FooFactory<FooCreateType::LOCKOBJ> {
     static Foo* create(FooId id) {
-        return (Foo*)MclLockObj_Create(sizeof(Foo), FooFactory::fooInit, &id);
+        auto p = (Foo*)MclLockObj_Create(sizeof(Foo));
+        MCL_ASSERT_VALID_PTR_NIL(p);
+        auto result = new(p) Foo(id);
+        return result;
     }
 
     static void destroy(Foo *f) {
@@ -32,13 +36,6 @@ struct FooFactory<FooCreateType::LOCKOBJ> {
     }
 
 private:
-    static MclStatus fooInit(void *p, void *arg) {
-    	if (!p) return MCL_FAILURE;
-    	auto id = (int*)arg;
-    	auto result = new(p) Foo(*id);
-    	return result ? MCL_SUCCESS : MCL_FAILURE;
-    }
-
     static void fooDestroy(void *p, void *arg) {
     	auto foo = (Foo*)p;
     	foo->~Foo();

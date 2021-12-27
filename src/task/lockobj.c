@@ -21,22 +21,19 @@ MCL_PRIVATE MclLockObj* MclLockObj_GetSelf(void *obj) {
 	return MclLockObj_IsValid(self) ? self : NULL;
 }
 
-MCL_PRIVATE MclStatus MclLockObj_Init(MclLockObj *self, MclLockObjConstructor objCtor, void *arg) {
-	if (objCtor) {
-		MCL_ASSERT_SUCC_CALL(objCtor(self->obj, arg));
-	}
+MCL_PRIVATE MclStatus MclLockObj_Init(MclLockObj *self) {
 	MCL_ASSERT_SUCC_CALL(MclMutex_InitRecursive(&self->mutex));
 	self->sentinel = MCL_LOCK_OBJ_SENTINEL;
 	return MCL_SUCCESS;
 }
 
-void* MclLockObj_Create(uint32_t size, MclLockObjConstructor objCtor, void *arg) {
+void* MclLockObj_Create(uint32_t size) {
 	MCL_ASSERT_TRUE_NIL(size > 0);
 
 	MclLockObj *self = MCL_MALLOC(sizeof(MclLockObj) + size);
 	MCL_ASSERT_VALID_PTR_NIL(self);
 
-	if (MCL_FAILED(MclLockObj_Init(self, objCtor, arg))) {
+	if (MCL_FAILED(MclLockObj_Init(self))) {
 		MCL_LOG_ERR("Init lock obj failed!");
 		MCL_FREE(self);
 		return NULL;

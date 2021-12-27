@@ -167,7 +167,7 @@ namespace {
         uint16_t tryCount = 0;
         while (true) {
             MCL_LOG_INFO("service 1 begin visit foo");
-            auto foo = fooRepo.getFirst();
+            MCL_AUTO_UNLOCK_OBJ auto foo = fooRepo.getFirst();
             if (!foo) {
             	sleep(1);
             	if (++tryCount >= 3) {
@@ -179,11 +179,9 @@ namespace {
             uint16_t tryCount = 0;
             auto id = foo->getId();
             if ((id < 0) || (id >= MAX_ID)) {
-                MclLockObj_Unlock(foo);
                 throw std::runtime_error("thread error");
             }
             MCL_LOG_INFO("service 1 end visit foo of id %d", id);
-            MclLockObj_Unlock(foo);
         }
         MCL_LOG_SUCC("Visit Service 1 exit!");
         return NULL;
@@ -192,7 +190,7 @@ namespace {
     void* FooVisitService2(void*) {
         for (int i = 0; i < MAX_ID; i++)  {
             MCL_LOG_INFO("service 2 begin visit foo");
-            auto foo = fooRepo.get(i);
+            MCL_AUTO_UNLOCK_OBJ auto foo = fooRepo.get(i);
             if (!foo) {
             	sleep(1);
             	continue;
@@ -200,11 +198,9 @@ namespace {
             sleep(1);
             auto id = foo->getId();
             if ((id < 0) || (id >= MAX_ID)) {
-            	MclLockObj_Unlock(foo);
                 throw std::runtime_error("thread error");
             }
             MCL_LOG_INFO("service 2 end visit foo of id %d", id);
-            MclLockObj_Unlock(foo);
         }
         MCL_LOG_SUCC("Visit Service 2 exit!");
         return NULL;

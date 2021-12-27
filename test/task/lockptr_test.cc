@@ -46,7 +46,7 @@ namespace {
                 auto result = removeById(id);
                 MCL_ASSERT_VALID_PTR_VOID(result);
                 MCL_LOG_DBG("FooRepo: begin delete foo of id %d", id);
-                MclLockPtr_Delete(result, (MclLockPtr_PtrDeleter)FooFactory<FooCreateType::NORMAL>::destroy);
+                MclLockPtr_Delete(result, (MclLockPtrDeleter)FooFactory<FooCreateType::NORMAL>::destroy);
                 MCL_LOG_DBG("FooRepo: end delete foo of id %d", id);
                 MCL_LOG_DBG("FooRepo: end remove foo of id %d", id);
             }
@@ -173,7 +173,7 @@ namespace {
         uint16_t tryCount = 0;
         while (true) {
             MCL_LOG_INFO("service 1 begin visit foo");
-            auto fptr = fooRepo.getFirst();
+            MCL_AUTO_UNLOCK_PTR MclLockPtr *fptr = fooRepo.getFirst();
             if (!fptr) {
             	sleep(1);
             	if (++tryCount >= 3) {
@@ -187,11 +187,9 @@ namespace {
             sleep(2);
             auto id = f->getId();
             if ((id < 0) || (id >= MAX_ID)) {
-                MclLockPtr_Unlock(fptr);
                 throw std::runtime_error("thread error");
             }
             MCL_LOG_INFO("service 1 end visit foo of id %d", id);
-            MclLockPtr_Unlock(fptr);
         }
         MCL_LOG_SUCC("Visit service 1 exit!");
         return NULL;
@@ -200,7 +198,7 @@ namespace {
     void* FooVisitService2(void*) {
         for (int i = 0; i < MAX_ID; i++)  {
             MCL_LOG_INFO("service 2 begin visit foo");
-            auto fptr = fooRepo.get(i);
+            MCL_AUTO_UNLOCK_PTR MclLockPtr *fptr = fooRepo.get(i);
             if (!fptr) {
             	sleep(1);
             	continue;
@@ -209,11 +207,9 @@ namespace {
             sleep(1);
             auto id = f->getId();
             if ((id < 0) || (id >= MAX_ID)) {
-                MclLockPtr_Unlock(fptr);
                 throw std::runtime_error("thread error");
             }
             MCL_LOG_INFO("service 2 end visit foo of id %d", id);
-            MclLockPtr_Unlock(fptr);
         }
         MCL_LOG_SUCC("Visit service 2 exit!");
         return NULL;

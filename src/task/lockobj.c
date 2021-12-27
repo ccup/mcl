@@ -3,16 +3,16 @@
 #include "mcl/mem/malloc.h"
 #include "mcl/assert.h"
 
-static const uint64_t MCL_LOCK_OBJ_HEADER = 0xdeadc0de;
+static const uint64_t MCL_LOCK_OBJ_SENTINEL = 0xdeadc0de;
 
 MCL_TYPE(MclLockObj) {
-	uint64_t header;
+	uint64_t sentinel;
 	MclMutex mutex;
 	uint8_t obj[];
 };
 
 MCL_PRIVATE bool MclLockObj_IsValid(MclLockObj* self) {
-	return (self && self->header == MCL_LOCK_OBJ_HEADER);
+	return (self && self->sentinel == MCL_LOCK_OBJ_SENTINEL);
 }
 
 MCL_PRIVATE MclLockObj* MclLockObj_GetSelf(void *obj) {
@@ -26,7 +26,7 @@ MCL_PRIVATE MclStatus MclLockObj_Init(MclLockObj *self, MclLockObj_ObjInit objIn
 		MCL_ASSERT_SUCC_CALL(objInit(self->obj, arg));
 	}
 	MCL_ASSERT_SUCC_CALL(MclMutex_InitRecursive(&self->mutex));
-	self->header = MCL_LOCK_OBJ_HEADER;
+	self->sentinel = MCL_LOCK_OBJ_SENTINEL;
 	return MCL_SUCCESS;
 }
 

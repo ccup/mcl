@@ -11,7 +11,7 @@ MCL_STDC_BEGIN
 #define MCL_MEMORY_FORCE_CLEAN
 #endif
 
-MCL_INLINE void* Mcl_Malloc(uint32_t size) {
+MCL_INLINE MCL_MALLOC_API void* Mcl_Malloc(uint32_t size) {
     void* p = malloc(size);
 #ifdef MCL_MEMORY_FORCE_CLEAN
     memset(p, 0, size);

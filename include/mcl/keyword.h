@@ -16,7 +16,7 @@
     #define MCL_RAII(function)	__attribute__((cleanup(function)))
     #define MCL_MALLOC_API      __attribute__ ((malloc))
     #define MCL_PURE            __attribute__ ((pure))
-    #define MCL_INLINE          __attribute__ ((always_inline)) inline
+    #define MCL_INLINE          __attribute__ ((always_inline)) static inline
 #else
     #define MCL_CTOR            MCL_STATIC_ASSERT("MCL CTOR NOT SUPPORTED!")
 	#define MCL_DTOR            MCL_STATIC_ASSERT("MCL DTOR NOT SUPPORTED!")

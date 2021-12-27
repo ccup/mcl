@@ -3,8 +3,7 @@
 #include "mcl/mem/malloc.h"
 #include "mcl/assert.h"
 
-MCL_PRIVATE uint32_t MclHashMap_GetBucketId(const MclHashMap *self, MclHashKey key)
-{
+MCL_PRIVATE uint32_t MclHashMap_GetBucketId(const MclHashMap *self, MclHashKey key) {
     return key % self->bucketCount;
 }
 

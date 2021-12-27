@@ -2,10 +2,10 @@
 #include "mcl/mem/allocator.h"
 
 namespace {
-	typedef struct Object {
+	MCL_TYPE(Object) {
 		uint32_t age;
 		const char* name;
-	} Object;
+	};
 
     constexpr uint16_t OBJECT_SIZE = 2;
 

@@ -41,7 +41,7 @@ FIXTURE(RaiiTest)
 
 	TEST("should auto free after exit scope, checking by ason")
 	{
-        MCL_AUTO_FREE void *pf = MCL_MALLOC(sizeof(Foo));
+        MCL_FREE_AUTO void *pf = MCL_MALLOC(sizeof(Foo));
         ASSERT_TRUE(pf != nullptr);
 	}
 };

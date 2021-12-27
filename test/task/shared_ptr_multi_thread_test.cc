@@ -1,7 +1,7 @@
 #include <cctest/cctest.h>
 #include "foo_utils/foo.h"
 #include "foo_utils/foo_factory.h"
-#include "mcl/task/lockobj.h"
+#include "mcl/mem/shared_ptr.h"
 #include "mcl/task/rwlock.h"
 #include "mcl/task/thread.h"
 #include "mcl/list/list.h"
@@ -20,7 +20,7 @@ namespace {
         }
 
         ~FooRepo() {
-            MclListDataDeleter fooDeleter{.destroy = Foo_ListDelete<FooCreateType::LOCKOBJ>};
+            MclListDataDeleter fooDeleter{.destroy = Foo_ListDelete<FooCreateType::SHARED_PTR>};
             MclList_Delete(foos, &fooDeleter);
             MclRwLock_Destroy(&rwlock);
         }
@@ -43,7 +43,7 @@ namespace {
                 auto foo = removeById(id);
                 MCL_ASSERT_VALID_PTR_VOID(foo);
                 MCL_LOG_DBG("FooRepo: begin delete foo of id %d", id);
-                FooFactory<FooCreateType::LOCKOBJ>::destroy(foo);
+                FooFactory<FooCreateType::SHARED_PTR>::destroy(foo);
                 MCL_LOG_DBG("FooRepo: end delete foo of id %d", id);
                 MCL_LOG_DBG("FooRepo: end remove foo of id %d", id);
             }
@@ -57,9 +57,8 @@ namespace {
             MCL_LIST_FOREACH(foos, node) {
                 auto foo = (Foo*)MclListNode_GetData(node);
                 if (id == foo->getId()) {
-                	MclLockObj_Lock(foo);
                     MCL_LOG_DBG("FooRepo: end get foo of id %d", id);
-                    return foo;
+                    return MCL_SHARED_REF(Foo, foo);
                 }
             }
             return NULL;
@@ -72,11 +71,8 @@ namespace {
             auto node = MclList_GetFirst(foos);
             auto foo = (Foo*)MclListNode_GetData(node);
             MCL_ASSERT_VALID_PTR_NIL(foo);
-            MCL_LOG_DBG("FooRepo: begin lock first foo %d", foo->getId());
-            MclLockObj_Lock(foo);
-            MCL_LOG_DBG("FooRepo: end lock first foo %d", foo->getId());
-            MCL_LOG_DBG("FooRepo: end get first foo %d", foo->getId());
-            return foo;
+            MCL_LOG_DBG("FooRepo: end get first foo");
+            return MCL_SHARED_REF(Foo, foo);
         }
 
         int getFirstId() {
@@ -129,7 +125,7 @@ namespace {
     void* FooCreateService(void*) {
         for (int id = 0; id < MAX_ID; id++) {
             MCL_LOG_INFO("service begin insert foo of id %d", id);
-            auto f = FooFactory<FooCreateType::LOCKOBJ>::create(id);
+            auto f = FooFactory<FooCreateType::SHARED_PTR>::create(id);
             MCL_ASSERT_VALID_PTR_NIL(f);
             fooRepo.insert(f);
             MCL_LOG_INFO("service end insert foo of id %d", id);
@@ -165,7 +161,7 @@ namespace {
         uint16_t tryCount = 0;
         while (true) {
             MCL_LOG_INFO("service 1 begin visit foo");
-            MCL_UNLOCK_OBJ_AUTO auto foo = fooRepo.getFirst();
+            MCL_SHARED_AUTO auto foo = fooRepo.getFirst();
             if (!foo) {
             	sleep(1);
             	if (++tryCount >= 3) {
@@ -188,7 +184,7 @@ namespace {
     void* FooVisitService2(void*) {
         for (int i = 0; i < MAX_ID; i++)  {
             MCL_LOG_INFO("service 2 begin visit foo");
-            MCL_UNLOCK_OBJ_AUTO auto foo = fooRepo.get(i);
+            MCL_SHARED_AUTO auto foo = fooRepo.get(i);
             if (!foo) {
             	sleep(1);
             	continue;
@@ -205,7 +201,7 @@ namespace {
     }
 }
 
-FIXTURE(LockObjTest) {
+FIXTURE(SharedPtrMutiThreadTest) {
     BEFORE {
         Foo::FOO_COUNT = 0;
     }

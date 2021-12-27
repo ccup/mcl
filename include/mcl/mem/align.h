@@ -6,7 +6,7 @@
 MCL_STDC_BEGIN
 
 MCL_INLINE size_t MclAlign_GetSizeOf(size_t size) {
-    return (size + (sizeof(char *) - 1)) & ~(sizeof(char *) - 1);
+    return (size + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
 }
 
 MCL_STDC_END

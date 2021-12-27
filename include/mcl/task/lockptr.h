@@ -35,7 +35,7 @@ MCL_INLINE void MclLockPtr_AutoUnlock(MclLockPtr **ppPtr) {
     (void)MclLockPtr_Unlock(*ppPtr);
 }
 
-#define MCL_AUTO_UNLOCK_PTR  MCL_RAII(MclLockPtr_AutoUnlock)
+#define MCL_UNLOCK_PTR_AUTO  MCL_RAII(MclLockPtr_AutoUnlock)
 
 MCL_STDC_END
 

@@ -7,7 +7,7 @@ MCL_STDC_BEGIN
 
 typedef void (*MclLockObjDestructor)(void *obj, void *arg);
 
-void* MclLockObj_Create(uint32_t size);
+void* MclLockObj_Create(size_t size);
 void  MclLockObj_Delete(void *obj, MclLockObjDestructor, void *arg);
 
 MclStatus MclLockObj_Lock(void *obj);
@@ -20,7 +20,7 @@ MCL_INLINE void MclLockObj_AutoUnlock(void *ppobj) {
     (void)MclLockObj_Unlock(*pObj);
 }
 
-#define MCL_AUTO_UNLOCK_OBJ  MCL_RAII(MclLockObj_AutoUnlock)
+#define MCL_UNLOCK_OBJ_AUTO  MCL_RAII(MclLockObj_AutoUnlock)
 
 MCL_STDC_END
 

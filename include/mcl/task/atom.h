@@ -7,16 +7,16 @@ MCL_STDC_BEGIN
 
 typedef volatile uint32_t MclAtom;
 
-MCL_INLINE void MclAtom_Add(MclAtom *atom, uint32_t value) {
-    __sync_fetch_and_add(atom, value);
+MCL_INLINE MclAtom MclAtom_Add(MclAtom *atom, uint32_t value) {
+    return __sync_add_and_fetch(atom, value);
 }
 
-MCL_INLINE void MclAtom_Sub(MclAtom *atom, uint32_t value) {
-    __sync_fetch_and_sub(atom, value);
+MCL_INLINE MclAtom MclAtom_Sub(MclAtom *atom, uint32_t value) {
+    return __sync_sub_and_fetch(atom, value);
 }
 
-MCL_INLINE void MclAtom_Set(MclAtom *atom, uint32_t value) {
-    __sync_lock_test_and_set(atom, value);
+MCL_INLINE MclAtom MclAtom_Set(MclAtom *atom, uint32_t value) {
+    return __sync_lock_test_and_set(atom, value);
 }
 
 MCL_INLINE void MclAtom_Clear(MclAtom *atom) {

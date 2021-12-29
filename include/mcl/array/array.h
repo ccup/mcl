@@ -12,9 +12,6 @@ MCL_TYPE(MclArray) {
     uint8_t *buff;
 };
 
-#define MCL_ARRAY(COUNT, ELEM_BYTES, BUFF) \
-{.count = COUNT, .elemBytes = ELEM_BYTES, .buff = BUFF}
-
 MclArray* MclArray_Create(uint16_t count, uint16_t elemBytes);
 void MclArray_Delete(MclArray*);
 
@@ -29,6 +26,10 @@ void MclArray_Reset(MclArray*, uint16_t index);
 /////////////////////////////////////////////////////////////////////
 MCL_INLINE uint16_t MclArray_GetCount(const MclArray *self) {
     return self ? self->count : 0;
+}
+
+MCL_INLINE uint16_t MclArray_GetElemSize(const MclArray *self) {
+    return self->elemBytes;
 }
 
 MCL_INLINE uint32_t MclArray_GetBuffSize(uint16_t count, uint16_t elemBytes) {
@@ -48,6 +49,9 @@ for (PTR  = (TYPE*)MclArray_Begin(ARRAY); PTR < (TYPE*)MclArray_End(ARRAY); PTR+
 
 #define MCL_ARRAY_FOREACH_INDEX(ARRAY, INDEX)   \
 for (INDEX = 0; INDEX < (ARRAY)->count; INDEX++)
+
+#define MCL_ARRAY(COUNT, ELEM_BYTES, BUFF) \
+{.count = COUNT, .elemBytes = ELEM_BYTES, .buff = BUFF}
 
 MCL_STDC_END
 

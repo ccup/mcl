@@ -40,7 +40,7 @@ MclLinkArray* MclLinkArray_Create(uint16_t count, uint16_t elemBytes) {
 
     uint8_t *buff = MCL_MALLOC(MclArray_GetBuffSize(count, elemBytes));
     if (!buff) {
-        MCL_LOG_ERR("Malloc array link buff failed!");
+        MCL_LOG_ERR("Malloc array for link buff failed!");
         MCL_FREE(self);
         return NULL;
     }

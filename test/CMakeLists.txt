@@ -15,9 +15,10 @@ if (ENABLE_THREAD)
     message(STATUS "Thread tests enabled!")
 else()
     list(REMOVE_ITEM TASK_SOURCES 
+        ${CMAKE_CURRENT_SOURCE_DIR}/task/ringbuff_test.cc
 #        ${CMAKE_CURRENT_SOURCE_DIR}/task/lockobj_test.cc
 #        ${CMAKE_CURRENT_SOURCE_DIR}/task/lockptr_test.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/task/atom_test.cc
+#        ${CMAKE_CURRENT_SOURCE_DIR}/task/atom_test.cc
 #        ${CMAKE_CURRENT_SOURCE_DIR}/task/shared_ptr_multi_thread_test.cc
     )
     list(REMOVE_ITEM SOURCES ${TASK_SOURCES})

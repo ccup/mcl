@@ -1,5 +1,5 @@
 #include <cctest/cctest.h>
-#include "mcl/task/scheduler.h"
+#include "mcl/task/task_scheduler.h"
 #include "task/task_utils/demo_task.h"
 
 FIXTURE(SchedulerTest)

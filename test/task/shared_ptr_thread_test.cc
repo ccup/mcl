@@ -201,7 +201,7 @@ namespace {
     }
 }
 
-FIXTURE(SharedPtrMutiThreadTest) {
+FIXTURE(SharedPtrThreadTest) {
     BEFORE {
         Foo::FOO_COUNT = 0;
     }

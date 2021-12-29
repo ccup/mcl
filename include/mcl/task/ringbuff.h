@@ -25,7 +25,7 @@ MclStatus MclRingBuff_Pop(MclRingBuff*, void*);
 MclStatus MclRingBuff_Put(MclRingBuff*, void*);
 
 #define MCL_RINGBUFF(COUNT, ELEM_BYTES, BUFF)           \
-{.buff = MCL_ARRAY{COUNT, ELEM_BYTES, BUFF}, .head = 0, .tail = 0}
+{.buff = MCL_ARRAY(COUNT, ELEM_BYTES, BUFF), .head = 0, .tail = 0}
 
 MCL_STDC_END
 

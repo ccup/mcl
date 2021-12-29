@@ -78,20 +78,20 @@ namespace {
     constexpr uint16_t MSG_QUEUE_SIZE = 10;
     Msg msgBuff[MSG_QUEUE_SIZE] = {0};
 
-    MclRingBuff msgQueue = MCL_RINGBUFF(MSG_QUEUE_SIZE, sizeof(Msg), msgBuff);
+    MclRingBuff msgQueue = MCL_RINGBUFF(MSG_QUEUE_SIZE, sizeof(Msg), (uint8_t*)msgBuff);
 
     void* sendMsg(void *) {
         uint16_t i = 0;
         while(true) {
             Msg msg {i, true};
-            if (MCL_FAILED(MclRingBuff_Put(&msgQueue, &msg))) {
-                MclThread_Yield();
-            } else {
+            if (!MCL_FAILED(MclRingBuff_Put(&msgQueue, &msg))) {
                 if (i++ >= MAX_SEND_VALUE) {
                     break;
                 }
             }
+            MclThread_Yield();
         }
+        MCL_LOG_SUCC("Msg queue send thread quit OK!");
         return NULL;
     }
 
@@ -99,26 +99,27 @@ namespace {
 
     void* recvMsg(void *) {
         while(true) {
-            Msg msg {0, false};
-            if (MCL_FAILED(MclRingBuff_Pop(&msgQueue, &msg))) {
-                MclThread_Yield();
-            } else {
+            Msg msg{0, false};
+            if (!MCL_FAILED(MclRingBuff_Pop(&msgQueue, &msg))) {
                 if (msg.valid) {
                     if (msg.value != LAST_RECEIVED_VALUD) {
+                        MCL_LOG_ERR("Msg queue recv failed!");
                         break;
                     }
-                    if (LAST_RECEIVED_VALUD++ >= MAX_SEND_VALUE) {
+                    if (++LAST_RECEIVED_VALUD >= MAX_SEND_VALUE) {
                         break;
                     }
                 }
             }
+            MclThread_Yield();
         }
+        MCL_LOG_SUCC("Msg queue recv thread quit OK!");
         return NULL;
     }
 }
 
 FIXTURE(RingbuffAdvanceTest) {
-    TEST("should create an empty ringbuff") {
+    TEST("should run correctly in producer and consumer threads") {
         MclThread producer, consumer;
 
         MclThread_Create(&producer, NULL, sendMsg, NULL);

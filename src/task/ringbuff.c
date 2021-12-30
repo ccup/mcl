@@ -50,7 +50,7 @@ MclStatus MclRingBuff_Init(MclRingBuff *self, uint16_t count, uint16_t elemBytes
     MCL_ASSERT_TRUE(count > 0);
     MCL_ASSERT_TRUE(elemBytes > 0);
 
-    MclArray_Init(&self->buff, count + 1, elemBytes, buff);
+    MclArray_Init(&self->buff, count, elemBytes, buff);
     self->head = 0;
     self->tail = 0;
     return MCL_SUCCESS;

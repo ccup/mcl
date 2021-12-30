@@ -50,20 +50,20 @@ FIXTURE(RingbuffTest) {
 
     TEST("should not put to full ringbuff") {
         Msg msg{3, true};
-        for (size_t i = 0; i < RING_BUFF_SIZE; i++) {
+        for (size_t i = 0; i < RING_BUFF_SIZE - 1; i++) {
             ASSERT_EQ(MCL_SUCCESS, MclRingBuff_Put(rb, &msg));
         }
         ASSERT_TRUE(MCL_FAILED(MclRingBuff_Put(rb, &msg)));
     }
 
     TEST("should pop from full ringbuff to empty") {
-        for (uint16_t i = 0; i < RING_BUFF_SIZE; i++) {
+        for (uint16_t i = 0; i < RING_BUFF_SIZE - 1; i++) {
             Msg msg{i, true};
             ASSERT_EQ(MCL_SUCCESS, MclRingBuff_Put(rb, &msg));
         }
 
         Msg result;
-        for (uint16_t i = 0; i < RING_BUFF_SIZE; i++) {
+        for (uint16_t i = 0; i < RING_BUFF_SIZE - 1; i++) {
             ASSERT_EQ(MCL_SUCCESS, MclRingBuff_Pop(rb, &result));
             ASSERT_EQ(i, result.value);
             ASSERT_EQ(true, result.valid);

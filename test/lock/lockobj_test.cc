@@ -1,7 +1,7 @@
 #include <cctest/cctest.h>
+#include "mcl/lock/lockobj.h"
 #include "foo_utils/foo.h"
 #include "foo_utils/foo_factory.h"
-#include "mcl/lock/lockobj.h"
 #include "mcl/lock/rwlock.h"
 #include "mcl/thread/thread.h"
 #include "mcl/list/list.h"

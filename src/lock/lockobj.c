@@ -26,10 +26,16 @@ MCL_PRIVATE MclLockObj* MclLockObj_GetSelf(void *obj) {
 }
 
 MCL_PRIVATE MclStatus MclLockObj_Init(MclLockObj *self) {
-	MCL_ASSERT_SUCC_CALL(MclMutex_InitRecursive(&self->mutex));
+	MCL_ASSERT_SUCC_CALL(MclMutex_Init(&self->mutex, NULL));
 	self->sentinel = MCL_LOCK_OBJ_SENTINEL;
 	self->ptr = (uint8_t*)self + MclLockObj_HeaderSize();
 	return MCL_SUCCESS;
+}
+
+MCL_PRIVATE void MclLockObj_Destroy(MclLockObj *self, MclLockObjDestructor objDtor, void *arg) {
+    MCL_ASSERT_SUCC_CALL_VOID(MclMutex_Lock(&self->mutex));
+    MCL_ASSERT_SUCC_CALL_VOID(MclMutex_Unlock(&self->mutex));
+    if(objDtor) objDtor(self->ptr, arg);
 }
 
 void* MclLockObj_Create(size_t size) {
@@ -53,10 +59,7 @@ void  MclLockObj_Delete(void *obj, MclLockObjDestructor objDtor, void *arg) {
 	MclLockObj *self = MclLockObj_GetSelf(obj);
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
-    (void)MclLockObj_Lock(obj);
-    (void)MclLockObj_Unlock(obj);
-
-	if(objDtor) objDtor(obj, arg);
+    MclLockObj_Destroy(self, objDtor, arg);
 	MCL_FREE(self);
 }
 

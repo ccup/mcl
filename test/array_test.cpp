@@ -23,7 +23,7 @@ FIXTURE(ArrayTest) {
     TEST("should create array with buffer") {
         ASSERT_TRUE(array != NULL);
         ASSERT_TRUE(array->buff != NULL);
-        ASSERT_EQ(ARRAY_SIZE, array->count);
+        ASSERT_EQ(ARRAY_SIZE, MclArray_GetCapacity(array));
         ASSERT_EQ(sizeof(Foo), array->elemBytes);
     }
 

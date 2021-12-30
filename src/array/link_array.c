@@ -5,7 +5,7 @@
 static const uint16_t MCL_LINK_ARRAY_INDEX_INVALID = 0xFFFF;
 
 MCL_PRIVATE void MclLinkArray_InitLink(MclLinkArray *self) {
-    uint16_t count = MclArray_GetCount(&self->array);
+    uint16_t count = MclArray_GetCapacity(&self->array);
     self->freeHead = 0;
     self->freeTail = count - 1;
     self->freeCount = count;
@@ -90,7 +90,7 @@ MCL_PRIVATE uint16_t MclLinkArray_GetIndexOf(MclLinkArray *self, const void* p) 
     }
 
     uint16_t index = (((uint8_t*)p - begin) / self->array.elemBytes);
-    if (index >= MclArray_GetCount(&self->array)) return MCL_LINK_ARRAY_INDEX_INVALID;
+    if (index >= MclArray_GetCapacity(&self->array)) return MCL_LINK_ARRAY_INDEX_INVALID;
 
     return index;
 }

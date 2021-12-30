@@ -11,10 +11,10 @@ MCL_TYPE(MclRingBuff) {
     uint16_t tail;
 };
 
-MclRingBuff* MclRingBuff_Create(uint16_t count, uint16_t elemBytes);
+MclRingBuff* MclRingBuff_Create(uint16_t capacity, uint16_t elemBytes);
 void MclRingBuff_Delete(MclRingBuff*);
 
-MclStatus MclRingBuff_Init(MclRingBuff*, uint16_t count, uint16_t elemBytes, uint8_t* buff);
+MclStatus MclRingBuff_Init(MclRingBuff*, uint16_t capacity, uint16_t elemBytes, uint8_t* buff);
 void MclRingBuff_Reset(MclRingBuff*);
 
 bool MclRingBuff_IsFull(const MclRingBuff*);
@@ -26,8 +26,12 @@ MclStatus MclRingBuff_Pop(MclRingBuff*, void*);
 MclStatus MclRingBuff_Put(MclRingBuff*, void*);
 
 /////////////////////////////////////////////////////////////////
-#define MCL_RINGBUFF(COUNT, ELEM_BYTES, BUFF)                   \
-{.buff = MCL_ARRAY(COUNT, ELEM_BYTES, BUFF), .head = 0, .tail = 0}
+MCL_INLINE void* MclRingBuff_GetBuff(MclRingBuff *self) {
+    return self ? MclArray_Begin(&self->buff): NULL;
+}
+
+#define MCL_RINGBUFF(CAPACITY, ELEM_BYTES, BUFF)                   \
+{.buff = MCL_ARRAY(CAPACITY, ELEM_BYTES, BUFF), .head = 0, .tail = 0}
 
 MCL_STDC_END
 

@@ -1,7 +1,7 @@
 #ifndef H0198CF29_2964_442A_AF22_490F400D9756
 #define H0198CF29_2964_442A_AF22_490F400D9756
 
-#include "mcl/log/level.h"
+#include "mcl/log/log_level.h"
 
 #ifdef MCL_CUSTOMER_LOG
 
@@ -11,7 +11,7 @@ extern "C" void MclLog_Customer(int level , const char* levelstr , const char* f
 
 #else
 
-#include "mcl/log/basename.h"
+#include "mcl/log/log_base_name.h"
 #include <stdio.h>
 
 #define MCL_LOG_PRINTF(level, levelstr, file, line, fmt, ...)	\

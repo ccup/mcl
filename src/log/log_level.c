@@ -1,5 +1,5 @@
-#include "mcl/log/level.h"
-#include "color.h"
+#include "mcl/log/log_level.h"
+#include "log_color.h"
 
 const char* MclLogLevel_GetColorFmt(MclLogLevel level) {
 	MclLogColor color;

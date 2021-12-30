@@ -1,7 +1,7 @@
 #ifndef H38247538_297F_4A80_94D3_8A289788461B
 #define H38247538_297F_4A80_94D3_8A289788461B
 
-#include "mcl/log/config.h"
+#include "mcl/log/log_config.h"
 
 #define __MCL_LOG_TITLE(level, levelstr, fmt, ...) 		\
 do {													\

@@ -1,4 +1,4 @@
-#include "color.h"
+#include "log_color.h"
 
 const char* MclLogColor_GetStr(MclLogColor color) {
 	switch (color) {

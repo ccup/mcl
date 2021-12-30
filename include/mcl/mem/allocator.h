@@ -9,7 +9,7 @@ MCL_STDC_BEGIN
 #define MCL_ALLOCATOR(TYPE)           TYPE##Allocator
 #define MCL_ALLOCATOR_ELEM(TYPE) 	  TYPE##AllocatorElemType
 
-#define MCL_ALLOCATOR_TYPE_DEF(TYPE, SIZE)                                  \
+#define MCL_ALLOCATOR_TYPE_DEF(TYPE, CAPACITY)                              \
 typedef union MCL_ALLOCATOR_ELEM(TYPE) {                                    \
     uint8_t obj[sizeof(TYPE)];                                              \
     void *p;                                                                \
@@ -17,12 +17,12 @@ typedef union MCL_ALLOCATOR_ELEM(TYPE) {                                    \
                                                                             \
 typedef struct MCL_ALLOCATOR(TYPE) {                                        \
     MclLinkArray elems;                                                     \
-    uint8_t buff[SIZE * sizeof(MCL_ALLOCATOR_ELEM(TYPE))];                  \
+    uint8_t buff[CAPACITY * sizeof(MCL_ALLOCATOR_ELEM(TYPE))];              \
 } MCL_ALLOCATOR(TYPE);                                                      \
                                                                             \
 MCL_INLINE MclStatus TYPE##Allocator_Init(MCL_ALLOCATOR(TYPE) *self) {      \
     MCL_ASSERT_VALID_PTR(self);                                             \
-    MCL_ASSERT_SUCC_CALL(MclLinkArray_Init(&self->elems, SIZE, sizeof(MCL_ALLOCATOR_ELEM(TYPE)), self->buff)); \
+    MCL_ASSERT_SUCC_CALL(MclLinkArray_Init(&self->elems, CAPACITY, sizeof(MCL_ALLOCATOR_ELEM(TYPE)), self->buff)); \
     return MCL_SUCCESS;                                                     \
 }                                                                           \
                                                                             \

@@ -4,7 +4,7 @@
 #include "mcl/assert.h"
 
 MCL_PRIVATE uint16_t MclRingBuff_GetNextPos(const MclRingBuff *self, uint16_t pos) {
-    return (pos + 1) % MclArray_GetCount(&self->buff);
+    return (pos + 1) % MclArray_GetCapacity(&self->buff);
 }
 
 MCL_PRIVATE uint16_t MclRingBuff_GetNextHead(const MclRingBuff *self) {
@@ -15,8 +15,8 @@ MCL_PRIVATE uint16_t MclRingBuff_GetNextTail(const MclRingBuff *self) {
     return MclRingBuff_GetNextPos(self, (uint16_t)self->tail);
 }
 
-MclRingBuff* MclRingBuff_Create(uint16_t count, uint16_t elemBytes) {
-    MCL_ASSERT_TRUE_NIL(count > 0);
+MclRingBuff* MclRingBuff_Create(uint16_t capacity, uint16_t elemBytes) {
+    MCL_ASSERT_TRUE_NIL(capacity > 0);
     MCL_ASSERT_TRUE_NIL(elemBytes > 0);
 
     MclRingBuff *self = MCL_MALLOC(sizeof(MclRingBuff));
@@ -24,14 +24,14 @@ MclRingBuff* MclRingBuff_Create(uint16_t count, uint16_t elemBytes) {
 
     elemBytes = MclAlign_GetSizeOf(elemBytes);
 
-    uint8_t *buff = MCL_MALLOC(MclArray_GetBuffSize(count, elemBytes));
+    uint8_t *buff = MCL_MALLOC(MclArray_GetBuffSize(capacity, elemBytes));
     if (!buff) {
         MCL_LOG_ERR("Malloc array for ringbuff failed!");
         MCL_FREE(self);
         return NULL;
     }
 
-    if (MCL_FAILED(MclRingBuff_Init(self, count, elemBytes, buff))) {
+    if (MCL_FAILED(MclRingBuff_Init(self, capacity, elemBytes, buff))) {
         MCL_LOG_ERR("Init ringbuff failed!");
         MCL_FREE(buff);
         MCL_FREE(self);
@@ -43,19 +43,20 @@ MclRingBuff* MclRingBuff_Create(uint16_t count, uint16_t elemBytes) {
 void MclRingBuff_Delete(MclRingBuff *self) {
     MCL_ASSERT_VALID_PTR_VOID(self);
 
-    if (self->buff.buff) {
-        MCL_FREE(self->buff.buff);
+    void *buff = MclArray_Begin(&self->buff);
+    if (buff) {
+        MCL_FREE(buff);
     }
     MCL_FREE(self);
 }
 
-MclStatus MclRingBuff_Init(MclRingBuff *self, uint16_t count, uint16_t elemBytes, uint8_t* buff) {
+MclStatus MclRingBuff_Init(MclRingBuff *self, uint16_t capacity, uint16_t elemBytes, uint8_t* buff) {
     MCL_ASSERT_VALID_PTR(self);
     MCL_ASSERT_VALID_PTR(buff);
-    MCL_ASSERT_TRUE(count > 0);
+    MCL_ASSERT_TRUE(capacity > 0);
     MCL_ASSERT_TRUE(elemBytes > 0);
 
-    MclArray_Init(&self->buff, count, elemBytes, buff);
+    MclArray_Init(&self->buff, capacity, elemBytes, buff);
     self->head = 0;
     self->tail = 0;
     return MCL_SUCCESS;
@@ -82,8 +83,8 @@ bool MclRingBuff_IsEmpty(const MclRingBuff *self) {
 uint16_t MclRingBuff_GetCount(const MclRingBuff *self) {
     MCL_ASSERT_VALID_PTR_NIL(self);
 
-    uint16_t maxCount = MclArray_GetCount(&self->buff);
-    return (self->tail + maxCount - self->head) % maxCount;
+    uint16_t capacity = MclArray_GetCapacity(&self->buff);
+    return (self->tail + capacity - self->head) % capacity;
 }
 
 MclStatus MclRingBuff_Pop(MclRingBuff *self, void *value) {

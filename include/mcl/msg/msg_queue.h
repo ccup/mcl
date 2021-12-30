@@ -8,9 +8,8 @@
 MCL_STDC_BEGIN
 
 MCL_TYPE(MclMsgQueue) {
-    MclRingBuff queue;
+    MclRingBuff ringbuff;
     MclMutex mutex;
-    MclMsg *msgBuff;
 };
 
 MclMsgQueue* MclMsgQueue_Create(uint16_t capacity);
@@ -26,6 +25,10 @@ uint16_t MclMsgQueue_GetCount(const MclMsgQueue*);
 
 MclStatus MclMsgQueue_Send(MclMsgQueue*, MclMsg*);
 MclStatus MclMsgQueue_Recv(MclMsgQueue*, MclMsg*);
+
+///////////////////////////////////////////////////////////
+#define MCL_MSG_QUEUE(MSG_BUFF, CAPACITY) \
+{.ringbuff = MCL_RINGBUFF(CAPACITY, sizeof(MclMsg), MSG_BUFF), .mutex = MCL_MUTEX()}
 
 MCL_STDC_END
 

@@ -13,13 +13,13 @@ if (ENABLE_THREAD)
     message(STATUS "Thread tests enabled!")
 else()
     list(APPEND TASK_SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/ringbuff_test.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/lock/atom_test.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/lock/mutex_test.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/lock/lockobj_test.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/lock/lockptr_test.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/task/task_scheduler_test.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/mem/shared_ptr_thread_test.cc
+            ${CMAKE_CURRENT_SOURCE_DIR}/ringbuff_test.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/lock/atom_test.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/lock/mutex_test.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/lock/lockobj_test.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/lock/lockptr_test.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/task/task_scheduler_test.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/mem/shared_ptr_thread_test.cpp
     )
     list(REMOVE_ITEM SOURCES ${TASK_SOURCES})
     message(STATUS "Thread tests disabled, removed tests in sources : ${TASK_SOURCES}!")

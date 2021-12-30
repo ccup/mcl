@@ -26,7 +26,8 @@ MclMsgQueue* MclMsgQueue_Create(uint16_t capacity) {
 void MclMsgQueue_Delete(MclMsgQueue *self) {
     MCL_ASSERT_VALID_PTR_VOID(self);
 
-    if (self->msgBuff) MCL_FREE(self->msgBuff);
+    void *buff = MclRingBuff_GetBuff(&self->ringbuff);
+    if (buff) MCL_FREE(buff);
     MCL_FREE(self);
 }
 
@@ -35,47 +36,46 @@ MclStatus MclMsgQueue_Init(MclMsgQueue *self, uint16_t capacity, MclMsg* msgBuff
     MCL_ASSERT_VALID_PTR(msgBuff);
     MCL_ASSERT_TRUE(capacity > 1);
 
-    MCL_ASSERT_SUCC_CALL(MclRingBuff_Init(&self->queue, capacity, sizeof(MclMsg), (uint8_t*)msgBuff));
+    MCL_ASSERT_SUCC_CALL(MclRingBuff_Init(&self->ringbuff, capacity, sizeof(MclMsg), (uint8_t*)msgBuff));
     MCL_ASSERT_SUCC_CALL(MclMutex_Init(&self->mutex, NULL));
 
-    self->msgBuff = msgBuff;
     return MCL_SUCCESS;
 }
 
 void MclMsgQueue_Clear(MclMsgQueue *self) {
     MCL_ASSERT_VALID_PTR_VOID(self);
     MCL_LOCK_AUTO(self->mutex);
-    MclRingBuff_Reset(&self->queue);
+    MclRingBuff_Reset(&self->ringbuff);
 }
 
 bool MclMsgQueue_IsFull(const MclMsgQueue *self) {
     MCL_ASSERT_VALID_PTR_R(self, true);
     MCL_LOCK_AUTO(self->mutex);
-    return MclRingBuff_IsFull(&self->queue);
+    return MclRingBuff_IsFull(&self->ringbuff);
 }
 
 bool MclMsgQueue_IsEmpty(const MclMsgQueue *self) {
     MCL_ASSERT_VALID_PTR_R(self, true);
     MCL_LOCK_AUTO(self->mutex);
-    return MclRingBuff_IsEmpty(&self->queue);
+    return MclRingBuff_IsEmpty(&self->ringbuff);
 }
 
 uint16_t MclMsgQueue_GetCount(const MclMsgQueue *self) {
     MCL_ASSERT_VALID_PTR_NIL(self);
     MCL_LOCK_AUTO(self->mutex);
-    return MclRingBuff_GetCount(&self->queue);
+    return MclRingBuff_GetCount(&self->ringbuff);
 }
 
 MclStatus MclMsgQueue_Send(MclMsgQueue *self, MclMsg *msg) {
     MCL_ASSERT_VALID_PTR(self);
     MCL_LOCK_AUTO(self->mutex);
-    MCL_ASSERT_SUCC_CALL(MclRingBuff_Put(&self->queue, msg));
+    MCL_ASSERT_SUCC_CALL(MclRingBuff_Put(&self->ringbuff, msg));
     return MCL_SUCCESS;
 }
 
 MclStatus MclMsgQueue_Recv(MclMsgQueue *self, MclMsg *msg) {
     MCL_ASSERT_VALID_PTR(self);
     MCL_LOCK_AUTO(self->mutex);
-    MCL_ASSERT_SUCC_CALL(MclRingBuff_Pop(&self->queue, msg));
+    MCL_ASSERT_SUCC_CALL(MclRingBuff_Pop(&self->ringbuff, msg));
     return MCL_SUCCESS;
 }

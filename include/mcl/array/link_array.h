@@ -15,7 +15,7 @@ MCL_TYPE(MclLinkArray) {
 MclLinkArray* MclLinkArray_Create(uint16_t count, uint16_t elemBytes);
 void MclLinkArray_Delete(MclLinkArray*);
 
-void MclLinkArray_Init(MclLinkArray*, uint16_t count, uint16_t elemBytes, uint8_t* buff);
+MclStatus MclLinkArray_Init(MclLinkArray*, uint16_t count, uint16_t elemBytes, uint8_t* buff);
 void MclLinkArray_Clear(MclLinkArray*);
 
 void* MclLinkArray_Take(MclLinkArray*);

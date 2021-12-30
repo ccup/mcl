@@ -31,7 +31,12 @@ MclRingBuff* MclRingBuff_Create(uint16_t count, uint16_t elemBytes) {
         return NULL;
     }
 
-    (void)MclRingBuff_Init(self, count, elemBytes, buff);
+    if (MCL_FAILED(MclRingBuff_Init(self, count, elemBytes, buff))) {
+        MCL_LOG_ERR("Init ringbuff failed!");
+        MCL_FREE(buff);
+        MCL_FREE(self);
+        return NULL;
+    }
     return self;
 }
 

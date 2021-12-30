@@ -21,7 +21,12 @@ MclArray* MclArray_Create(uint16_t count, uint16_t elemBytes) {
         return NULL;
     }
 
-    MclArray_Init(self, count, elemBytes, buff);
+    if (MCL_FAILED(MclArray_Init(self, count, elemBytes, buff))) {
+        MCL_LOG_ERR("Init array failed!");
+        MCL_FREE(buff);
+        MCL_FREE(self);
+        return NULL;
+    }
     return self;
 }
 
@@ -34,15 +39,16 @@ void MclArray_Delete(MclArray *self) {
     MCL_FREE(self);
 }
 
-void MclArray_Init(MclArray *self, uint16_t count, uint16_t elemBytes, uint8_t* buff) {
-    MCL_ASSERT_VALID_PTR_VOID(self);
-    MCL_ASSERT_VALID_PTR_VOID(buff);
-    MCL_ASSERT_TRUE_VOID(count > 0);
-    MCL_ASSERT_TRUE_VOID(elemBytes > 0);
+MclStatus MclArray_Init(MclArray *self, uint16_t count, uint16_t elemBytes, uint8_t* buff) {
+    MCL_ASSERT_VALID_PTR(self);
+    MCL_ASSERT_VALID_PTR(buff);
+    MCL_ASSERT_TRUE(count > 0);
+    MCL_ASSERT_TRUE(elemBytes > 0);
 
     self->elemBytes = elemBytes;
     self->count = count;
     self->buff = buff;
+    return MCL_SUCCESS;
 }
 
 void MclArray_Clear(MclArray *self) {

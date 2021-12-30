@@ -15,7 +15,7 @@ MCL_TYPE(MclArray) {
 MclArray* MclArray_Create(uint16_t count, uint16_t elemBytes);
 void MclArray_Delete(MclArray*);
 
-void MclArray_Init(MclArray*, uint16_t count, uint16_t elemBytes, uint8_t* buff);
+MclStatus MclArray_Init(MclArray*, uint16_t count, uint16_t elemBytes, uint8_t* buff);
 void MclArray_Clear(MclArray*);
 
 void* MclArray_Get(MclArray*, uint16_t index);

@@ -20,9 +20,10 @@ typedef struct MCL_ALLOCATOR(TYPE) {                                        \
     uint8_t buff[SIZE * sizeof(MCL_ALLOCATOR_ELEM(TYPE))];                  \
 } MCL_ALLOCATOR(TYPE);                                                      \
                                                                             \
-MCL_INLINE void TYPE##Allocator_Init(MCL_ALLOCATOR(TYPE) *self) {           \
-    MCL_ASSERT_VALID_PTR_VOID(self);                                        \
-    MclLinkArray_Init(&self->elems, SIZE, sizeof(MCL_ALLOCATOR_ELEM(TYPE)), self->buff);\
+MCL_INLINE MclStatus TYPE##Allocator_Init(MCL_ALLOCATOR(TYPE) *self) {      \
+    MCL_ASSERT_VALID_PTR(self);                                             \
+    MCL_ASSERT_SUCC_CALL(MclLinkArray_Init(&self->elems, SIZE, sizeof(MCL_ALLOCATOR_ELEM(TYPE)), self->buff)); \
+    return MCL_SUCCESS;                                                     \
 }                                                                           \
                                                                             \
 MCL_INLINE TYPE* TYPE##Allocator_Alloc(MCL_ALLOCATOR(TYPE) *self) {         \

@@ -16,14 +16,15 @@ MCL_PRIVATE void MclLinkArray_InitLink(MclLinkArray *self) {
     }
 }
 
-void MclLinkArray_Init(MclLinkArray *self, uint16_t count, uint16_t elemBytes, uint8_t* buff) {
-    MCL_ASSERT_VALID_PTR_VOID(self);
-    MCL_ASSERT_VALID_PTR_VOID(buff);
-    MCL_ASSERT_TRUE_VOID(count > 0);
-    MCL_ASSERT_TRUE_VOID(elemBytes >= sizeof(uint16_t));
+MclStatus MclLinkArray_Init(MclLinkArray *self, uint16_t count, uint16_t elemBytes, uint8_t* buff) {
+    MCL_ASSERT_VALID_PTR(self);
+    MCL_ASSERT_VALID_PTR(buff);
+    MCL_ASSERT_TRUE(count > 0);
+    MCL_ASSERT_TRUE(elemBytes >= sizeof(uint16_t));
 
-    MclArray_Init(&self->array, count, elemBytes, buff);
+    MCL_ASSERT_SUCC_CALL(MclArray_Init(&self->array, count, elemBytes, buff));
     MclLinkArray_InitLink(self);
+    return MCL_SUCCESS;
 }
 
 void MclLinkArray_Clear(MclLinkArray *self) {
@@ -45,7 +46,12 @@ MclLinkArray* MclLinkArray_Create(uint16_t count, uint16_t elemBytes) {
         return NULL;
     }
 
-    MclLinkArray_Init(self, count, elemBytes, buff);
+    if (MCL_FAILED(MclLinkArray_Init(self, count, elemBytes, buff))) {
+        MCL_LOG_ERR("Init link array failed!");
+        MCL_FREE(buff);
+        MCL_FREE(self);
+        return NULL;
+    }
     return self;
 }
 

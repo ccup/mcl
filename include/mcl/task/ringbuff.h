@@ -21,10 +21,13 @@ void MclRingBuff_Reset(MclRingBuff*);
 bool MclRingBuff_IsFull(const MclRingBuff*);
 bool MclRingBuff_IsEmpty(const MclRingBuff*);
 
+uint16_t MclRingBuff_GetCount(const MclRingBuff*);
+
 MclStatus MclRingBuff_Pop(MclRingBuff*, void*);
 MclStatus MclRingBuff_Put(MclRingBuff*, void*);
 
-#define MCL_RINGBUFF(COUNT, ELEM_BYTES, BUFF)           \
+/////////////////////////////////////////////////////////////////
+#define MCL_RINGBUFF(COUNT, ELEM_BYTES, BUFF)                   \
 {.buff = MCL_ARRAY(COUNT, ELEM_BYTES, BUFF), .head = 0, .tail = 0}
 
 MCL_STDC_END

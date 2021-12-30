@@ -1,0 +1,15 @@
+#ifndef MCL_129EB2106E3F47B98AAF2DE052B8476F
+#define MCL_129EB2106E3F47B98AAF2DE052B8476F
+
+#include "mcl/typedef.h"
+
+MCL_STDC_BEGIN
+
+typedef enum {
+    MCL_MSG_URGENT,
+    MCL_MSG_NORMAL,
+} MclMsgPriority;
+
+MCL_STDC_END
+
+#endif

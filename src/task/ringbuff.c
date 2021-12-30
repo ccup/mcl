@@ -65,13 +65,20 @@ void MclRingBuff_Reset(MclRingBuff *self) {
 }
 
 bool MclRingBuff_IsFull(const MclRingBuff *self) {
-    MCL_ASSERT_VALID_PTR_BOOL(self);
+    MCL_ASSERT_VALID_PTR_R(self, true);
     return MclRingBuff_GetNextTail(self) == self->head;
 }
 
 bool MclRingBuff_IsEmpty(const MclRingBuff *self) {
     MCL_ASSERT_VALID_PTR_R(self, true);
     return self->head == self->tail;
+}
+
+uint16_t MclRingBuff_GetCount(const MclRingBuff *self) {
+    MCL_ASSERT_VALID_PTR_NIL(self);
+
+    uint16_t maxCount = MclArray_GetCount(&self->buff);
+    return (self->tail + maxCount - self->head) % maxCount;
 }
 
 MclStatus MclRingBuff_Pop(MclRingBuff *self, void *value) {

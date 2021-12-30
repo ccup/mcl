@@ -9,7 +9,8 @@ typedef pthread_cond_t MclCond;
 typedef pthread_condattr_t MclCondAttr;
 typedef struct timespec MclCondTimeSpec;
 
-#define MCL_COND_INIT(COND) COND=PTHREAD_COND_INITIALIZER
+#define MCL_COND() PTHREAD_COND_INITIALIZER
+#define MCL_COND_INIT(COND) COND = MCL_COND()
 
 MCL_INLINE MclStatus MclCond_InitAttr(MclCondAttr *attr) {
 	return pthread_condattr_init(attr) ? MCL_FAILURE : MCL_SUCCESS;

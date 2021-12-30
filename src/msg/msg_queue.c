@@ -8,7 +8,7 @@ MclMsgQueue* MclMsgQueue_Create(uint16_t capacity) {
     MCL_ASSERT_VALID_PTR_NIL(self);
 
     MclMsg *msgBuff = MCL_MALLOC(sizeof(MclMsg) * capacity);
-    if (msgBuff) {
+    if (!msgBuff) {
         MCL_LOG_ERR("malloc memory of msg buff failed!");
         MCL_FREE(self);
         return NULL;
@@ -68,14 +68,22 @@ uint16_t MclMsgQueue_GetCount(const MclMsgQueue *self) {
 
 MclStatus MclMsgQueue_Send(MclMsgQueue *self, MclMsg *msg) {
     MCL_ASSERT_VALID_PTR(self);
+    MCL_ASSERT_VALID_PTR(msg);
+
     MCL_LOCK_AUTO(self->mutex);
-    MCL_ASSERT_SUCC_CALL(MclRingBuff_Put(&self->ringbuff, msg));
-    return MCL_SUCCESS;
+    return MclRingBuff_Put(&self->ringbuff, msg);
 }
 
-MclStatus MclMsgQueue_Recv(MclMsgQueue *self, MclMsg *msg) {
+MclStatus MclMsgQueue_Recv(MclMsgQueue *self, MclMsg *result) {
     MCL_ASSERT_VALID_PTR(self);
+    MCL_ASSERT_VALID_PTR(result);
+
     MCL_LOCK_AUTO(self->mutex);
-    MCL_ASSERT_SUCC_CALL(MclRingBuff_Pop(&self->ringbuff, msg));
+
+    MclMsg msg;
+    if (MCL_FAILED(MclRingBuff_Pop(&self->ringbuff, &msg))) {
+        return MCL_FAILURE;
+    }
+    MCL_ASSERT_SUCC_CALL(MclMsg_Copy(&msg, result));
     return MCL_SUCCESS;
 }

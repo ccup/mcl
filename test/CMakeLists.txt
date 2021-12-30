@@ -14,6 +14,7 @@ if (ENABLE_THREAD)
 else()
     list(APPEND TASK_SOURCES
             ${CMAKE_CURRENT_SOURCE_DIR}/ringbuff_test.cpp
+#            ${CMAKE_CURRENT_SOURCE_DIR}/msg/msg_queue_test.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/lock/atom_test.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/lock/mutex_test.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/lock/lockobj_test.cpp

@@ -1,6 +1,6 @@
 #include <cctest/cctest.h>
-#include "mcl/task/ringbuff.h"
-#include "mcl/task/thread.h"
+#include "mcl/ringbuff/ringbuff.h"
+#include "mcl/thread/thread.h"
 
 namespace {
     struct Msg {

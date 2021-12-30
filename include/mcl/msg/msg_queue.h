@@ -2,8 +2,8 @@
 #define MCL_9C4A7089E0AB41BC8795A6C1A51C3BAE
 
 #include "mcl/msg/msg.h"
-#include "mcl/task/ringbuff.h"
-#include "mcl/task/mutex.h"
+#include "mcl/ringbuff/ringbuff.h"
+#include "mcl/lock/mutex.h"
 
 MCL_STDC_BEGIN
 

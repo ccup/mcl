@@ -1,5 +1,5 @@
 #include "mcl/mem/shared_ptr.h"
-#include "mcl/task/atom.h"
+#include "mcl/lock/atom.h"
 #include "mcl/mem/malloc.h"
 #include "mcl/mem/align.h"
 #include "mcl/assert.h"

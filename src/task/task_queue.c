@@ -1,6 +1,6 @@
 #include "mcl/task/task_queue.h"
-#include "mcl/task/atom.h"
-#include "mcl/task/cond.h"
+#include "mcl/lock/atom.h"
+#include "mcl/lock/cond.h"
 #include "mcl/task/task.h"
 #include "mcl/list/list.h"
 #include "mcl/list/list_node_allocator.h"

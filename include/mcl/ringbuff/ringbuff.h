@@ -1,7 +1,6 @@
 #ifndef MCL_BF3E52E326AC45BD894114F46228E796
 #define MCL_BF3E52E326AC45BD894114F46228E796
 
-#include "mcl/typedef.h"
 #include "mcl/array/array.h"
 
 MCL_STDC_BEGIN

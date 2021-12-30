@@ -1,5 +1,5 @@
-#include "mcl/task/lockobj.h"
-#include "mcl/task/mutex.h"
+#include "mcl/lock/lockobj.h"
+#include "mcl/lock/mutex.h"
 #include "mcl/mem/malloc.h"
 #include "mcl/mem/align.h"
 #include "mcl/assert.h"

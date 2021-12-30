@@ -1,7 +1,7 @@
 #ifndef H34BD157B_99A2_4FEB_B9FE_9C85A9BB6703
 #define H34BD157B_99A2_4FEB_B9FE_9C85A9BB6703
 
-#include "mcl/task/mutex.h"
+#include "mcl/lock/mutex.h"
 #include "task/task_utils/executed_task.h"
 #include <initializer_list>
 #include <iostream>

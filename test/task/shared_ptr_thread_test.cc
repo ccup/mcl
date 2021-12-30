@@ -2,8 +2,8 @@
 #include "foo_utils/foo.h"
 #include "foo_utils/foo_factory.h"
 #include "mcl/mem/shared_ptr.h"
-#include "mcl/task/rwlock.h"
-#include "mcl/task/thread.h"
+#include "mcl/lock/rwlock.h"
+#include "mcl/thread/thread.h"
 #include "mcl/list/list.h"
 #include <unistd.h>
 #include <string>

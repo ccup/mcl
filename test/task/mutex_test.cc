@@ -1,6 +1,6 @@
 #include <cctest/cctest.h>
-#include "mcl/task/mutex.h"
-#include "mcl/task/thread.h"
+#include "mcl/lock/mutex.h"
+#include "mcl/thread/thread.h"
 
 namespace {
 	struct Obj {

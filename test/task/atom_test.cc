@@ -1,6 +1,6 @@
 #include <cctest/cctest.h>
-#include "mcl/task/atom.h"
-#include "mcl/task/thread.h"
+#include "mcl/lock/atom.h"
+#include "mcl/thread/thread.h"
 
 namespace {
     MclAtom sum = 0;

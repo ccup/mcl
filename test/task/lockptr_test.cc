@@ -1,8 +1,8 @@
 #include <cctest/cctest.h>
 #include "foo_utils/foo_factory.h"
-#include "mcl/task/lockptr.h"
-#include "mcl/task/rwlock.h"
-#include "mcl/task/thread.h"
+#include "mcl/lock/lockptr.h"
+#include "mcl/lock/rwlock.h"
+#include "mcl/thread/thread.h"
 #include "mcl/list/list.h"
 #include <unistd.h>
 #include <string>

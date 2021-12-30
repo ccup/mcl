@@ -1,7 +1,7 @@
 #ifndef MCL_ED99144E686E49A1ADF6F1BE984D14E1
 #define MCL_ED99144E686E49A1ADF6F1BE984D14E1
 
-#include "mcl/task/mutex.h"
+#include "mcl/lock/mutex.h"
 
 MCL_STDC_BEGIN
 

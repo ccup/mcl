@@ -2,7 +2,7 @@
 #define H09F794ED_B8FC_4A49_A88A_5A8DA7B6FCE8
 
 #include "foo_utils/foo.h"
-#include "mcl/task/lockobj.h"
+#include "mcl/lock/lockobj.h"
 #include "mcl/mem/shared_ptr.h"
 #include "mcl/list/list_data.h"
 #include "mcl/map/hash_value.h"

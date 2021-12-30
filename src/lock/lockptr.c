@@ -1,4 +1,4 @@
-#include "mcl/task/lockptr.h"
+#include "mcl/lock/lockptr.h"
 #include "mcl/mem/malloc.h"
 
 MclStatus MclLockPtr_Lock(MclLockPtr *self) {

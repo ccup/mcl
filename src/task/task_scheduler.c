@@ -1,6 +1,6 @@
 #include "mcl/task/task_scheduler.h"
 #include "mcl/task/task_queue.h"
-#include "mcl/task/thread.h"
+#include "mcl/thread/thread.h"
 #include "mcl/task/task.h"
 #include "mcl/mem/malloc.h"
 #include "mcl/assert.h"

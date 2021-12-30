@@ -1,7 +1,7 @@
 #ifndef H16533543_F5E3_4361_BF24_AEB9E4E92F5B
 #define H16533543_F5E3_4361_BF24_AEB9E4E92F5B
 
-#include "mcl/task/mutex.h"
+#include "mcl/lock/mutex.h"
 
 MCL_STDC_BEGIN
 

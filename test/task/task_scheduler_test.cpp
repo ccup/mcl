@@ -31,7 +31,7 @@ FIXTURE(SchedulerTest)
 	}
 
 	void waitScheduleDone(MclTaskScheduler *scheduler) {
-		MclTaskScheduler_WaitDone(scheduler);
+        MclTaskScheduler_WaitDone(scheduler);
 		sleep(slowTaskPauseTime + 1);
 	}
 
@@ -168,7 +168,7 @@ FIXTURE(SchedulerTest)
 
 		ASSERT_EQ(0, history.getSize());
 
-		MclTaskScheduler_WaitDone(scheduler);
+        MclTaskScheduler_LocalExecute(scheduler);
 		MclTaskScheduler_Delete(scheduler);
 
 		ASSERT_TRUE(history.isInOrderOf({__ET(URGENT), __ET(NORMAL), __ET(SLOW)}));

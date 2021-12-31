@@ -102,7 +102,7 @@ do {                                        \
 
 //////////////////////////////////////////////////////////////////////////
 #define __MCL_WARNING_CALL(call, status)        \
-    MCL_WARN(#call" = [%X]", status)
+    MCL_LOG_WARN(#call" = [%X]", status)
 
 #define __MCL_EXPECT_SUCC_CALL(call, action)\
 do {                                            \

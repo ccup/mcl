@@ -13,18 +13,14 @@ MCL_TYPE_DECL(MclTaskQueue);
 MclTaskQueue* MclTaskQueue_Create(uint32_t priorities, uint32_t *thresholds);
 void MclTaskQueue_Delete(MclTaskQueue*);
 
-MclStatus MclTaskQueue_Start(MclTaskQueue*);
-MclStatus MclTaskQueue_Stop(MclTaskQueue*);
+void MclTaskQueue_Start(MclTaskQueue *self);
+void MclTaskQueue_Stop(MclTaskQueue *self);
 
-MclStatus MclTaskQueue_SubmitTask(MclTaskQueue*, MclTask*, uint32_t priority);
-MclStatus MclTaskQueue_RemoveTask(MclTaskQueue*, MclTaskKey, uint32_t priority);
-
-bool MclTaskQueue_IsReady(const MclTaskQueue*);
 bool MclTaskQueue_IsEmpty(const MclTaskQueue*);
 
-void MclTaskQueue_ExecuteAll(MclTaskQueue*);
-
-void* MclTaskQueue_ThreadExecute(void*);
+MclStatus MclTaskQueue_AddTask(MclTaskQueue*, MclTask*, uint32_t priority);
+MclStatus MclTaskQueue_DelTask(MclTaskQueue*, MclTaskKey, uint32_t priority);
+MclTask*  MclTaskQueue_PopTask(MclTaskQueue *);
 
 MCL_STDC_END
 

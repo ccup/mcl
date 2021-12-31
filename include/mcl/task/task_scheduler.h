@@ -21,6 +21,7 @@ bool MclTaskScheduler_IsRunning(const MclTaskScheduler*);
 MclStatus MclTaskScheduler_SubmitTask(MclTaskScheduler*, MclTask*, uint32_t priority);
 MclStatus MclTaskScheduler_RemoveTask(MclTaskScheduler*, MclTaskKey, uint32_t priority);
 
+void MclTaskScheduler_LocalExecute(MclTaskScheduler*);
 void MclTaskScheduler_WaitDone(MclTaskScheduler*);
 
 MCL_STDC_END

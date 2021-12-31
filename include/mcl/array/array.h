@@ -51,7 +51,7 @@ for (PTR  = (TYPE*)MclArray_Begin(ARRAY); PTR < (TYPE*)MclArray_End(ARRAY); PTR+
 for (INDEX = 0; INDEX < (ARRAY)->capacity; INDEX++)
 
 #define MCL_ARRAY(CAPACITY, ELEM_BYTES, BUFF) \
-{.capacity = CAPACITY, .elemBytes = ELEM_BYTES, .buff = BUFF}
+{.capacity = (CAPACITY), .elemBytes = (ELEM_BYTES), .buff = (uint8_t*)(BUFF)}
 
 MCL_STDC_END
 

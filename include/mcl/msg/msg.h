@@ -6,19 +6,21 @@
 
 MCL_STDC_BEGIN
 
-typedef uint32_t MsgId;
+typedef uint16_t MclMsgType;
+typedef uint16_t MclMsgId;
 
 MCL_TYPE(MclMsg) {
-    MsgId id;
+    MclMsgType type;
+    MclMsgId   id;
     uint16_t rev;
     uint16_t bodyBytes;
     void* body;
 };
 
-MclMsg* MclMsg_Create(MsgId, uint16_t bodySize);
+MclMsg* MclMsg_Create(MclMsgType type, MclMsgId, uint16_t bodySize);
 void MclMsg_Delete(MclMsg*);
 
-MclStatus MclMsg_Init(MclMsg*, MsgId, uint16_t bodySize, void* body);
+MclStatus MclMsg_Init(MclMsg*, MclMsgType, MclMsgId, uint16_t bodySize, void* body);
 
 MclStatus MclMsg_Fill(MclMsg*, uint16_t pos, uint16_t len, void *value);
 MclStatus MclMsg_Fetch(MclMsg *self, uint16_t pos, uint16_t len, void *value);
@@ -48,8 +50,8 @@ MCL_INLINE void MclMsg_AutoFree(MclMsg **ppMsg) {
 
 #define MCL_AUTO_MSG    MCL_RAII(MclMsg_AutoFree)
 
-#define MCL_MSG(ID, BODY_SIZE, BODY_PTR) \
-{.id = ID, .rev = 0, .bodyBytes = BODY_SIZE, .body = BODY_PTR}
+#define MCL_MSG(TYPE, ID, BODY_SIZE, BODY_PTR) \
+{.type = TYPE, .id = ID, .rev = 0, .bodyBytes = BODY_SIZE, .body = BODY_PTR}
 
 MCL_STDC_END
 

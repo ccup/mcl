@@ -9,6 +9,7 @@ MCL_STDC_BEGIN
 #define MCL_ALLOCATOR(TYPE)           TYPE##Allocator
 #define MCL_ALLOCATOR_ELEM(TYPE) 	  TYPE##AllocatorElemType
 
+/////////////////////////////////////////////////////////////////////////////
 #define MCL_ALLOCATOR_TYPE_DEF(TYPE, CAPACITY)                              \
 typedef union MCL_ALLOCATOR_ELEM(TYPE) {                                    \
     uint8_t obj[sizeof(TYPE)];                                              \
@@ -36,6 +37,7 @@ MCL_INLINE void TYPE##Allocator_Free(MCL_ALLOCATOR(TYPE) *self, TYPE *p) {  \
     MCL_ASSERT_VALID_PTR_VOID(p);                                           \
     MclLinkArray_Give(&self->elems, p);                                     \
 }
+/////////////////////////////////////////////////////////////////////////////
 
 MCL_STDC_END
 

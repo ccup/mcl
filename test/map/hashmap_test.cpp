@@ -1,8 +1,40 @@
 #include <cctest/cctest.h>
-#include "foo_utils/foo_factory.h"
 #include "mcl/map/hash_map.h"
 
 namespace {
+	using FooId = uint32_t;
+	constexpr FooId FOO_ID_INVALID = 0xFFFFFFFF;
+
+	struct Foo {
+		static std::atomic<uint16_t> FOO_COUNT;
+
+		Foo (FooId id) : id {id} {
+		}
+
+		FooId getId() const {
+			return id;
+		}
+	private:
+		FooId id {FOO_ID_INVALID};
+	};
+
+	std::atomic<uint16_t> Foo::FOO_COUNT {0};
+
+	Foo* Foo_Create(FooId id = FOO_ID_INVALID) {
+		Foo::FOO_COUNT++;
+		return new Foo {id};
+	}
+
+	void Foo_Delete(Foo *f) {
+		Foo::FOO_COUNT--;
+		if (f) delete f;
+	}
+
+	void Foo_HashDelete(MclHashValueDeleter *deleter, MclHashValue value) {
+		auto f = (Foo*)value;
+		Foo_Delete(f);
+	}
+
     void Foo_Sum(const Foo *foo, uint32_t *sum) {
     	(*sum) += foo->getId();
     }
@@ -51,7 +83,7 @@ FIXTURE(HashMapTest) {
 
     BEFORE {
     	foos = MclHashMap_CreateDefault();
-    	fooDeleter.destroy = Foo_HashDelete<FooCreateType::NORMAL>;
+    	fooDeleter.destroy = Foo_HashDelete;
     	HashNodePred_Init(&fooIdPred);
     	HashNodeVisitor_Init(&fooVisitor);
     }
@@ -71,7 +103,7 @@ FIXTURE(HashMapTest) {
 
 	TEST("should add element to map")
 	{
-		auto foo = FooFactory<>::create(1);
+		auto foo = Foo_Create(1);
 
 		MclHashMap_Set(foos, 1, foo);
 		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
@@ -86,9 +118,9 @@ FIXTURE(HashMapTest) {
 
 	TEST("should add more elements to map")
 	{
-		auto foo1 = FooFactory<>::create(1);
-		auto foo2 = FooFactory<>::create(2);
-		auto foo3 = FooFactory<>::create(3);
+		auto foo1 = Foo_Create(1);
+		auto foo2 = Foo_Create(2);
+		auto foo3 = Foo_Create(3);
 
 		MclHashMap_Set(foos, 1, foo1);
 		MclHashMap_Set(foos, 2, foo2);
@@ -114,7 +146,7 @@ FIXTURE(HashMapTest) {
 
 	TEST("should remove element from map")
 	{
-		auto foo = FooFactory<>::create(1);
+		auto foo = Foo_Create(1);
 
 		MclHashMap_Set(foos, 1, foo);
 
@@ -126,21 +158,21 @@ FIXTURE(HashMapTest) {
 		Foo *f {nullptr};
 		ASSERT_TRUE(MCL_FAILED(MclHashMap_Get(foos, 1, (MclHashValue*)(&f))));
 
-		FooFactory<>::destroy(foo);
+		Foo_Delete(foo);
 	}
 
 	TEST("should remove elements from map")
 	{
-		auto foo1 = FooFactory<>::create(1);
-		auto foo2 = FooFactory<>::create(2);
-		auto foo3 = FooFactory<>::create(3);
+		auto foo1 = Foo_Create(1);
+		auto foo2 = Foo_Create(2);
+		auto foo3 = Foo_Create(3);
 
 		MclHashMap_Set(foos, 1, foo1);
 		MclHashMap_Set(foos, 2, foo2);
 		MclHashMap_Set(foos, 3, foo3);
 
 		MclHashMap_Remove(foos, 2, NULL);
-		FooFactory<>::destroy(foo2);
+		Foo_Delete(foo2);
 
 		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
 		ASSERT_EQ(2, MclHashMap_GetCount(foos));
@@ -155,13 +187,13 @@ FIXTURE(HashMapTest) {
 		ASSERT_TRUE(MclHashMap_IsEmpty(foos));
 		ASSERT_EQ(0, MclHashMap_GetCount(foos));
 
-		FooFactory<>::destroy(foo1);
-		FooFactory<>::destroy(foo3);
+		Foo_Delete(foo1);
+		Foo_Delete(foo3);
 	}
 
 	TEST("should delete element from map")
 	{
-		auto foo = FooFactory<>::create(1);
+		auto foo = Foo_Create(1);
 
 		MclHashMap_Set(foos, 1, foo);
 		MclHashMap_Remove(foos, 1, &fooDeleter);
@@ -171,9 +203,9 @@ FIXTURE(HashMapTest) {
 
 	TEST("should delete elements from map")
 	{
-		auto foo1 = FooFactory<>::create(1);
-		auto foo2 = FooFactory<>::create(2);
-		auto foo3 = FooFactory<>::create(3);
+		auto foo1 = Foo_Create(1);
+		auto foo2 = Foo_Create(2);
+		auto foo3 = Foo_Create(3);
 
 		MclHashMap_Set(foos, 1, foo1);
 		MclHashMap_Set(foos, 2, foo2);
@@ -193,7 +225,7 @@ FIXTURE(HashMapTest) {
 
 	TEST("should clear elements in map")
 	{
-		auto foo = FooFactory<>::create(1);
+		auto foo = Foo_Create(1);
 
 		MclHashMap_Set(foos, 1, foo);
 
@@ -204,9 +236,9 @@ FIXTURE(HashMapTest) {
 
 	TEST("should remove nodes in map by condition")
 	{
-		auto foo1 = FooFactory<>::create(1);
-		auto foo2 = FooFactory<>::create(2);
-		auto foo3 = FooFactory<>::create(3);
+		auto foo1 = Foo_Create(1);
+		auto foo2 = Foo_Create(2);
+		auto foo3 = Foo_Create(3);
 
 		MclHashMap_Set(foos, 1, foo1);
 		MclHashMap_Set(foos, 2, foo2);
@@ -229,11 +261,11 @@ FIXTURE(HashMapTest) {
 
 	TEST("should visit nodes in map by condition")
 	{
-		MclHashMap_Set(foos, 12, FooFactory<>::create(12));
-		MclHashMap_Set(foos, 13, FooFactory<>::create(13));
-		MclHashMap_Set(foos, 14, FooFactory<>::create(14));
-		MclHashMap_Set(foos, FOO_ID_INVALID, FooFactory<>::create(FOO_ID_INVALID));
-		MclHashMap_Set(foos, 15, FooFactory<>::create(15));
+		MclHashMap_Set(foos, 12, Foo_Create(12));
+		MclHashMap_Set(foos, 13, Foo_Create(13));
+		MclHashMap_Set(foos, 14, Foo_Create(14));
+		MclHashMap_Set(foos, FOO_ID_INVALID, Foo_Create(FOO_ID_INVALID));
+		MclHashMap_Set(foos, 15, Foo_Create(15));
 
 //		MclHashMap_Dump(foos);
 
@@ -248,7 +280,7 @@ FIXTURE(HashMapTest) {
 		constexpr uint32_t MAX_ELEMS = 10000;
 
 		for (uint32_t i = 0; i < MAX_ELEMS; i++) {
-			MclHashMap_Set(foos, i, FooFactory<>::create(i));
+			MclHashMap_Set(foos, i, Foo_Create(i));
 		}
 
 		ASSERT_EQ(MAX_ELEMS, MclHashMap_GetCount(foos));
@@ -270,71 +302,5 @@ FIXTURE(HashMapTest) {
 		ASSERT_EQ(MAX_ELEMS + MAX_ELEMS - 3, fooVisitor.sum);
 
 		MclHashMap_Clear(foos, &fooDeleter);
-	}
-};
-
-namespace {
-	struct FooMap {
-		MclHashMap map;
-		MclHashBucket buckets[MCL_HASHMAP_BUCKET_COUNT_DEFAULT];
-	};
-}
-
-FIXTURE(HashMapAdvanceTest) {
-	constexpr static uint32_t NODE_NUM = 6;
-
-	FooMap foomap;
-	MclHashNode nodes[NODE_NUM];
-
-	MclHashMap *foos{nullptr};
-
-    HashMapAdvanceTest() {
-    	foos = &foomap.map;
-		MclHashMap_Init(foos, MCL_HASHMAP_BUCKET_COUNT_DEFAULT, foomap.buckets, NULL);
-
-		for (long i = 0; i < NODE_NUM; i++) {
-		    MclHashNode_Init(&nodes[i], (MclHashKey)i, (MclHashValue)i);
-		}
-	}
-
-    AFTER {
-		MclHashMap_Clear(foos, NULL);
-    }
-
-	TEST("find all valid data")
-	{
-		MclHashMap_InsertNode(foos, &nodes[1]);
-		MclHashMap_InsertNode(foos, &nodes[3]);
-		MclHashMap_InsertNode(foos, &nodes[5]);
-		MclHashMap_InsertNode(foos, &nodes[2]);
-
-		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
-		ASSERT_EQ(4, MclHashMap_GetCount(foos));
-
-		long value{0};
-
-		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(foos, 1, (MclHashValue*)(&value))));
-		ASSERT_EQ(1, value);
-
-		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(foos, 2, (MclHashValue*)(&value))));
-		ASSERT_EQ(2, value);
-
-		ASSERT_TRUE(MCL_FAILED(MclHashMap_Get(foos, 4, (MclHashValue*)(&value))));
-
-		auto result = MclHashMap_FindNode(foos, 5);
-		ASSERT_TRUE(result != NULL);
-		ASSERT_EQ(5, result->key);
-		ASSERT_EQ(5, (long)result->value);
-
-		ASSERT_TRUE(MclHashMap_FindNode(foos, 6) == NULL);
-
-		ASSERT_TRUE(!MCL_FAILED(MclHashMap_RemoveNode(foos, &nodes[5], NULL)));
-		ASSERT_TRUE(MclHashMap_FindNode(foos, 5) == NULL);
-		ASSERT_EQ(3, MclHashMap_GetCount(foos));
-
-		MclHashNode node = MCL_HASH_NODE(6, (MclHashValue)6);
-		ASSERT_TRUE(MCL_FAILED(MclHashMap_RemoveNode(foos, &node, NULL)));
-
-        ASSERT_EQ(3, MclHashMap_GetCount(foos));
 	}
 };

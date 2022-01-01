@@ -2,10 +2,9 @@
 #define H8E11CCEE_05CA_4E3E_BF3C_1E19204214E5
 
 #include "mcl/list/list_node.h"
+#include "mcl/list/list_node_allocator.h"
 
 MCL_STDC_BEGIN
-
-MCL_TYPE_DECL(MclListNodeAllocator);
 
 MCL_TYPE(MclList) {
 	MCL_LINK(MclListNode) nodes;
@@ -99,7 +98,9 @@ MCL_INLINE MclListNode* MclList_GetPrevOf(MclList *self, MclListNode *node) {
 
 /////////////////////////////////////////////////////////////////
 #define MCL_LIST(LIST, ALLOCATOR)   							\
-	{.nodes = MCL_LINK_INITIALIZER(&LIST.nodes, MclListNode, link), .count = 0, .allocator = (ALLOCATOR)}
+	{.nodes = MCL_LINK_INITIALIZER(&(LIST).nodes, MclListNode, link), .count = 0, .allocator = (ALLOCATOR)}
+
+#define MCL_LIST_DEFAULT(LIST) MCL_LIST(LIST, &MCL_LIST_NODE_ALLOCATOR)
 
 MCL_STDC_END
 

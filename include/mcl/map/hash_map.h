@@ -2,10 +2,9 @@
 #define MCL_9D4ABA5E943341339E3B717F62B7F8D1
 
 #include "mcl/map/hash_bucket.h"
+#include "mcl/map/hash_node_allocator.h"
 
 MCL_STDC_BEGIN
-
-MCL_TYPE_DECL(MclHashNodeAllocator);
 
 MCL_TYPE(MclHashMap) {
 	MclHashNodeAllocator *allocator;
@@ -42,7 +41,9 @@ void MclHashMap_Dump(const MclHashMap*);
 #define MCL_HASHMAP_BUCKET_COUNT_DEFAULT (uint32_t)127
 
 #define MCL_HASHMAP(MAP, BUCKET_COUNT, BUCKETS, ALLOCATOR)   			\
-{.allocator = ALLOCATOR, .elementCount = 0, .bucketCount = BUCKET_COUNT, .buckets = BUCKETS}
+{.allocator = (ALLOCATOR), .elementCount = 0, .bucketCount = (BUCKET_COUNT), .buckets = (BUCKETS)}
+
+#define MCL_HASHMAP_DEFAULT(MAP, BUCKET_COUNT, BUCKETS) MCL_HASHMAP(MAP, BUCKET_COUNT, BUCKETS, &MCL_HASH_NODE_ALLOCATOR)
 
 MCL_STDC_END
 

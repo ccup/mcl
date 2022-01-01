@@ -7,13 +7,14 @@ MCL_PRIVATE MclHashNode* MclHashNodeAllocator_AllocDefault(MclHashNodeAllocator 
 }
 
 MCL_PRIVATE void MclHashNodeAllocator_ReleaseDefault(MclHashNodeAllocator *self, MclHashNode *node) {
-    MCL_FREE(node);
+    if (node) MCL_FREE(node);
 }
 
+MclHashNodeAllocator MCL_HASH_NODE_ALLOCATOR = {
+        .alloc = MclHashNodeAllocator_AllocDefault,
+        .release = MclHashNodeAllocator_ReleaseDefault
+};
+
 MclHashNodeAllocator* MclHashNodeAllocator_GetDefault() {
-    static MclHashNodeAllocator defaultAllocator = {
-            .alloc = MclHashNodeAllocator_AllocDefault,
-            .release = MclHashNodeAllocator_ReleaseDefault
-    };
-    return &defaultAllocator;
+    return &MCL_HASH_NODE_ALLOCATOR;
 }

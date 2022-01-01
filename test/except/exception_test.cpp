@@ -1,5 +1,5 @@
 #include <cctest/cctest.h>
-#include "mcl/exception.h"
+#include "mcl/except/exception.h"
 
 namespace {
     MclStatus func_return_status(MclStatus status) {

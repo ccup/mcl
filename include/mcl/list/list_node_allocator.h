@@ -20,6 +20,7 @@ MCL_INLINE void MclListNodeAllocator_Release(MclListNodeAllocator *self, MclList
     if (self && self->release) self->release(self, node);
 }
 
+extern MclListNodeAllocator MCL_LIST_NODE_ALLOCATOR;
 MclListNodeAllocator* MclListNodeAllocator_GetDefault();
 
 /////////////////////////////////////////////////////////

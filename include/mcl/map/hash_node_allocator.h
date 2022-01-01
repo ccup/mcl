@@ -1,5 +1,5 @@
-#ifndef H22383929_F96E_447A_9D78_780E12E969BC
-#define H22383929_F96E_447A_9D78_780E12E969BC
+#ifndef H22383929_F96E_447A_9D78_780E12E969BD
+#define H22383929_F96E_447A_9D78_780E12E969BD
 
 #include "mcl/keyword.h"
 
@@ -20,6 +20,7 @@ MCL_INLINE void MclHashNodeAllocator_Release(MclHashNodeAllocator *self, MclHash
     if (self && self->release) self->release(self, node);
 }
 
+extern MclHashNodeAllocator MCL_HASH_NODE_ALLOCATOR;
 MclHashNodeAllocator* MclHashNodeAllocator_GetDefault();
 
 ///////////////////////////////////////////////////////////

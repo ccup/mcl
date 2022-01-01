@@ -35,7 +35,7 @@ MCL_INLINE void MclThread_Exit(MclThread *thread) {
 }
 
 MCL_INLINE void MclThread_Yield() {
-	pthread_yield_np();
+    sched_yield();
 }
 
 MCL_INLINE uintptr_t MclThread_GetId() {

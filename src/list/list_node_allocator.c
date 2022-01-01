@@ -7,13 +7,14 @@ MCL_PRIVATE MclListNode* MclListNodeAllocator_AllocDefault(MclListNodeAllocator 
 }
 
 MCL_PRIVATE void MclListNodeAllocator_ReleaseDefault(MclListNodeAllocator *self, MclListNode *node) {
-    MCL_FREE(node);
+    if (node) MCL_FREE(node);
 }
 
+MclListNodeAllocator MCL_LIST_NODE_ALLOCATOR = {
+        .alloc = MclListNodeAllocator_AllocDefault,
+        .release = MclListNodeAllocator_ReleaseDefault
+};
+
 MclListNodeAllocator* MclListNodeAllocator_GetDefault() {
-    static MclListNodeAllocator defaultAllocator = {
-            .alloc = MclListNodeAllocator_AllocDefault,
-            .release = MclListNodeAllocator_ReleaseDefault
-    };
-    return &defaultAllocator;
+    return &MCL_LIST_NODE_ALLOCATOR;
 }

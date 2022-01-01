@@ -1,6 +1,6 @@
 #include <cctest/cctest.h>
 #include "mcl/mem/shared_ptr.h"
-#include "foo_utils//foo_factory.h"
+#include "lock/foo_utils/foo_factory.h"
 
 FIXTURE(SharedPtrTest) {
     TEST("should create shared ptr") {

@@ -23,7 +23,7 @@ MclStatus MclArray_Set(MclArray*, uint16_t index, void*);
 
 void MclArray_Reset(MclArray*, uint16_t index);
 
-/////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 MCL_INLINE uint16_t MclArray_GetCapacity(const MclArray *self) {
     return self ? self->capacity : 0;
 }

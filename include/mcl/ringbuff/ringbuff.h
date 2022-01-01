@@ -25,7 +25,7 @@ uint16_t MclRingBuff_GetCount(const MclRingBuff*);
 MclStatus MclRingBuff_Pop(MclRingBuff*, void*);
 MclStatus MclRingBuff_Put(MclRingBuff*, void*);
 
-/////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 MCL_INLINE void* MclRingBuff_GetBuff(MclRingBuff *self) {
     return self ? MclArray_Begin(&self->buff): NULL;
 }

@@ -33,6 +33,7 @@ MCL_INLINE bool MclStatus_IsDone(MclStatus status) {
 	return MCL_STATUS_DONE == status;
 }
 
+///////////////////////////////////////////////////////////
 #define MCL_FAILED(result)   MclStatus_IsFailed(result)
 #define MCL_DONE(result)     MclStatus_IsDone(result)
 

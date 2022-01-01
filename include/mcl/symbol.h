@@ -14,6 +14,7 @@
 #  define MCL_SYMBOL_UNIQUE_ID __LINE__
 #endif
 
+///////////////////////////////////////////////////////////
 #define MCL_SYMBOL_UNIQUE(prefix) MCL_SYMBOL_JOIN(prefix, MCL_SYMBOL_UNIQUE_ID)
 
 #endif

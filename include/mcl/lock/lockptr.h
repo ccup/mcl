@@ -29,7 +29,7 @@ void MclLockPtr_UniqueDestroy(MclLockPtr*, MclLockPtrDeleter, void *arg);
 MclStatus MclLockPtr_Lock(MclLockPtr*);
 MclStatus MclLockPtr_Unlock(MclLockPtr*);
 
-///////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 MCL_INLINE void MclLockPtr_AutoUnlock(MclLockPtr **ppPtr) {
     if (!ppPtr) return;
     (void)MclLockPtr_Unlock(*ppPtr);

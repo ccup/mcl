@@ -13,7 +13,7 @@
 #define __MCL_PEEK_ACTION
 #define __MCL_RESULT_ACTION(status)   return status
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 #define __MCL_WARNING_NOT_TRUE(exp)         \
   MCL_LOG_WARN("assertion failed: "#exp)
 
@@ -48,7 +48,7 @@ do {                                        \
 #define MCL_EXPECT_TRUE_BOOL(exp)           \
   __MCL_EXPECT_TRUE(exp, __MCL_FAILED_BOOL_ACTION)
 
-///////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 #define  __MCL_NOT_TRUE(exp)                \
     MCL_LOG_ERR("assertion failed: "#exp)
 
@@ -85,7 +85,7 @@ do {                                        \
 #define MCL_ASSERT_TRUE_BOOL(exp)           \
   __MCL_ASSERT_TRUE(exp, __MCL_FAILED_BOOL_ACTION)
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 #define __MCL_ASSERT_TRUE_POST(exp, action, returnAction) \
 do {                                        \
     if (!(exp))                             \
@@ -100,7 +100,7 @@ do {                                        \
   __MCL_ASSERT_TRUE_POST(exp, action, __MCL_FAILED_STATUS_ACTION)
 
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 #define __MCL_WARNING_CALL(call, status)        \
     MCL_LOG_WARN(#call" = [%X]", status)
 
@@ -129,7 +129,7 @@ do {                                            \
 #define MCL_EXPECT_SUCC_CALL_NIL(call)          \
    __MCL_EXPECT_SUCC_CALL(call, __MCL_NIL_ACTION)
 
-/////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 #define __MCL_FAIL_CALL(call, status)           \
   MCL_LOG_ERR(#call" = [%X]", status)
 
@@ -162,8 +162,7 @@ do {                                            \
 #define MCL_PEEK_SUCC_CALL(call)            \
    __MCL_ASSERT_SUCC_CALL(call, __MCL_PEEK_ACTION)
 
-//////////////////////////////////////////////////////////////////////////
-
+///////////////////////////////////////////////////////////
 #define __MCL_ASSERT_SUCC_CALL_FINALLY(call, action, returnAction)  \
 do {                                                \
     MclStatus __status = call;                      \
@@ -178,7 +177,7 @@ do {                                                \
 #define MCL_ASSERT_SUCC_CALL_FINALLY(exp, action)   \
   __MCL_ASSERT_SUCC_CALL_FINALLY(exp, action, __MCL_FAILED_STATUS_ACTION)
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 #define __MCL_ASSERT_NO_REAL_FAIL(call, action)      \
 do {                                                 \
     MclStatus __status = call;                       \
@@ -196,7 +195,7 @@ do {                                                 \
 #define MCL_ASSERT_NO_REAL_FAIL(call)                \
     __MCL_ASSERT_NO_REAL_FAIL(call, __MCL_STATUS_ACTION)
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 #define __MCL_NIL_PTR(ptr)                               \
     MCL_LOG_ERR("assertion failed: unexpected null ptr: "#ptr)
 

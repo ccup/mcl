@@ -9,6 +9,7 @@ MCL_INLINE size_t MclAlign_GetSizeOf(size_t size) {
     return (size + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
 }
 
+///////////////////////////////////////////////////////////
 #define MCL_ALIGN(N) __attribute__((aligned(N)))
 
 MCL_STDC_END

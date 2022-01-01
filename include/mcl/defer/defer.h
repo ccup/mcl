@@ -16,7 +16,7 @@ void MclDefer_Clear(MclDefer*);
 void MclDefer_Add(MclDefer*, MclDeferNode*);
 void MclDefer_Exec(MclDefer*);
 
-////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 #define __MCL_DEFER_NODE_NAME(id) MCL_SYMBOL_JOIN(mclDeferNode, id)
 
 #define __MCL_DEFER_ADD(id, defer, fn, ctxt)                        \
@@ -28,7 +28,7 @@ MclDefer_Add(&defer, &__MCL_DEFER_NODE_NAME(id))
 
 #define __MCL_DEFER_DEFAULT  __mcl_defer_default
 
-////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 #define MCL_DEFER_ENABLE()                                          \
 MCL_RAII(MclDefer_Exec) MclDefer __MCL_DEFER_DEFAULT = MCL_DEFER(__MCL_DEFER_DEFAULT)
 

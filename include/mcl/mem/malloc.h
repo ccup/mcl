@@ -7,6 +7,7 @@
 
 MCL_STDC_BEGIN
 
+///////////////////////////////////////////////////////////
 #ifndef MCL_MEMORY_FORCE_CLEAN
 #define MCL_MEMORY_FORCE_CLEAN
 #endif
@@ -25,13 +26,7 @@ MCL_INLINE void Mcl_Free(void * p) {
     }
 }
 
-MCL_INLINE void Mcl_AutoFree(void* pp) {
-    if (!pp) return;
-    void** p_pointer =  (void**)pp;
-    Mcl_Free(*p_pointer);
-    (*p_pointer) = NULL;
-}
-
+///////////////////////////////////////////////////////////
 #define MCL_MALLOC(SIZE)    Mcl_Malloc(SIZE)
 
 #define MCL_FREE(PTR)                   \
@@ -39,6 +34,14 @@ do {                                    \
     Mcl_Free(PTR);                      \
     (PTR) = NULL;                       \
 } while(0)
+
+///////////////////////////////////////////////////////////
+MCL_INLINE void Mcl_AutoFree(void* pp) {
+    if (!pp) return;
+    void** p_pointer =  (void**)pp;
+    Mcl_Free(*p_pointer);
+    (*p_pointer) = NULL;
+}
 
 #define MCL_FREE_AUTO    MCL_RAII(Mcl_AutoFree)
 

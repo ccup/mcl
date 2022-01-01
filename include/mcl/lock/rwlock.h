@@ -42,6 +42,7 @@ MCL_INLINE MclStatus MclRwLock_Unlock(MclRwLock *rwlock) {
     return pthread_rwlock_unlock(rwlock) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
+///////////////////////////////////////////////////////////
 MCL_TYPE(MclAutoRwLock) {
     MclRwLock *rwlock;
 };

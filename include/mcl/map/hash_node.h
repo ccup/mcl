@@ -26,7 +26,7 @@ MCL_INLINE void MclHashNode_Init(MclHashNode *self, MclHashKey key, MclHashValue
 MclHashNode* MclHashNode_Create(MclHashKey, MclHashValue, MclHashNodeAllocator*);
 void MclHashNode_Delete(MclHashNode*, MclHashNodeAllocator*, MclHashValueDeleter*);
 
-//////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 MCL_TYPE(MclHashNodePred) {
     bool (*pred)(MclHashNodePred*, const MclHashNode*);
 };
@@ -37,7 +37,7 @@ MCL_INLINE bool MclHashNodePred_Predicate(MclHashNodePred *pred, const MclHashNo
 
 #define MCL_HASH_NODE_PRED(PRED) {.pred = PRED}
 
-//////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 MCL_TYPE(MclHashNodeVisitor) {
     MclStatus (*visit)(MclHashNodeVisitor*, MclHashNode*);
 };
@@ -48,7 +48,7 @@ MCL_INLINE MclStatus MclHashNodeVisitor_Visit(MclHashNodeVisitor *visitor, MclHa
 
 #define MCL_HASH_NODE_VISITOR(VISITOR) {.visit = VISITOR}
 
-//////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 #define MCL_HASH_NODE(KEY, VALUE) {.link.prev = NULL, .link.next = NULL, .key = KEY, .value = VALUE};
 
 MCL_STDC_END

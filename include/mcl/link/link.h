@@ -3,7 +3,7 @@
 
 #include "mcl/stdtype.h"
 
-//////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 #define MCL_LINK_NODE(NodeType) struct { NodeType* next; NodeType* prev; }
 
 #define MCL_LINK_NODE_NEXT(ep, link)  (ep)->link.next
@@ -18,7 +18,7 @@
 #define MCL_LINK_NODE_IS_IN_LINK(ep, link)              \
 (ep && (ep->link.next) && (ep->link.prev) && (ep->link.next->link.prev == ep) && (ep->link.prev->link.next == ep))
 
-//////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 #define MCL_LINK(NodeType)  MCL_LINK_NODE(NodeType)
 
 #define MCL_LINK_FIRST(head) (head)->next

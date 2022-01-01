@@ -13,7 +13,7 @@ void  MclLockObj_Delete(void *obj, MclLockObjDestructor, void *arg);
 MclStatus MclLockObj_Lock(void *obj);
 MclStatus MclLockObj_Unlock(void *obj);
 
-///////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 MCL_INLINE void MclLockObj_AutoUnlock(void *ppobj) {
     if (!ppobj) return;
     void** pObj =  (void**)ppobj;

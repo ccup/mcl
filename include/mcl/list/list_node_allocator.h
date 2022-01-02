@@ -20,7 +20,7 @@ MCL_INLINE void MclListNodeAllocator_Free(MclListNodeAllocator *self, MclListNod
     if (self && self->free) self->free(self, node);
 }
 
-extern MclListNodeAllocator MCL_LIST_NODE_ALLOCATOR;
+extern MclListNodeAllocator MCL_LIST_NODE_ALLOCATOR_DEFAULT;
 
 MclListNodeAllocator* MclListNodeAllocator_GetDefault();
 

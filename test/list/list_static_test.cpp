@@ -53,16 +53,17 @@ namespace {
     	MclListNodeStaticAllocator_Free(&nodeAllocator, node);
     }
 
-	MclList list = MCL_LIST(list, NULL);
+    MclList list = MCL_LIST(list, NULL);
 }
 
-FIXTURE(StaticListTest)
+FIXTURE(ListStaticTest)
 {
 	MclListNode nodes[NODE_NUM_MAX];
 	MclListNode invalidNode;
 
-	StaticListTest() {
+	ListStaticTest() {
 		MclListNodeStaticAllocator_Init(&nodeAllocator);
+
 		for (long i = 0; i < NODE_NUM_MAX; i++) {
 		    MclListNode_Init(&nodes[i], (MclListData)i);
 		}

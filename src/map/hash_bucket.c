@@ -16,7 +16,7 @@ void MclHashBucket_Clear(MclHashBucket *self, MclHashNodeAllocator *allocator, M
 }
 
 bool MclHashBucket_IsEmpty(const MclHashBucket *self) {
-	return self ? MCL_LINK_EMPTY(&self->nodes, MclHashNode, link) : false;
+	return self ? MCL_LINK_EMPTY(&self->nodes, MclHashNode, link) : true;
 }
 
 MclHashNode* MclHashBucket_FindNode(const MclHashBucket *self, MclHashKey key) {
@@ -41,6 +41,7 @@ MclStatus MclHashBucket_PushBackNode(MclHashBucket *self, MclHashNode *node) {
 }
 
 MclStatus MclHashBucket_RemoveNode(MclHashBucket *self, MclHashNode *node, MclHashNodeAllocator *allocator, MclHashValueDeleter *valueDeleter) {
+	MCL_ASSERT_VALID_PTR(self);
     MCL_ASSERT_TRUE(MCL_LINK_NODE_IS_IN_LINK(node, link));
 	MCL_LINK_REMOVE(node, link);
 	MclHashNode_Delete(node, allocator, valueDeleter);

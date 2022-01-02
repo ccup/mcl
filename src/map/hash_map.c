@@ -16,7 +16,7 @@ MclHashMap* MclHashMap_Create(uint32_t bucketCount, MclHashNodeAllocator *alloca
     MclHashMap *self = MCL_MALLOC(sizeof(MclHashMap));
     MCL_ASSERT_VALID_PTR_NIL(self);
 
-    MclHashBucket *buckets = MCL_MALLOC(sizeof(MclHashBucket*) * bucketCount);
+    MclHashBucket *buckets = MCL_MALLOC(sizeof(MclHashBucket) * bucketCount);
     if (!buckets) {
         MCL_LOG_ERR("Malloc for buckets failed!");
         MCL_FREE(self);

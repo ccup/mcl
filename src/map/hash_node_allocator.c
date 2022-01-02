@@ -11,8 +11,8 @@ MCL_PRIVATE void MclHashNodeAllocator_FreeDefault(MclHashNodeAllocator *self, Mc
 }
 
 MclHashNodeAllocator MCL_HASH_NODE_ALLOCATOR_DEFAULT = {
-        .alloc = MclHashNodeAllocator_AllocDefault,
-        .free = MclHashNodeAllocator_FreeDefault
+    .alloc = MclHashNodeAllocator_AllocDefault,
+    .free = MclHashNodeAllocator_FreeDefault
 };
 
 MclHashNodeAllocator* MclHashNodeAllocator_GetDefault() {

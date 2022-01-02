@@ -11,13 +11,13 @@ namespace {
     MclHashMap foomap = MCL_HASHMAP(foomap, MCL_HASHMAP_BUCKET_COUNT_DEFAULT, buckets, NULL);
 }
 
-FIXTURE(StaticHashMapTest) {
+FIXTURE(HashMapStaticTest) {
 	constexpr static uint32_t NODE_NUM = 6;
 
 	MclHashNode nodes[NODE_NUM];
 	MclHashMap *foos{nullptr};
 
-    StaticHashMapTest() {
+    HashMapStaticTest() {
     	foos = &foomap;
 		for (long i = 0; i < NODE_NUM; i++) {
 		    MclHashNode_Init(&nodes[i], (MclHashKey)i, (MclHashValue)i);

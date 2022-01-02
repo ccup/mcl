@@ -3,6 +3,7 @@
 
 namespace {
 	using FooId = uint32_t;
+
 	constexpr FooId FOO_ID_INVALID = 0xFFFFFFFF;
 
 	struct Foo {
@@ -32,12 +33,8 @@ namespace {
 
 	void Foo_HashDelete(MclHashValueDeleter *deleter, MclHashValue value) {
 		auto f = (Foo*)value;
-		Foo_Delete(f);
+		if (f) Foo_Delete(f);
 	}
-
-    void Foo_Sum(const Foo *foo, uint32_t *sum) {
-    	(*sum) += foo->getId();
-    }
 
     struct HashNodePred {
     	MclHashNodePred pred;
@@ -74,7 +71,6 @@ namespace {
     }
 }
 
-
 FIXTURE(HashMapTest) {
     MclHashMap *foos {nullptr};
     MclHashValueDeleter fooDeleter;
@@ -92,7 +88,6 @@ FIXTURE(HashMapTest) {
 		MclHashMap_Delete(foos, &fooDeleter);
 		ASSERT_EQ(0, Foo::FOO_COUNT.load());
     }
-
 
 	TEST("should be empty when initialized")
 	{

@@ -34,7 +34,7 @@
 #define MCL_MACRO_ARG_TAKE_N_5(n, a, ...) MCL_MACRO_ARG_TAKE_N_4(n, __VA_ARGS__)
 
 // pos start from 0
-#define MCL_MACRO_ARG_TAKE(pos, n, ...) MCL_MACRO_ARG_TAKE_N_##pos(n, __VA_ARGS__)
+#define MCL_MACRO_ARGS_TAKE(pos, n, ...) MCL_MACRO_ARG_TAKE_N_##pos(n, __VA_ARGS__)
 #define MCL_MACRO_ARGS(...) __VA_ARGS__
 
 #endif

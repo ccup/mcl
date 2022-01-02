@@ -25,6 +25,10 @@ MclStatus MclHashBucket_Accept(const MclHashBucket*, MclHashNodeVisitor*);
 
 void MclHashBucket_Dump(const MclHashBucket*);
 
+///////////////////////////////////////////////////////////
+#define MCL_HASH_BUCKET(BUCKET)   							\
+{.nodes = MCL_LINK_INITIALIZER(&(BUCKET).nodes, MclHashNode, link)}
+
 MCL_STDC_END
 
 #endif

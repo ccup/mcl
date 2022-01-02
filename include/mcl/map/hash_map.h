@@ -38,7 +38,7 @@ MclStatus MclHashMap_Accept(const MclHashMap*, MclHashNodeVisitor*);
 void MclHashMap_Dump(const MclHashMap*);
 
 ///////////////////////////////////////////////////////////
-#define MCL_HASHMAP_BUCKET_COUNT_DEFAULT (uint32_t)127
+#define MCL_HASHMAP_BUCKET_COUNT_DEFAULT 127
 
 #define MCL_HASHMAP(MAP, BUCKET_COUNT, BUCKETS, ALLOCATOR)   			\
 {.allocator = (ALLOCATOR), .elementCount = 0, .bucketCount = (BUCKET_COUNT), .buckets = (BUCKETS)}

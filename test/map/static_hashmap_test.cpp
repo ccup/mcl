@@ -1,9 +1,14 @@
 #include <cctest/cctest.h>
 #include "mcl/map/hash_map.h"
+#include "mcl/macro/repeat.h"
 
 namespace {
-    MclHashBucket buckets[MCL_HASHMAP_BUCKET_COUNT_DEFAULT] = {0};
-    MclHashMap foomap;
+	#define __MCL_HASH_BUCKETS_ITEM_INIT(n)  [n]=MCL_HASH_BUCKET(buckets[n]),
+
+    MclHashBucket buckets[MCL_HASHMAP_BUCKET_COUNT_DEFAULT] = {
+    		MCL_MARCO_REPEAT_SIMPLE(MCL_HASHMAP_BUCKET_COUNT_DEFAULT, __MCL_HASH_BUCKETS_ITEM_INIT)
+    };
+    MclHashMap foomap = MCL_HASHMAP(foomap, MCL_HASHMAP_BUCKET_COUNT_DEFAULT, buckets, NULL);
 }
 
 FIXTURE(StaticHashMapTest) {
@@ -14,7 +19,6 @@ FIXTURE(StaticHashMapTest) {
 
     StaticHashMapTest() {
     	foos = &foomap;
-    	MclHashMap_Init(&foomap, MCL_HASHMAP_BUCKET_COUNT_DEFAULT, buckets, NULL);
 		for (long i = 0; i < NODE_NUM; i++) {
 		    MclHashNode_Init(&nodes[i], (MclHashKey)i, (MclHashValue)i);
 		}

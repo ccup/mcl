@@ -49,7 +49,7 @@ MCL_INLINE MclStatus MclHashNodeVisitor_Visit(MclHashNodeVisitor *visitor, MclHa
 #define MCL_HASH_NODE_VISITOR(VISITOR) {.visit = VISITOR}
 
 ///////////////////////////////////////////////////////////
-#define MCL_HASH_NODE(KEY, VALUE) {.link.prev = NULL, .link.next = NULL, .key = (KEY), .value = (VALUE)}
+#define MCL_HASH_NODE(KEY, VALUE) {.link = MCL_LINK_NODE_INITIALIZER(), .key = (KEY), .value = (VALUE)}
 
 MCL_STDC_END
 

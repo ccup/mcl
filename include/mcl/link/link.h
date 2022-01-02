@@ -14,6 +14,7 @@
     MCL_LINK_NODE_PREV((ep), link) = (ep);              \
 } while (0)
 
+#define MCL_LINK_NODE_INITIALIZER() {.next = NULL, .prev = NULL}
 
 #define MCL_LINK_NODE_IS_IN_LINK(ep, link)              \
 (ep && (ep->link.next) && (ep->link.prev) && (ep->link.next->link.prev == ep) && (ep->link.prev->link.next == ep))

@@ -46,7 +46,7 @@ MclListNode* MclListNode_Create(MclListData, MclListNodeAllocator*);
 void MclListNode_Delete(MclListNode*, MclListNodeAllocator*, MclListDataDeleter*);
 
 ///////////////////////////////////////////////////////////////
-#define MCL_LIST_NODE(DATA) {.link.next = NULL, .link.prev = NULL, .data = (DATA)}
+#define MCL_LIST_NODE(DATA) {.link = MCL_LINK_NODE_INITIALIZER(), .data = (DATA)}
 
 MCL_STDC_END
 

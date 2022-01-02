@@ -22,7 +22,7 @@ MCL_INLINE void MclDeferNode_Exec(MclDeferNode *self) {
 }
 
 #define MCL_DEFER_NODE(FUNC, CTXT)      \
-{.link.prev = NULL, .link.next = NULL, .func = FUNC, .ctxt = CTXT}
+{.link = MCL_LINK_NODE_INITIALIZER(), .func = FUNC, .ctxt = CTXT}
 
 MCL_STDC_END
 

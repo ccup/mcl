@@ -1,13 +1,18 @@
 #ifndef H0198CF29_2964_442A_AF22_490F400D9756
 #define H0198CF29_2964_442A_AF22_490F400D9756
 
+#include "mcl/config.h"
 #include "mcl/log/log_level.h"
 
-#ifdef MCL_LOG_CUSTOMER
+#ifdef MCL_CONFIG_LOG
 
-extern "C" void MclLog_Customer(int level , const char* levelstr , const char* file, unsigned int line, const char* fmt, ...);
+MCL_STDC_BEGIN
 
-#define MCL_LOG_OUTPUT MclLog_Customer
+void MclLog_Output(int level , const char* levelstr , const char* file, unsigned int line, const char* fmt, ...);
+
+MCL_STDC_END
+
+#define MCL_LOG_OUTPUT(...)    MclLog_Output(__VA_ARGS__)
 
 #else
 
@@ -25,16 +30,9 @@ do {															\
 	}															\
 } while(0)
 
-#define MCL_LOG_OUTPUT MCL_LOG_PRINTF
+#define MCL_LOG_OUTPUT(...)    MCL_LOG_PRINTF(__VA_ARGS__)
 
 #endif
-
-#define MCL_LOG_TITLE(level, levelstr, fmt, ...) 		\
-do {													\
-	if (level & MCL_LOG_LEVELS) {						\
-		MCL_LOG_OUTPUT(level, levelstr, __FILE__, __LINE__, fmt, ##__VA_ARGS__);\
-	}													\
-} while(0)
 
 /* Specify max logout level */
 #define MCL_LOG_LEVELS MCL_LOG_LEVEL_TOTAL

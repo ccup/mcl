@@ -3,6 +3,15 @@
 
 #include "mcl/log/log_config.h"
 
+///////////////////////////////////////////////////////////
+#define MCL_LOG_TITLE(level, levelstr, fmt, ...) 		\
+do {													\
+	if (level & MCL_LOG_LEVELS) {						\
+		MCL_LOG_OUTPUT(level, levelstr, __FILE__, __LINE__, fmt, ##__VA_ARGS__);\
+	}													\
+} while(0)
+
+///////////////////////////////////////////////////////////
 #define MCL_LOG_FATAL(fmt, ...) \
 	MCL_LOG_TITLE(MCL_LOG_LEVEL_FATAL, "FATAL", fmt, ##__VA_ARGS__)
 

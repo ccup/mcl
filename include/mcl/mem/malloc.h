@@ -1,9 +1,8 @@
 #ifndef H90B6970A_7AC3_43F4_9432_0647CA0925A0
 #define H90B6970A_7AC3_43F4_9432_0647CA0925A0
 
+#include "mcl/mem/mem_config.h"
 #include "mcl/keyword.h"
-#include "mcl/stdtype.h"
-#include <stdlib.h>
 
 MCL_STDC_BEGIN
 
@@ -13,7 +12,7 @@ MCL_STDC_BEGIN
 #endif
 
 MCL_INLINE MCL_MALLOC_API void* Mcl_Malloc(uint32_t size) {
-    void* p = malloc(size);
+    void* p = MCL_MEM_MALLOC(size);
 #ifdef MCL_MALLOC_FORCE_CLEAN
     memset(p, 0, size);
 #endif
@@ -22,7 +21,7 @@ MCL_INLINE MCL_MALLOC_API void* Mcl_Malloc(uint32_t size) {
 
 MCL_INLINE void Mcl_Free(void * p) {
     if (p) {
-        free(p);
+    	MCL_MEM_FREE(p);
     }
 }
 

@@ -58,6 +58,6 @@ FIXTURE(MsgQueueThreadTest) {
         MclThread_Join(r1, NULL);
         MclThread_Join(r2, NULL);
 
-        ASSERT_EQ(SENT_COUNT, RECV_COUNT);
+        ASSERT_EQ(SENT_COUNT, RECV_COUNT + MclMsgQueue_GetCount(&mq));
     }
 };

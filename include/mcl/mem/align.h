@@ -5,12 +5,12 @@
 
 MCL_STDC_BEGIN
 
-MCL_INLINE size_t MclAlign_GetSizeOf(size_t size) {
-    return (size + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
-}
+#define MCL_ALIGNED(N) __attribute__((aligned(N)))
+#define MCL_ALIGN_SIZE(size) ((size + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1))
 
-///////////////////////////////////////////////////////////
-#define MCL_ALIGN(N) __attribute__((aligned(N)))
+MCL_INLINE size_t MclAlign_GetSizeOf(size_t size) {
+    return MCL_ALIGN_SIZE(size);
+}
 
 MCL_STDC_END
 

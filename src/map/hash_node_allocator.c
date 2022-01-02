@@ -6,13 +6,13 @@ MCL_PRIVATE MclHashNode* MclHashNodeAllocator_AllocDefault(MclHashNodeAllocator 
     return MCL_MALLOC(sizeof(MclHashNode));
 }
 
-MCL_PRIVATE void MclHashNodeAllocator_ReleaseDefault(MclHashNodeAllocator *self, MclHashNode *node) {
+MCL_PRIVATE void MclHashNodeAllocator_FreeDefault(MclHashNodeAllocator *self, MclHashNode *node) {
     if (node) MCL_FREE(node);
 }
 
 MclHashNodeAllocator MCL_HASH_NODE_ALLOCATOR = {
         .alloc = MclHashNodeAllocator_AllocDefault,
-        .release = MclHashNodeAllocator_ReleaseDefault
+        .free = MclHashNodeAllocator_FreeDefault
 };
 
 MclHashNodeAllocator* MclHashNodeAllocator_GetDefault() {

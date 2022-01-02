@@ -14,5 +14,5 @@ void MclListNode_Delete(MclListNode *self, MclListNodeAllocator *allocator, MclL
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
     MclListDataDeleter_Destroy(dataDeleter, self->data);
-    MclListNodeAllocator_Release(allocator, self);
+    MclListNodeAllocator_Free(allocator, self);
 }

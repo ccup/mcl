@@ -9,14 +9,14 @@ namespace {
 
     constexpr uint16_t OBJECT_SIZE = 2;
 
-    MCL_ALLOCATOR_TYPE_DEF(Object, OBJECT_SIZE);
+    MCL_ALLOCATOR_TYPE_DEF(ObjectAllocator, Object, OBJECT_SIZE);
 
-    MCL_ALLOCATOR_TYPE_DEF(char, OBJECT_SIZE);
+    MCL_ALLOCATOR_TYPE_DEF(CharAllocator, char, OBJECT_SIZE);
 }
 
 FIXTURE(AllocatorTest) {
 	TEST("alloc object from allocator") {
-        MCL_ALLOCATOR(Object) allocator;
+		ObjectAllocator allocator;
         ObjectAllocator_Init(&allocator);
 
 		Object* obj1 = ObjectAllocator_Alloc(&allocator);
@@ -35,18 +35,18 @@ FIXTURE(AllocatorTest) {
 	}
 
 	TEST("alloc char from allocator") {
-        MCL_ALLOCATOR(char) allocator;
-        charAllocator_Init(&allocator);
+        CharAllocator allocator;
+        CharAllocator_Init(&allocator);
 
-		char* a = charAllocator_Alloc(&allocator);
+		char* a = CharAllocator_Alloc(&allocator);
 		*a = 'a';
-		char* b = charAllocator_Alloc(&allocator);
+		char* b = CharAllocator_Alloc(&allocator);
 		*b = 'b';
-		char* c = charAllocator_Alloc(&allocator);
+		char* c = CharAllocator_Alloc(&allocator);
 		ASSERT_EQ(NULL, c);
 
-        charAllocator_Free(&allocator, a);
-		c = charAllocator_Alloc(&allocator);
+        CharAllocator_Free(&allocator, a);
+		c = CharAllocator_Alloc(&allocator);
 		ASSERT_EQ(a, c);
 	}
 };

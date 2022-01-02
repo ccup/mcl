@@ -1,5 +1,6 @@
 #include <cctest/cctest.h>
 #include "mcl/list/list.h"
+#include "mcl/mem/allocator.h"
 
 namespace {
 	const long INVALID_DATA = 0xFFFFFFFF;
@@ -38,18 +39,31 @@ namespace {
         return pred;
 	}
 
+    constexpr static uint32_t NODE_NUM_MAX = 6;
+
+    MCL_ALLOCATOR_TYPE_DEF(MclListNodeStaticAllocator, MclListNode, NODE_NUM_MAX);
+
+    MclListNodeStaticAllocator nodeAllocator;
+
+    MclListNode* ListNode_StaticAlloc(MclListNodeAllocator *allocator) {
+    	return MclListNodeStaticAllocator_Alloc(&nodeAllocator);
+    }
+
+    void ListNode_StaticFree(MclListNodeAllocator *allocator, MclListNode *node) {
+    	MclListNodeStaticAllocator_Free(&nodeAllocator, node);
+    }
+
 	MclList list = MCL_LIST(list, NULL);
 }
 
 FIXTURE(StaticListTest)
 {
-    constexpr static uint32_t NODE_NUM = 6;
-
-	MclListNode nodes[NODE_NUM];
+	MclListNode nodes[NODE_NUM_MAX];
 	MclListNode invalidNode;
 
 	StaticListTest() {
-		for (long i = 0; i < NODE_NUM; i++) {
+		MclListNodeStaticAllocator_Init(&nodeAllocator);
+		for (long i = 0; i < NODE_NUM_MAX; i++) {
 		    MclListNode_Init(&nodes[i], (MclListData)i);
 		}
 		MclListNode_Init(&invalidNode, (MclListData)INVALID_DATA);
@@ -66,7 +80,8 @@ FIXTURE(StaticListTest)
 		MclList_PushBackNode(&list, &nodes[5]);
 		MclList_PushBackNode(&list, &nodes[2]);
 
-        MclList result = MCL_LIST_DEFAULT(result);
+		MclListNodeAllocator allocator = MCL_LIST_NODE_ALLOCATOR(ListNode_StaticAlloc, ListNode_StaticFree);
+        MclList result = MCL_LIST(result, &allocator);
 
         auto isLargerThan = DataPred_Create(2);
 		MclList_FindBy(&list, &isLargerThan.pred, &result);

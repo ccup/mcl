@@ -3,7 +3,7 @@
 
 #include "mcl/log/log_level.h"
 
-#ifdef MCL_CUSTOMER_LOG
+#ifdef MCL_LOG_CUSTOMER
 
 extern "C" void MclLog_Customer(int level , const char* levelstr , const char* file, unsigned int line, const char* fmt, ...);
 
@@ -29,13 +29,14 @@ do {															\
 
 #endif
 
-#define MCL_LOG_LEVELS MCL_LOG_LEVEL_TOTAL
-
 #define MCL_LOG_TITLE(level, levelstr, fmt, ...) 		\
 do {													\
 	if (level & MCL_LOG_LEVELS) {						\
 		MCL_LOG_OUTPUT(level, levelstr, __FILE__, __LINE__, fmt, ##__VA_ARGS__);\
-	}										\
+	}													\
 } while(0)
+
+/* Specify max logout level */
+#define MCL_LOG_LEVELS MCL_LOG_LEVEL_TOTAL
 
 #endif

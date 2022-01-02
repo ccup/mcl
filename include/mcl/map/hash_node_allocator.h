@@ -9,7 +9,7 @@ MCL_TYPE_DECL(MclHashNode);
 
 MCL_TYPE(MclHashNodeAllocator) {
     MclHashNode* (*alloc)(MclHashNodeAllocator*);
-    void (*release)(MclHashNodeAllocator*, MclHashNode*);
+    void (*free)(MclHashNodeAllocator*, MclHashNode*);
 };
 
 MCL_INLINE MclHashNode* MclHashNodeAllocator_Alloc(MclHashNodeAllocator *self) {
@@ -17,14 +17,14 @@ MCL_INLINE MclHashNode* MclHashNodeAllocator_Alloc(MclHashNodeAllocator *self) {
 }
 
 MCL_INLINE void MclHashNodeAllocator_Release(MclHashNodeAllocator *self, MclHashNode *node) {
-    if (self && self->release) self->release(self, node);
+    if (self && self->free) self->free(self, node);
 }
 
 extern MclHashNodeAllocator MCL_HASH_NODE_ALLOCATOR;
 MclHashNodeAllocator* MclHashNodeAllocator_GetDefault();
 
 ///////////////////////////////////////////////////////////
-#define MCL_HASH_NODE_ALLOCATOR(ALLOC, RELEASE) {.alloc = ALLOC, .release = RELEASE}
+#define MCL_HASH_NODE_ALLOCATOR(ALLOC, FREE) {.alloc = ALLOC, .free = FREE}
 
 MCL_STDC_END
 

@@ -1,7 +1,6 @@
 #ifndef H90B6970A_7AC3_43F4_9432_0647CA0925A2
 #define H90B6970A_7AC3_43F4_9432_0647CA0925A2
 
-#include "mcl/stdc.h"
 #include "mcl/stdtype.h"
 
 MCL_STDC_BEGIN

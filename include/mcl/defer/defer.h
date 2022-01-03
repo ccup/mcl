@@ -2,8 +2,7 @@
 #define MCL_774090C197554E02ABB46B5559A38F0A
 
 #include "mcl/defer/defer_node.h"
-#include "mcl/keyword.h"
-#include "mcl/symbol.h"
+#include "mcl/macro/symbol.h"
 
 MCL_STDC_BEGIN
 

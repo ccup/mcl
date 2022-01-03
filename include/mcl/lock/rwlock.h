@@ -4,7 +4,7 @@
 #include "mcl/typedef.h"
 #include "mcl/keyword.h"
 #include "mcl/assert.h"
-#include "mcl/symbol.h"
+#include "mcl/macro/symbol.h"
 #include <pthread.h>
 
 MCL_STDC_BEGIN

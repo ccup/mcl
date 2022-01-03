@@ -88,4 +88,33 @@ FIXTURE(BitTest) {
 		MCL_BIT_CLR_64(value, 56);
 		ASSERT_EQ(0x8000000000000000, value);
 	}
+
+	TEST ("bits set operations") {
+		uint32_t value = 0xFF000000;
+		uint32_t mask = 0x0000FF00;
+
+		MCL_BITS_SET(value, mask);
+		ASSERT_EQ(0xFF00FF00, value);
+		ASSERT_TRUE(MCL_BITS_IS_ON(value, mask));
+		MCL_BITS_CLR(value, mask);
+		ASSERT_EQ(0xFF000000, value);
+
+		MCL_BITS_NEG(value, 0x00F00000);
+		ASSERT_EQ(0xFFF00000, value);
+
+		value = 0xFF000000;
+		MCL_BITS_ASSIGN(value, mask, 0x01000110);
+		ASSERT_EQ(0xFF000100, value);
+
+	}
+
+	TEST ("bits test operations") {
+		uint32_t value = 0xFF000000;
+		ASSERT_TRUE(MCL_BITS_IS_ON(value, value));
+		ASSERT_TRUE(MCL_BITS_IS_OFF(value, 0x00FFFFFF));
+
+		ASSERT_TRUE(MCL_BITS_TEST(value, 0xF0000000));
+		ASSERT_TRUE(MCL_BITS_TEST(value, 0x0FF00000));
+		ASSERT_FALSE(MCL_BITS_TEST(value, 0x00F00000));
+	}
 };

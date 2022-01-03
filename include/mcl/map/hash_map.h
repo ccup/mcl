@@ -40,10 +40,11 @@ void MclHashMap_Dump(const MclHashMap*);
 ///////////////////////////////////////////////////////////
 #define MCL_HASHMAP_BUCKET_COUNT_DEFAULT 127
 
-#define MCL_HASHMAP(MAP, BUCKET_COUNT, BUCKETS, ALLOCATOR)   			\
-{.allocator = (ALLOCATOR), .elementCount = 0, .bucketCount = (BUCKET_COUNT), .buckets = (BUCKETS)}
+#define MCL_HASHMAP(MAP, BUCKET_COUNT, BUCKETS, ALLOCATOR)   		\
+	{.allocator = (ALLOCATOR), .elementCount = 0, .bucketCount = (BUCKET_COUNT), .buckets = (BUCKETS)}
 
-#define MCL_HASHMAP_DEFAULT(MAP, BUCKET_COUNT, BUCKETS) MCL_HASHMAP(MAP, BUCKET_COUNT, BUCKETS, &MCL_HASH_NODE_ALLOCATOR_DEFAULT)
+#define MCL_HASHMAP_DEFAULT(MAP, BUCKET_COUNT, BUCKETS) 			\
+	MCL_HASHMAP(MAP, BUCKET_COUNT, BUCKETS, &MCL_HASH_NODE_ALLOCATOR_DEFAULT)
 
 MCL_STDC_END
 

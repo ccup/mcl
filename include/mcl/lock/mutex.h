@@ -95,9 +95,10 @@ MCL_INLINE bool MclLock_IsLocked(const MclAutoLock *lock) {
     return (lock && lock->mutex);
 }
 
-#define MCL_LOCK_AUTO(MUTEX) MCL_RAII(MclLock_AutoUnlock) MclAutoLock MCL_SYMBOL_UNIQUE(MCL_LOCK) = MclLock_AutoLock((MclMutex*)&MUTEX)
+#define MCL_LOCK_AUTO(MUTEX)								\
+MCL_RAII(MclLock_AutoUnlock) MclAutoLock MCL_SYMBOL_UNIQUE(MCL_LOCK) = MclLock_AutoLock((MclMutex*)&MUTEX)
 
-#define MCL_LOCK_SCOPE(MUTEX)           \
+#define MCL_LOCK_SCOPE(MUTEX)           					\
 for (MCL_RAII(MclLock_AutoUnlock) MclAutoLock mclLock=MclLock_AutoLock((MclMutex*)&MUTEX); MclLock_IsLocked(&mclLock); MclLock_AutoUnlock(&mclLock))
 
 MCL_STDC_END

@@ -24,7 +24,7 @@ FIXTURE(SchedulerTest)
 		}
 	}
 
-	void scheduleTask(MclTaskScheduler *scheduler, PriorityLevel priority, int index = 0) {
+	void submitTask(MclTaskScheduler *scheduler, PriorityLevel priority, int index = 0) {
 		if (index >= TASK_COUNT) return;
 		if (priority > MAX_PRIORITY) return;
         MclTaskScheduler_SubmitTask(scheduler, &demoTasks[priority][index].task, priority);
@@ -59,7 +59,7 @@ FIXTURE(SchedulerTest)
 
 		MclTaskScheduler_Start(scheduler);
 
-		scheduleTask(scheduler, NORMAL);
+		submitTask(scheduler, NORMAL);
 
 		waitScheduleDone(scheduler);
 
@@ -72,9 +72,9 @@ FIXTURE(SchedulerTest)
 	{
 		MclTaskScheduler *scheduler = MclTaskScheduler_Create(1, MAX_PRIORITY, NULL);
 
-		scheduleTask(scheduler, SLOW);
-		scheduleTask(scheduler, NORMAL);
-		scheduleTask(scheduler, URGENT);
+		submitTask(scheduler, SLOW);
+		submitTask(scheduler, NORMAL);
+		submitTask(scheduler, URGENT);
 
 		MclTaskScheduler_Start(scheduler);
 
@@ -91,9 +91,9 @@ FIXTURE(SchedulerTest)
 		MclTaskScheduler *scheduler = MclTaskScheduler_Create(2, MAX_PRIORITY, NULL);
 
 		for (int i = 0; i < 10; i++) {
-			scheduleTask(scheduler, SLOW,   i);
-			scheduleTask(scheduler, URGENT, i);
-			scheduleTask(scheduler, NORMAL, i);
+			submitTask(scheduler, SLOW,   i);
+			submitTask(scheduler, URGENT, i);
+			submitTask(scheduler, NORMAL, i);
 		}
 
 		MclTaskScheduler_Start(scheduler);
@@ -111,8 +111,8 @@ FIXTURE(SchedulerTest)
 		MclTaskScheduler_Start(scheduler);
 
 		for (int i = 0; i < 10; i++) {
-			scheduleTask(scheduler, SLOW,   i);
-			scheduleTask(scheduler, URGENT, i);
+			submitTask(scheduler, SLOW,   i);
+			submitTask(scheduler, URGENT, i);
 		}
 
 		sleep(1);
@@ -134,9 +134,9 @@ FIXTURE(SchedulerTest)
 		MclTaskScheduler *scheduler = MclTaskScheduler_Create(1, MAX_PRIORITY, thresholds);
 
 		for (int key = 0; key < 5; key++) {
-			scheduleTask(scheduler, SLOW,   key);
-			scheduleTask(scheduler, URGENT, key);
-			scheduleTask(scheduler, NORMAL, key);
+			submitTask(scheduler, SLOW,   key);
+			submitTask(scheduler, URGENT, key);
+			submitTask(scheduler, NORMAL, key);
 		}
 
 		MclTaskScheduler_Start(scheduler);
@@ -160,9 +160,9 @@ FIXTURE(SchedulerTest)
 
 		MclTaskScheduler_Start(scheduler);
 
-		scheduleTask(scheduler, SLOW);
-		scheduleTask(scheduler, URGENT);
-		scheduleTask(scheduler, NORMAL);
+		submitTask(scheduler, SLOW);
+		submitTask(scheduler, URGENT);
+		submitTask(scheduler, NORMAL);
 
 		sleep(1);
 

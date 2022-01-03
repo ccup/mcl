@@ -7,11 +7,11 @@ namespace {
 		const char* name;
 	};
 
-    constexpr uint16_t OBJECT_SIZE = 2;
+    constexpr uint16_t ALLOCATOR_CAPACITY = 2;
 
-    MCL_ALLOCATOR_TYPE_DEF(ObjectAllocator, Object, OBJECT_SIZE);
+    MCL_ALLOCATOR_TYPE_DEF(ObjectAllocator, Object, ALLOCATOR_CAPACITY);
 
-    MCL_ALLOCATOR_TYPE_DEF(CharAllocator, char, OBJECT_SIZE);
+    MCL_ALLOCATOR_TYPE_DEF(CharAllocator, char, ALLOCATOR_CAPACITY);
 }
 
 FIXTURE(AllocatorTest) {

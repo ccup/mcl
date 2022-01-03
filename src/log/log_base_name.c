@@ -2,7 +2,7 @@
 #include "mcl/stdtype.h"
 
 
-const char* MclLog_GetBaseFile(const char* absPath) {
+const char* MclLog_GetBaseName(const char* absPath) {
 	if (!absPath) return "";
 
 	const char* p = absPath + strlen(absPath);

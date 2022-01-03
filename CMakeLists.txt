@@ -11,7 +11,7 @@ endif()
 
 option(ENABLE_CUSTOMIZED   "Enable Cumtomize" OFF)
 option(ENABLE_TEST         "Build tests" ON)
-option(ENABLE_THREAD       "Build tests with thread" OFF)
+option(ENABLE_THREAD       "Build tests with thread" ON)
 option(ENABLE_ASON         "Enable AddressSanitizer" ON)
 option(ENABLE_TSAN         "Enable ThreadSanitizer" OFF)
 

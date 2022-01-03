@@ -1,53 +1,42 @@
 #include "mcl/algo/sort.h"
 #include "mcl/assert.h"
 
-MCL_PRIVATE MclStatus MclSort_ExchangeBackward(MclSortObj *sortObjs, uint32_t key, uint32_t minNum, uint32_t *maxNum) {
-	while ((minNum < *maxNum) && ((sortObjs + *maxNum)->key >= key)) {
-		--(*maxNum);
-	}
-	memmove(sortObjs + minNum, sortObjs + *maxNum, sizeof(MclSortObj));
-	return MCL_SUCCESS;
-}
+MCL_PRIVATE uint32_t MclSort_SeekPosition(MclSortObj *sortObjs, size_t begin, uint32_t end) {
+	MclSortObj keyObj = sortObjs[begin];
+	MclSortKey key = keyObj.key;
 
-MCL_PRIVATE MclStatus MclSort_ExchangeForward(MclSortObj *sortObjs, uint32_t key, uint32_t *minNum, uint32_t maxNum) {
-	while ((*minNum < maxNum) && ((sortObjs + *minNum)->key <= key)) {
-		++(*minNum);
-	}
-	memmove(sortObjs + maxNum, sortObjs + *minNum, sizeof(MclSortObj));
-	return MCL_SUCCESS;
-}
-
-MCL_PRIVATE MclStatus MclSort_SeekPosition(MclSortObj *sortObjs, uint32_t minNum, uint32_t maxNum, uint32_t *position) {
-	MCL_ASSERT_VALID_PTR(sortObjs);
-	MCL_ASSERT_VALID_PTR(position);
-
-	MclSortObj keyObj = {0};
-	memcpy(&keyObj, sortObjs + minNum, sizeof(MclSortObj));
-
-	while (minNum < maxNum) {
-		MCL_ASSERT_SUCC_CALL(MclSort_ExchangeBackward(sortObjs, keyObj.key, minNum, &maxNum));
-		MCL_ASSERT_SUCC_CALL(MclSort_ExchangeForward(sortObjs, keyObj.key, &minNum, maxNum));
+	uint32_t i = begin;
+	uint32_t j = end;
+	while (i < j) {
+		while (i < j && (sortObjs[j].key > key)) {
+			j--;
+		}
+		if (i < j) {
+			sortObjs[i++] = sortObjs[j];
+		}
+		while (i < j && (sortObjs[i].key < key)) {
+			i++;
+		}
+		if (i < j) {
+			sortObjs[j--] = sortObjs[i];
+		}
 	}
 
-	*position = minNum;
-	memcpy(sortObjs + *position, &keyObj, sizeof(MclSortObj));
-	return MCL_SUCCESS;
+	sortObjs[i] = keyObj;
+	return i;
 }
 
-MclStatus MclSort_QuickSortRange(MclSortObj *sortObjs, uint32_t minNum, uint32_t maxNum) {
-	MCL_ASSERT_VALID_PTR(sortObjs);
-	uint32_t position = minNum;
-	if (minNum < maxNum) {
-		MCL_ASSERT_SUCC_CALL(MclSort_SeekPosition(sortObjs, minNum, maxNum, &position));
-		if (position > minNum) MCL_ASSERT_SUCC_CALL(MclSort_QuickSortRange(sortObjs, minNum, position));
-		if (position < maxNum) MCL_ASSERT_SUCC_CALL(MclSort_QuickSortRange(sortObjs, position, maxNum));
-	}
-	return MCL_SUCCESS;
+void MclSort_QuickSortRange(MclSortObj *sortObjs, uint32_t begin, uint32_t end) {
+	MCL_ASSERT_VALID_PTR_VOID(sortObjs);
+	if (begin >= end) return;
+
+	uint32_t position = MclSort_SeekPosition(sortObjs, begin, end);
+	if (position > begin) MclSort_QuickSortRange(sortObjs, begin, position - 1);
+	if (position < end) MclSort_QuickSortRange(sortObjs, position + 1, end);
 }
 
-MclStatus MclSort_QuickSort(MclSortObj *sortObjs, uint32_t count) {
-	MCL_ASSERT_VALID_PTR(sortObjs);
-	MCL_ASSERT_TRUE(count > 0);
-	MCL_ASSERT_SUCC_CALL(MclSort_QuickSortRange(sortObjs, 0, count - 1));
-	return MCL_SUCCESS;
+void MclSort_QuickSort(MclSortObj *sortObjs, size_t size) {
+	MCL_ASSERT_VALID_PTR_VOID(sortObjs);
+	MCL_ASSERT_TRUE_VOID(size > 0);
+	return MclSort_QuickSortRange(sortObjs, 0, size - 1);
 }

@@ -8,13 +8,13 @@ MCL_PRIVATE uint32_t MclSort_SeekPosition(MclSortObj *sortObjs, size_t begin, ui
 	uint32_t i = begin;
 	uint32_t j = end;
 	while (i < j) {
-		while (i < j && (sortObjs[j].key > key)) {
+		while (i < j && (key <= sortObjs[j].key)) {
 			j--;
 		}
 		if (i < j) {
 			sortObjs[i++] = sortObjs[j];
 		}
-		while (i < j && (sortObjs[i].key < key)) {
+		while (i < j && (sortObjs[i].key <= key)) {
 			i++;
 		}
 		if (i < j) {

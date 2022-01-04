@@ -30,6 +30,7 @@ MCL_INLINE void* MclRingBuff_GetBuff(MclRingBuff *self) {
     return self ? MclArray_Begin(&self->buff): NULL;
 }
 
+///////////////////////////////////////////////////////////
 #define MCL_RINGBUFF(CAPACITY, ELEM_BYTES, BUFF)                   \
 {.buff = MCL_ARRAY(CAPACITY, ELEM_BYTES, BUFF), .head = 0, .tail = 0}
 

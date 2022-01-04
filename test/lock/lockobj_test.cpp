@@ -16,7 +16,7 @@ namespace {
     public:
         FooRepo() {
             foos = MclList_CreateDefault();
-            MCL_RWLOCK_INIT(rwlock);
+            MclRwLock_Init(&rwlock, NULL);
         }
 
         ~FooRepo() {
@@ -181,7 +181,7 @@ namespace {
         uint16_t tryCount = 0;
         while (true) {
             MCL_LOG_INFO("service 1 begin visit foo");
-            MCL_UNLOCK_OBJ_AUTO auto foo = fooRepo.getFirst();
+            MCL_LOCK_OBJ_AUTO auto foo = fooRepo.getFirst();
             if (!foo) {
             	sleep(1);
             	if (++tryCount >= 3) {
@@ -204,7 +204,7 @@ namespace {
     void* FooVisitService2(void*) {
         for (int i = 0; i < MAX_ID; i++)  {
             MCL_LOG_INFO("service 2 begin visit foo");
-            MCL_UNLOCK_OBJ_AUTO auto foo = fooRepo.getConst(i);
+            MCL_LOCK_OBJ_AUTO auto foo = fooRepo.getConst(i);
             if (!foo) {
             	sleep(1);
             	continue;

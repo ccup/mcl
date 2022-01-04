@@ -35,12 +35,15 @@ MclStatus MclLockPtr_RdLock(MclLockPtr*);
 MclStatus MclLockPtr_Unlock(MclLockPtr*);
 
 ///////////////////////////////////////////////////////////
+#define MCL_LOCK_PTR(PTR)  {.rwlock = MCL_RWLOCK(), .ptr = PTR}
+
+///////////////////////////////////////////////////////////
 MCL_INLINE void MclLockPtr_AutoUnlock(const MclLockPtr **ppPtr) {
     if (!ppPtr) return;
     (void)MclLockPtr_Unlock((MclLockPtr*)(*ppPtr));
 }
 
-#define MCL_UNLOCK_PTR_AUTO  MCL_RAII(MclLockPtr_AutoUnlock)
+#define MCL_LOCK_PTR_AUTO  MCL_RAII(MclLockPtr_AutoUnlock)
 
 MCL_STDC_END
 

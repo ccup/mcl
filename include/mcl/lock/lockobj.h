@@ -21,7 +21,7 @@ MCL_INLINE void MclLockObj_AutoUnlock(void *ppobj) {
     (void)MclLockObj_Unlock(*pObj);
 }
 
-#define MCL_UNLOCK_OBJ_AUTO  MCL_RAII(MclLockObj_AutoUnlock)
+#define MCL_LOCK_OBJ_AUTO  MCL_RAII(MclLockObj_AutoUnlock)
 
 MCL_STDC_END
 

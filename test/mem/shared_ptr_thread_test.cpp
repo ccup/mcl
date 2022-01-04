@@ -16,7 +16,7 @@ namespace {
     public:
         FooRepo() {
             foos = MclList_CreateDefault();
-            MCL_RWLOCK_INIT(rwlock);
+            MclRwLock_Init(&rwlock, NULL);
         }
 
         ~FooRepo() {

@@ -7,14 +7,15 @@ MclMsgQueue* MclMsgQueue_Create(uint16_t capacity) {
     MclMsgQueue *self = MCL_MALLOC(sizeof(MclMsgQueue));
     MCL_ASSERT_VALID_PTR_NIL(self);
 
-    MclMsg *msgBuff = MCL_MALLOC(sizeof(MclMsg) * capacity);
+    uint16_t capacityInRing = capacity + 1;
+    MclMsg *msgBuff = MCL_MALLOC(sizeof(MclMsg) * capacityInRing);
     if (!msgBuff) {
         MCL_LOG_ERR("malloc memory of msg buff failed!");
         MCL_FREE(self);
         return NULL;
     }
 
-    if (MCL_FAILED(MclMsgQueue_Init(self, capacity + 1, msgBuff))) {
+    if (MCL_FAILED(MclMsgQueue_Init(self, capacityInRing, msgBuff))) {
         MCL_LOG_ERR("Init msg queue failed!");
         MCL_FREE(msgBuff);
         MCL_FREE(self);
@@ -25,6 +26,8 @@ MclMsgQueue* MclMsgQueue_Create(uint16_t capacity) {
 
 void MclMsgQueue_Delete(MclMsgQueue *self) {
     MCL_ASSERT_VALID_PTR_VOID(self);
+
+    MclMsgQueue_Destroy(self);
 
     void *buff = MclRingBuff_GetBuff(&self->ringbuff);
     if (buff) MCL_FREE(buff);
@@ -40,6 +43,12 @@ MclStatus MclMsgQueue_Init(MclMsgQueue *self, uint16_t capacity, MclMsg* msgBuff
     MCL_ASSERT_SUCC_CALL(MclMutex_Init(&self->mutex, NULL));
 
     return MCL_SUCCESS;
+}
+
+void MclMsgQueue_Destroy(MclMsgQueue *self) {
+	MCL_ASSERT_VALID_PTR_VOID(self);
+	MCL_ASSERT_SUCC_CALL_VOID(MclMutex_Destroy(&self->mutex));
+	MclRingBuff_Reset(&self->ringbuff);
 }
 
 void MclMsgQueue_Clear(MclMsgQueue *self) {

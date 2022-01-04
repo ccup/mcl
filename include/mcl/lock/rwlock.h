@@ -12,7 +12,7 @@ MCL_STDC_BEGIN
 typedef pthread_rwlock_t MclRwLock;
 typedef pthread_rwlockattr_t MclRwLockAttr;
 
-#define MCL_RWLOCK_INIT(RWLOCK) RWLOCK=PTHREAD_RWLOCK_INITIALIZER
+#define MCL_RWLOCK()            PTHREAD_RWLOCK_INITIALIZER
 
 MCL_INLINE MclStatus MclRwLock_Init(MclRwLock *rwlock, const MclRwLockAttr *attr) {
     return pthread_rwlock_init(rwlock, attr) ?  MCL_FAILURE : MCL_SUCCESS;

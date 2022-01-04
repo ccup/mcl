@@ -16,6 +16,8 @@ MclMsgQueue* MclMsgQueue_Create(uint16_t capacity);
 void MclMsgQueue_Delete(MclMsgQueue*);
 
 MclStatus MclMsgQueue_Init(MclMsgQueue*, uint16_t capacity, MclMsg* msgBuff);
+void MclMsgQueue_Destroy(MclMsgQueue*);
+
 void MclMsgQueue_Clear(MclMsgQueue*);
 
 bool MclMsgQueue_IsFull(const MclMsgQueue*);

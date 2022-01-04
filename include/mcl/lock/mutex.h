@@ -13,7 +13,6 @@ typedef pthread_mutex_t MclMutex;
 typedef pthread_mutexattr_t MclMutexAttr;
 
 #define MCL_MUTEX()           PTHREAD_MUTEX_INITIALIZER
-#define MCL_MUTEX_INIT(MUTEX) MUTEX = MCL_MUTEX()
 
 MCL_INLINE MclStatus MclMutex_InitAttr(MclMutexAttr *attr) {
     return pthread_mutexattr_init(attr) ? MCL_FAILURE : MCL_SUCCESS;

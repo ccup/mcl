@@ -35,6 +35,7 @@ MCL_PRIVATE MclStatus MclLockObj_Init(MclLockObj *self) {
 MCL_PRIVATE void MclLockObj_Destroy(MclLockObj *self, MclLockObjDestructor objDtor, void *arg) {
     MCL_ASSERT_SUCC_CALL_VOID(MclRwLock_WrLock(&self->rwlock));
     MCL_ASSERT_SUCC_CALL_VOID(MclRwLock_Unlock(&self->rwlock));
+    MCL_ASSERT_SUCC_CALL_VOID(MclRwLock_Destroy(&self->rwlock));
     if(objDtor) objDtor(self->ptr, arg);
 }
 

@@ -1,5 +1,5 @@
 #include "mcl/lock/lockobj.h"
-#include "mcl/lock/mutex.h"
+#include "mcl/lock/rwlock.h"
 #include "mcl/mem/malloc.h"
 #include "mcl/mem/align.h"
 #include "mcl/assert.h"
@@ -8,7 +8,7 @@ static const uint64_t MCL_LOCK_OBJ_SENTINEL = 0xdeadc0de;
 
 MCL_TYPE(MclLockObj) {
 	uint64_t sentinel;
-	MclMutex mutex;
+	MclRwLock rwlock;
 	void *ptr;
 };
 
@@ -26,15 +26,15 @@ MCL_PRIVATE MclLockObj* MclLockObj_GetSelf(void *obj) {
 }
 
 MCL_PRIVATE MclStatus MclLockObj_Init(MclLockObj *self) {
-	MCL_ASSERT_SUCC_CALL(MclMutex_Init(&self->mutex, NULL));
+	MCL_ASSERT_SUCC_CALL(MclRwLock_Init(&self->rwlock, NULL));
 	self->sentinel = MCL_LOCK_OBJ_SENTINEL;
 	self->ptr = (uint8_t*)self + MclLockObj_HeaderSize();
 	return MCL_SUCCESS;
 }
 
 MCL_PRIVATE void MclLockObj_Destroy(MclLockObj *self, MclLockObjDestructor objDtor, void *arg) {
-    MCL_ASSERT_SUCC_CALL_VOID(MclMutex_Lock(&self->mutex));
-    MCL_ASSERT_SUCC_CALL_VOID(MclMutex_Unlock(&self->mutex));
+    MCL_ASSERT_SUCC_CALL_VOID(MclRwLock_WrLock(&self->rwlock));
+    MCL_ASSERT_SUCC_CALL_VOID(MclRwLock_Unlock(&self->rwlock));
     if(objDtor) objDtor(self->ptr, arg);
 }
 
@@ -63,13 +63,23 @@ void  MclLockObj_Delete(void *obj, MclLockObjDestructor objDtor, void *arg) {
 	MCL_FREE(self);
 }
 
-MclStatus MclLockObj_Lock(void *obj) {
+MclStatus MclLockObj_RdLock(void *obj) {
     MCL_ASSERT_VALID_PTR(obj);
 
 	MclLockObj *self = MclLockObj_GetSelf(obj);
 	MCL_ASSERT_VALID_PTR(self);
 
-	MCL_ASSERT_SUCC_CALL(MclMutex_Lock(&self->mutex));
+	MCL_ASSERT_SUCC_CALL(MclRwLock_RdLock(&self->rwlock));
+	return MCL_SUCCESS;
+}
+
+MclStatus MclLockObj_WrLock(void *obj) {
+    MCL_ASSERT_VALID_PTR(obj);
+
+	MclLockObj *self = MclLockObj_GetSelf(obj);
+	MCL_ASSERT_VALID_PTR(self);
+
+	MCL_ASSERT_SUCC_CALL(MclRwLock_WrLock(&self->rwlock));
 	return MCL_SUCCESS;
 }
 
@@ -79,6 +89,6 @@ MclStatus MclLockObj_Unlock(void *obj) {
 	MclLockObj *self = MclLockObj_GetSelf(obj);
 	MCL_ASSERT_VALID_PTR(self);
 
-	MCL_ASSERT_SUCC_CALL(MclMutex_Unlock(&self->mutex));
+	MCL_ASSERT_SUCC_CALL(MclRwLock_Unlock(&self->rwlock));
 	return MCL_SUCCESS;
 }

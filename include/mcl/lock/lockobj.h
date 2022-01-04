@@ -10,7 +10,8 @@ typedef void (*MclLockObjDestructor)(void *obj, void *arg);
 void* MclLockObj_Create(size_t size);
 void  MclLockObj_Delete(void *obj, MclLockObjDestructor, void *arg);
 
-MclStatus MclLockObj_Lock(void *obj);
+MclStatus MclLockObj_RdLock(void *obj);
+MclStatus MclLockObj_WrLock(void *obj);
 MclStatus MclLockObj_Unlock(void *obj);
 
 ///////////////////////////////////////////////////////////

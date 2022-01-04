@@ -1,16 +1,20 @@
 #ifndef MCL_ED99144E686E49A1ADF6F1BE984D14E1
 #define MCL_ED99144E686E49A1ADF6F1BE984D14E1
 
-#include "mcl/lock/mutex.h"
+#include "mcl/lock/rwlock.h"
 
 MCL_STDC_BEGIN
 
 MCL_TYPE(MclLockPtr) {
-    MclMutex mutex;
+    MclRwLock rwlock;
     void *ptr;
 };
 
 MCL_INLINE void* MclLockPtr_Get(MclLockPtr *self) {
+    return self ? self->ptr : NULL;
+}
+
+MCL_INLINE const void* MclLockPtr_GetConst(const MclLockPtr *self) {
     return self ? self->ptr : NULL;
 }
 
@@ -26,13 +30,14 @@ MclStatus MclLockPtr_Init(MclLockPtr*, void *ptr);
 void MclLockPtr_Destroy(MclLockPtr*, MclLockPtrDeleter, void *arg);
 void MclLockPtr_UniqueDestroy(MclLockPtr*, MclLockPtrDeleter, void *arg);
 
-MclStatus MclLockPtr_Lock(MclLockPtr*);
+MclStatus MclLockPtr_WrLock(MclLockPtr*);
+MclStatus MclLockPtr_RdLock(MclLockPtr*);
 MclStatus MclLockPtr_Unlock(MclLockPtr*);
 
 ///////////////////////////////////////////////////////////
-MCL_INLINE void MclLockPtr_AutoUnlock(MclLockPtr **ppPtr) {
+MCL_INLINE void MclLockPtr_AutoUnlock(const MclLockPtr **ppPtr) {
     if (!ppPtr) return;
-    (void)MclLockPtr_Unlock(*ppPtr);
+    (void)MclLockPtr_Unlock((MclLockPtr*)(*ppPtr));
 }
 
 #define MCL_UNLOCK_PTR_AUTO  MCL_RAII(MclLockPtr_AutoUnlock)

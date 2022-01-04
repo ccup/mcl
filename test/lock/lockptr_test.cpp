@@ -65,7 +65,7 @@ namespace {
                 auto fptr = (MclLockPtr*)MclListNode_GetData(node);
                 auto f = (Foo*)MclLockPtr_Get(fptr);
                 if (id == f->getId()) {
-                    MclLockPtr_Lock(fptr);
+                    MclLockPtr_WrLock(fptr);
                     MCL_LOG_DBG("FooRepo: end get foo of id %d", id);
                     return fptr;
                 }
@@ -73,7 +73,24 @@ namespace {
             return NULL;
         }
 
-        MclLockPtr* getFirst() {
+        const MclLockPtr* getConst(int id) {
+            MCL_LOG_DBG("FooRepo: enter get foo of id %d", id);
+            MCL_LOCK_READ_AUTO(rwlock);
+            MCL_LOG_DBG("FooRepo: begin get foo of id %d", id);
+            MclListNode *node = NULL;
+            MCL_LIST_FOREACH(foos, node) {
+                auto fptr = (MclLockPtr*)MclListNode_GetData(node);
+                auto f = (Foo*)MclLockPtr_Get(fptr);
+                if (id == f->getId()) {
+                    MclLockPtr_RdLock(fptr);
+                    MCL_LOG_DBG("FooRepo: end get foo of id %d", id);
+                    return fptr;
+                }
+            }
+            return NULL;
+        }
+
+        const MclLockPtr* getFirst() {
             MCL_LOG_DBG("FooRepo: enter get first foo");
             MCL_LOCK_READ_AUTO(rwlock);
             MCL_LOG_DBG("FooRepo: begin get first foo");
@@ -83,7 +100,7 @@ namespace {
             MCL_ASSERT_VALID_PTR_R(fptr, NULL);
             auto id = ((Foo*)MclLockPtr_Get(fptr))->getId();
             MCL_LOG_DBG("FooRepo: begin lock first foo %d", id);
-            MclLockPtr_Lock(fptr);
+            MclLockPtr_RdLock(fptr);
             MCL_LOG_DBG("FooRepo: end lock first foo %d", id);
             MCL_LOG_DBG("FooRepo: end get first foo %d", id);
             return fptr;
@@ -177,7 +194,7 @@ namespace {
         uint16_t tryCount = 0;
         while (true) {
             MCL_LOG_INFO("service 1 begin visit foo");
-            MCL_UNLOCK_PTR_AUTO MclLockPtr *fptr = fooRepo.getFirst();
+            MCL_UNLOCK_PTR_AUTO const MclLockPtr *fptr = fooRepo.getFirst();
             if (!fptr) {
             	sleep(1);
             	if (++tryCount >= 3) {
@@ -187,7 +204,7 @@ namespace {
             }
             sleep(2);
             uint16_t tryCount = 0;
-            auto f = (Foo*)MclLockPtr_Get(fptr);
+            auto f = (const Foo*)MclLockPtr_GetConst(fptr);
             sleep(2);
             auto id = f->getId();
             if ((id < 0) || (id >= MAX_ID)) {
@@ -202,12 +219,12 @@ namespace {
     void* FooVisitService2(void*) {
         for (int i = 0; i < MAX_ID; i++)  {
             MCL_LOG_INFO("service 2 begin visit foo");
-            MCL_UNLOCK_PTR_AUTO MclLockPtr *fptr = fooRepo.get(i);
+            MCL_UNLOCK_PTR_AUTO const MclLockPtr *fptr = fooRepo.getConst(i);
             if (!fptr) {
             	sleep(1);
             	continue;
             }
-            auto f = (Foo*)MclLockPtr_Get(fptr);
+            auto f = (const Foo*)MclLockPtr_GetConst(fptr);
             sleep(1);
             auto id = f->getId();
             if ((id < 0) || (id >= MAX_ID)) {

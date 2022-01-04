@@ -57,7 +57,7 @@ namespace {
             MCL_LIST_FOREACH(foos, node) {
                 auto foo = (Foo*)MclListNode_GetData(node);
                 if (id == foo->getId()) {
-                	MclLockObj_Lock(foo);
+                	MclLockObj_WrLock(foo);
                     MCL_LOG_DBG("FooRepo: end get foo of id %d", id);
                     return foo;
                 }
@@ -65,7 +65,23 @@ namespace {
             return NULL;
         }
 
-        Foo* getFirst() {
+        const Foo* getConst(int id) {
+            MCL_LOG_DBG("FooRepo: enter get const foo of id %d", id);
+            MCL_LOCK_READ_AUTO(rwlock);
+            MCL_LOG_DBG("FooRepo: begin get const foo of id %d", id);
+            MclListNode *node = NULL;
+            MCL_LIST_FOREACH(foos, node) {
+                auto foo = (Foo*)MclListNode_GetData(node);
+                if (id == foo->getId()) {
+                	MclLockObj_RdLock(foo);
+                    MCL_LOG_DBG("FooRepo: end get const foo of id %d", id);
+                    return foo;
+                }
+            }
+            return NULL;
+        }
+
+        const Foo* getFirst() {
             MCL_LOG_DBG("FooRepo: enter get first foo");
             MCL_LOCK_READ_AUTO(rwlock);
             MCL_LOG_DBG("FooRepo: begin get first foo");
@@ -73,7 +89,7 @@ namespace {
             auto foo = (Foo*)MclListNode_GetData(node);
             MCL_ASSERT_VALID_PTR_NIL(foo);
             MCL_LOG_DBG("FooRepo: begin lock first foo %d", foo->getId());
-            MclLockObj_Lock(foo);
+            MclLockObj_RdLock(foo);
             MCL_LOG_DBG("FooRepo: end lock first foo %d", foo->getId());
             MCL_LOG_DBG("FooRepo: end get first foo %d", foo->getId());
             return foo;
@@ -188,7 +204,7 @@ namespace {
     void* FooVisitService2(void*) {
         for (int i = 0; i < MAX_ID; i++)  {
             MCL_LOG_INFO("service 2 begin visit foo");
-            MCL_UNLOCK_OBJ_AUTO auto foo = fooRepo.get(i);
+            MCL_UNLOCK_OBJ_AUTO auto foo = fooRepo.getConst(i);
             if (!foo) {
             	sleep(1);
             	continue;

@@ -28,7 +28,6 @@ void MclLockPtr_Delete(MclLockPtr*, MclLockPtrDeleter, void *arg);
 
 MclStatus MclLockPtr_Init(MclLockPtr*, void *ptr);
 void MclLockPtr_Destroy(MclLockPtr*, MclLockPtrDeleter, void *arg);
-void MclLockPtr_UniqueDestroy(MclLockPtr*, MclLockPtrDeleter, void *arg);
 
 MclStatus MclLockPtr_WrLock(MclLockPtr*);
 MclStatus MclLockPtr_RdLock(MclLockPtr*);

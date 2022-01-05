@@ -50,8 +50,8 @@ MclStatus MclLockPtr_RdLock(MclLockPtr *self) {
     return MCL_SUCCESS;
 }
 
-MclStatus MclLockPtr_Unlock(MclLockPtr *self) {
+MclStatus MclLockPtr_UnLock(MclLockPtr *self) {
     MCL_ASSERT_VALID_PTR(self);
-    MCL_ASSERT_SUCC_CALL(MclRwLock_Unlock(&self->rwlock));
+    MCL_ASSERT_SUCC_CALL(MclRwLock_UnLock(&self->rwlock));
     return MCL_SUCCESS;
 }

@@ -62,8 +62,8 @@ FIXTURE(MutexTest)
     {
         MclMutex_Lock(&obj.mutex);
         MclMutex_Lock(&obj.mutex);
-        MclMutex_Unlock(&obj.mutex);
-        MclMutex_Unlock(&obj.mutex);
+        MclMutex_UnLock(&obj.mutex);
+        MclMutex_UnLock(&obj.mutex);
     }
 
     TEST("should not dead lock when assign mutex to other")
@@ -71,8 +71,8 @@ FIXTURE(MutexTest)
 	    MclMutex mutex = obj.mutex;
         MclMutex_Lock(&obj.mutex);
         MclMutex_Lock(&mutex);
-        MclMutex_Unlock(&obj.mutex);
-        MclMutex_Unlock(&mutex);
+        MclMutex_UnLock(&obj.mutex);
+        MclMutex_UnLock(&mutex);
     }
 
 	TEST("should auto lock")

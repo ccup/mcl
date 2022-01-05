@@ -12,16 +12,16 @@ void  MclLockObj_Delete(void *obj, MclLockObjDestructor, void *arg);
 
 MclStatus MclLockObj_RdLock(void *obj);
 MclStatus MclLockObj_WrLock(void *obj);
-MclStatus MclLockObj_Unlock(void *obj);
+MclStatus MclLockObj_UnLock(void *obj);
 
 ///////////////////////////////////////////////////////////
-MCL_INLINE void MclLockObj_AutoUnlock(void *ppobj) {
+MCL_INLINE void MclLockObj_AutoUnLock(void *ppobj) {
     if (!ppobj) return;
     void** pObj =  (void**)ppobj;
-    (void)MclLockObj_Unlock(*pObj);
+    (void)MclLockObj_UnLock(*pObj);
 }
 
-#define MCL_LOCK_OBJ_AUTO  MCL_RAII(MclLockObj_AutoUnlock)
+#define MCL_LOCK_OBJ_AUTO  MCL_RAII(MclLockObj_AutoUnLock)
 
 MCL_STDC_END
 

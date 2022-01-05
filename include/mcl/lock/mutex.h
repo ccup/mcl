@@ -53,7 +53,7 @@ MCL_INLINE MclStatus MclMutex_Lock(MclMutex *mutex) {
     return ret ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus MclMutex_Unlock(MclMutex *mutex) {
+MCL_INLINE MclStatus MclMutex_UnLock(MclMutex *mutex) {
     int ret = pthread_mutex_unlock(mutex);
     if (ret) {
         MCL_LOG_ERR("pthread_mutex_unlock fail %d!", ret);
@@ -81,9 +81,9 @@ MCL_INLINE MclAutoLock MclLock_AutoLock(MclMutex *mutex) {
     return lock;
 }
 
-MCL_INLINE void MclLock_AutoUnlock(MclAutoLock *lock) {
+MCL_INLINE void MclLock_AutoUnLock(MclAutoLock *lock) {
     if (lock && lock->mutex) {
-    	if (MCL_FAILED(MclMutex_Unlock(lock->mutex))) {
+    	if (MCL_FAILED(MclMutex_UnLock(lock->mutex))) {
             MCL_LOG_FATAL("Auto unlock mutex failed!");
 		}
         lock->mutex = NULL;
@@ -95,10 +95,10 @@ MCL_INLINE bool MclLock_IsLocked(const MclAutoLock *lock) {
 }
 
 #define MCL_LOCK_AUTO(MUTEX)								\
-MCL_RAII(MclLock_AutoUnlock) MclAutoLock MCL_SYMBOL_UNIQUE(MCL_LOCK) = MclLock_AutoLock((MclMutex*)&MUTEX)
+MCL_RAII(MclLock_AutoUnLock) MclAutoLock MCL_SYMBOL_UNIQUE(MCL_LOCK) = MclLock_AutoLock((MclMutex*)&MUTEX)
 
 #define MCL_LOCK_SCOPE(MUTEX)           					\
-for (MCL_RAII(MclLock_AutoUnlock) MclAutoLock mclLock=MclLock_AutoLock((MclMutex*)&MUTEX); MclLock_IsLocked(&mclLock); MclLock_AutoUnlock(&mclLock))
+for (MCL_RAII(MclLock_AutoUnLock) MclAutoLock mclLock=MclLock_AutoLock((MclMutex*)&MUTEX); MclLock_IsLocked(&mclLock); MclLock_AutoUnLock(&mclLock))
 
 MCL_STDC_END
 

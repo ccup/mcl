@@ -87,12 +87,12 @@ MclStatus MclLockObj_WrLock(void *obj) {
 	return MCL_SUCCESS;
 }
 
-MclStatus MclLockObj_Unlock(void *obj) {
+MclStatus MclLockObj_UnLock(void *obj) {
     MCL_ASSERT_VALID_PTR(obj);
 
 	MclLockObj *self = MclLockObj_GetSelf(obj);
 	MCL_ASSERT_VALID_PTR(self);
 
-	MCL_ASSERT_SUCC_CALL(MclRwLock_Unlock(&self->rwlock));
+	MCL_ASSERT_SUCC_CALL(MclRwLock_UnLock(&self->rwlock));
 	return MCL_SUCCESS;
 }

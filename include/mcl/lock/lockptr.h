@@ -31,18 +31,18 @@ void MclLockPtr_Destroy(MclLockPtr*, MclLockPtrDeleter, void *arg);
 
 MclStatus MclLockPtr_WrLock(MclLockPtr*);
 MclStatus MclLockPtr_RdLock(MclLockPtr*);
-MclStatus MclLockPtr_Unlock(MclLockPtr*);
+MclStatus MclLockPtr_UnLock(MclLockPtr*);
 
 ///////////////////////////////////////////////////////////
 #define MCL_LOCK_PTR(PTR)  {.rwlock = MCL_RWLOCK(), .ptr = PTR}
 
 ///////////////////////////////////////////////////////////
-MCL_INLINE void MclLockPtr_AutoUnlock(const MclLockPtr **ppPtr) {
+MCL_INLINE void MclLockPtr_AutoUnLock(const MclLockPtr **ppPtr) {
     if (!ppPtr) return;
-    (void)MclLockPtr_Unlock((MclLockPtr*)(*ppPtr));
+    (void)MclLockPtr_UnLock((MclLockPtr*)(*ppPtr));
 }
 
-#define MCL_LOCK_PTR_AUTO  MCL_RAII(MclLockPtr_AutoUnlock)
+#define MCL_LOCK_PTR_AUTO  MCL_RAII(MclLockPtr_AutoUnLock)
 
 MCL_STDC_END
 

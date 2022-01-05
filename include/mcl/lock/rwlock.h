@@ -38,7 +38,7 @@ MCL_INLINE MclStatus MclRwLock_TryWrLock(MclRwLock *rwlock) {
     return pthread_rwlock_trywrlock(rwlock) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus MclRwLock_Unlock(MclRwLock *rwlock) {
+MCL_INLINE MclStatus MclRwLock_UnLock(MclRwLock *rwlock) {
     return pthread_rwlock_unlock(rwlock) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
@@ -69,9 +69,9 @@ MCL_INLINE MclAutoRwLock MclRwLock_AutoWrLock(MclRwLock *rwlock) {
     return lock;
 }
 
-MCL_INLINE void MclRwLock_AutoUnlock(MclAutoRwLock *lock) {
+MCL_INLINE void MclRwLock_AutoUnLock(MclAutoRwLock *lock) {
     if (lock && lock->rwlock) {
-        if (MCL_FAILED(MclRwLock_Unlock(lock->rwlock))) {
+        if (MCL_FAILED(MclRwLock_UnLock(lock->rwlock))) {
             MCL_LOG_FATAL("Auto unlock rwlock failed!");
         }
         lock->rwlock = NULL;
@@ -83,16 +83,16 @@ MCL_INLINE bool MclRwLock_IsLocked(const MclAutoRwLock *lock) {
 }
 
 #define MCL_LOCK_READ_AUTO(RWLOCK)							\
-MCL_RAII(MclRwLock_AutoUnlock) MclAutoRwLock MCL_SYMBOL_UNIQUE(MCL_RDLOCK) = MclRwLock_AutoRdLock((MclRwLock*)&RWLOCK)
+MCL_RAII(MclRwLock_AutoUnLock) MclAutoRwLock MCL_SYMBOL_UNIQUE(MCL_RDLOCK) = MclRwLock_AutoRdLock((MclRwLock*)&RWLOCK)
 
 #define MCL_LOCK_WRITE_AUTO(RWLOCK)							\
-MCL_RAII(MclRwLock_AutoUnlock) MclAutoRwLock MCL_SYMBOL_UNIQUE(MCL_WRLOCK) = MclRwLock_AutoWrLock((MclRwLock*)&RWLOCK)
+MCL_RAII(MclRwLock_AutoUnLock) MclAutoRwLock MCL_SYMBOL_UNIQUE(MCL_WRLOCK) = MclRwLock_AutoWrLock((MclRwLock*)&RWLOCK)
 
 #define MCL_LOCK_READ_SCOPE(RWLOCK)           				\
-for (MCL_RAII(MclRwLock_AutoUnlock) MclAutoRwLock mclRdLock=MclRwLock_AutoRdLock((MclRwLock*)&RWLOCK); MclRwLock_IsLocked(&mclRdLock); MclRwLock_AutoUnlock(&mclRdLock))
+for (MCL_RAII(MclRwLock_AutoUnLock) MclAutoRwLock mclRdLock=MclRwLock_AutoRdLock((MclRwLock*)&RWLOCK); MclRwLock_IsLocked(&mclRdLock); MclRwLock_AutoUnLock(&mclRdLock))
 
 #define MCL_LOCK_WRITE_SCOPE(RWLOCK)           				\
-for (MCL_RAII(MclRwLock_AutoUnlock) MclAutoRwLock mclWrLock=MclRwLock_AutoWrLock((MclRwLock*)&RWLOCK); MclRwLock_IsLocked(&mclWrLock); MclRwLock_AutoUnlock(&mclWrLock))
+for (MCL_RAII(MclRwLock_AutoUnLock) MclAutoRwLock mclWrLock=MclRwLock_AutoWrLock((MclRwLock*)&RWLOCK); MclRwLock_IsLocked(&mclWrLock); MclRwLock_AutoUnLock(&mclWrLock))
 
 MCL_STDC_END
 

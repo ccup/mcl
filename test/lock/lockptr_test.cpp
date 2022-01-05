@@ -239,11 +239,11 @@ namespace {
 
 FIXTURE(LockPtrTest) {
     BEFORE {
-        Foo::FOO_COUNT = 0;
+    	MclAtom_Clear(&Foo::FOO_COUNT);
     }
 
     AFTER {
-        ASSERT_EQ(0, Foo::FOO_COUNT.load());
+        ASSERT_EQ(0, Foo::FOO_COUNT);
     }
 
     TEST("should not crash when multi-threads running") {

@@ -100,24 +100,24 @@ FIXTURE(SharedPtrDestructTest) {
 
 FIXTURE(SharedPtrAutoReleaseTest) {
     BEFORE {
-        Foo::FOO_COUNT = 0;
+    	MclAtom_Clear(&Foo::FOO_COUNT);
     }
 
     AFTER {
-        ASSERT_EQ(0, Foo::FOO_COUNT.load());
+        ASSERT_EQ(0, Foo::FOO_COUNT);
     }
 
     TEST("should auto release memory") {
         MCL_SHARED_AUTO Foo *f = FooFactory<FooCreateType::SHARED_PTR>::create(1);
         ASSERT_EQ(1, f->getId());
-        ASSERT_EQ(1, Foo::FOO_COUNT.load());
+        ASSERT_EQ(1, Foo::FOO_COUNT);
     }
 
     TEST("should auto release memory when ref count become zero") {
         MCL_SHARED_AUTO Foo *f1 = FooFactory<FooCreateType::SHARED_PTR>::create(1);
         MCL_SHARED_AUTO Foo *f2 = (Foo*)MclSharedPtr_Ref(f1);
         ASSERT_EQ(f1, f2);
-        ASSERT_EQ(1, Foo::FOO_COUNT.load());
+        ASSERT_EQ(1, Foo::FOO_COUNT);
     }
 
     TEST("should not release memory when ref count is not zero") {
@@ -128,6 +128,6 @@ FIXTURE(SharedPtrAutoReleaseTest) {
             ASSERT_EQ(1, f2->getId());
         }
         ASSERT_EQ(1, f1->getId());
-        ASSERT_EQ(1, Foo::FOO_COUNT.load());
+        ASSERT_EQ(1, Foo::FOO_COUNT);
     }
 };

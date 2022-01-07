@@ -21,6 +21,8 @@ void MclEntityFactory_DeleteLockObj(MclEntity*);
 MclLockPtr* MclEntityFactory_CreateLockPtr(MclEntityId);
 void MclEntityFactory_DeleteLockPtr(MclLockPtr*);
 
+size_t MclEntityFactory_GetUnreleasedCount();
+
 MCL_STDC_END
 
 #endif

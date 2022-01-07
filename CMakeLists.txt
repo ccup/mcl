@@ -10,7 +10,8 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
 endif()
 
 option(ENABLE_CUSTOMIZED   "Enable Cumtomize" OFF)
-option(ENABLE_TEST         "Build tests" ON)
+option(ENABLE_EXAMPLE      "Build example"    ON)
+option(ENABLE_TEST         "Build tests"      ON)
 option(ENABLE_THREAD       "Build tests with thread" ON)
 option(ENABLE_ASON         "Enable AddressSanitizer" ON)
 option(ENABLE_TSAN         "Enable ThreadSanitizer" OFF)
@@ -33,6 +34,10 @@ if(ENABLE_TSAN)
 endif()
 
 add_subdirectory(src)
+
+if(ENABLE_EXAMPLE)
+    add_subdirectory(example)
+endif()
 
 if(ENABLE_TEST)
     add_subdirectory(test)

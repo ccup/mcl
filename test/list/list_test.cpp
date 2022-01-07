@@ -38,6 +38,16 @@ namespace {
 	void Foo_Sum(const Foo *foo, uint32_t *sum) {
 		(*sum) += foo->getId();
 	}
+
+	struct FooIdEqualPred {
+		MclListDataPred pred;
+		FooId id;
+	};
+
+	bool FooIdEqualPred_IsEqual(MclListDataPred *pred, MclListData data) {
+		FooIdEqualPred *self = MCL_TYPE_REDUCT(pred, FooIdEqualPred, pred);
+		return self->id == ((Foo*)data)->getId();
+	}
 }
 
 FIXTURE(ListTest)
@@ -98,6 +108,27 @@ FIXTURE(ListTest)
 		ASSERT_EQ(foo3, result->data);
 	}
 
+	TEST("should find element in list")
+	{
+		auto foo1 = Foo_Create(1);
+		auto foo2 = Foo_Create(2);
+		auto foo3 = Foo_Create(3);
+
+		MclList_PushFront(list, foo1);
+		MclList_PushFront(list, foo2);
+		MclList_PushFront(list, foo3);
+
+		FooIdEqualPred equal2 = {.pred = MCL_LIST_DATA_PRED(FooIdEqualPred_IsEqual), .id = 2};
+		auto result = (Foo*)MclList_FindFirst(list, &equal2.pred);
+
+		ASSERT_TRUE(result != NULL);
+		ASSERT_EQ(2, result->getId());
+
+		FooIdEqualPred equal4 = {.pred = MCL_LIST_DATA_PRED(FooIdEqualPred_IsEqual), .id = 4};
+		result = (Foo*)MclList_FindFirst(list, &equal4.pred);
+		ASSERT_TRUE(result == NULL);
+	}
+
 	TEST("should remove element from list")
 	{
 		auto foo = Foo_Create();
@@ -140,6 +171,42 @@ FIXTURE(ListTest)
 
 		Foo_Delete(foo1);
 		Foo_Delete(foo3);
+	}
+
+	TEST("should remove satisfied element in list")
+	{
+		auto foo1 = Foo_Create(1);
+		auto foo2 = Foo_Create(2);
+		auto foo3 = Foo_Create(3);
+
+		MclList_PushFront(list, foo1);
+		MclList_PushFront(list, foo2);
+		MclList_PushFront(list, foo3);
+
+		FooIdEqualPred equal2 = {.pred = MCL_LIST_DATA_PRED(FooIdEqualPred_IsEqual), .id = 2};
+		auto result = (Foo*)MclList_RemoveFirst(list, &equal2.pred, NULL);
+		ASSERT_EQ(2, MclList_GetCount(list));
+
+		ASSERT_TRUE(result != NULL);
+		ASSERT_EQ(2, result->getId());
+		Foo_Delete(result);
+
+		result = (Foo*)MclList_RemoveFirst(list, &equal2.pred, NULL);
+		ASSERT_EQ(2, MclList_GetCount(list));
+		ASSERT_TRUE(result == NULL);
+
+		FooIdEqualPred equal3 = {.pred = MCL_LIST_DATA_PRED(FooIdEqualPred_IsEqual), .id = 3};
+		result = (Foo*)MclList_RemoveFirst(list, &equal3.pred, &fooDeleter);
+		ASSERT_EQ(1, MclList_GetCount(list));
+		ASSERT_TRUE(result == NULL);
+
+		result = (Foo*)MclList_FindFirst(list, &equal3.pred);
+		ASSERT_TRUE(result == NULL);
+
+		FooIdEqualPred equal1 = {.pred = MCL_LIST_DATA_PRED(FooIdEqualPred_IsEqual), .id = 1};
+		result = (Foo*)MclList_FindFirst(list, &equal1.pred);
+		ASSERT_TRUE(result != NULL);
+		ASSERT_EQ(1, result->getId());
 	}
 
 	TEST("should delete element from list")

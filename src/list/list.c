@@ -134,7 +134,7 @@ uint32_t MclList_RemoveData(MclList *self, MclListData data, MclListDataDeleter 
 	return 1;
 }
 
-uint32_t MclList_RemoveBy(MclList *self, MclListDataPred *pred, MclListDataDeleter *dataDeleter) {
+uint32_t MclList_RemoveAll(MclList *self, MclListDataPred *pred, MclListDataDeleter *dataDeleter) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
 	MCL_ASSERT_VALID_PTR_NIL(pred);
 
@@ -150,14 +150,43 @@ uint32_t MclList_RemoveBy(MclList *self, MclListDataPred *pred, MclListDataDelet
     return removedCount;
 }
 
-MclListNode* MclList_FindNode(MclList *self, MclListData data) {
+MclListData MclList_RemoveFirst(MclList *self, MclListDataPred *pred, MclListDataDeleter *dataDeleter) {
+	MCL_ASSERT_VALID_PTR_NIL(self);
+	MCL_ASSERT_VALID_PTR_NIL(pred);
+
+    MclListNode *node = NULL;
+    MclListNode *tmpNode = NULL;
+    MCL_LIST_FOREACH_SAFE((MclList*)self, node, tmpNode) {
+        if (MclListDataPred_Predicate(pred, node->data)) {
+        	MclListData data = node->data;
+            MclList_RemoveNodeFromList(self, node, dataDeleter);
+            return dataDeleter ? NULL: data;
+        }
+    }
+    return NULL;
+}
+
+MclListNode* MclList_FindNode(const MclList *self, MclListData data) {
     MCL_ASSERT_VALID_PTR_NIL(self);
 
     MclListNode *node = NULL;
-    MCL_LIST_FOREACH(self, node) {
+    MCL_LIST_FOREACH((MclList*)self, node) {
         if (data == node->data) return node;
     }
     return NULL;
+}
+
+MclListData  MclList_FindFirst(const MclList *self, MclListDataPred *pred) {
+	MCL_ASSERT_VALID_PTR_NIL(self);
+	MCL_ASSERT_VALID_PTR_NIL(pred);
+
+	MclListNode *node = NULL;
+	MCL_LIST_FOREACH((MclList*)self, node) {
+        if (MclListDataPred_Predicate(pred, node->data)) {
+            return node->data;
+        }
+    }
+	return NULL;
 }
 
 void MclList_FindBy(const MclList *self, MclListDataPred *pred, MclList *result) {

@@ -1,5 +1,6 @@
 #include "mcl/service/mcl_query_service.h"
 #include "repo/mcl_entity_repo.h"
+#include "entity/mcl_entity.h"
 #include "mcl/lock/lockobj.h"
 #include "mcl/assert.h"
 

@@ -15,7 +15,7 @@ MCL_PRIVATE MclEntityRepo entityRepo = {
 };
 
 void MclEntityRepo_Init() {
-	MCL_ASSERT_SUCC_CALL_VOID(MclRwLock_Init(&entityRepo.rwlock));
+	MCL_ASSERT_SUCC_CALL_VOID(MclRwLock_Init(&entityRepo.rwlock, NULL));
 	MclEntityList_Init(&entityRepo.entities);
 }
 
@@ -56,7 +56,7 @@ const MclEntity* MclEntityRepo_FetchConst(MclEntityId id) {
 	const MclEntity *result = NULL;
 	MCL_LOCK_READ_SCOPE(entityRepo.rwlock) {
 		result = MclEntityList_Find(&entityRepo.entities, id);
-		MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_RdLock(result));
+		MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_RdLock((void*)result));
 	}
 	return result;
 }
@@ -78,7 +78,7 @@ const MclEntity* MclEntityList_FetchConstBy(MclEntity_Pred pred, void *arg) {
 	const MclEntity *result = NULL;
 	MCL_LOCK_READ_SCOPE(entityRepo.rwlock) {
 		result = MclEntityList_FindBy(&entityRepo.entities, pred, arg);
-		MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_RdLock(result));
+		MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_RdLock((void*)result));
 	}
 	return result;
 }
@@ -122,7 +122,7 @@ MclStatus MclEntityRepo_Accept(MclEntity_Visit visit, void *arg) {
 
 	MCL_LOCK_READ_AUTO(entityRepo.rwlock);
 
-	return MclEntityList_Accept(MclEntityRepoVisitor_Visit, &visitor);
+	return MclEntityList_Accept(&entityRepo.entities, MclEntityRepoVisitor_Visit, &visitor);
 }
 
 typedef struct {
@@ -134,9 +134,9 @@ MCL_PRIVATE MclStatus MclEntityRepoVisitorConst_Visit(const MclEntity *entity, v
 	MclEntityRepoVisitorConst *visitor = (MclEntityRepoVisitorConst*)arg;
 
 	MclStatus result = MCL_FAILURE;
-	MCL_ASSERT_SUCC_CALL(MclLockObj_RdLock(entity));
+	MCL_ASSERT_SUCC_CALL(MclLockObj_RdLock((void*)entity));
 	result = visitor->visit(entity, arg);
-	MCL_ASSERT_SUCC_CALL(MclLockObj_UnLock(entity));
+	MCL_ASSERT_SUCC_CALL(MclLockObj_UnLock((void*)entity));
 	return result;
 }
 
@@ -147,5 +147,5 @@ MclStatus MclEntityRepo_AcceptConst(MclEntity_VisitConst visit, void *arg) {
 
 	MCL_LOCK_READ_AUTO(entityRepo.rwlock);
 
-	return MclEntityList_AcceptConst(MclEntityRepoVisitorConst_Visit, &visitor);
+	return MclEntityList_AcceptConst(&entityRepo.entities, MclEntityRepoVisitorConst_Visit, &visitor);
 }

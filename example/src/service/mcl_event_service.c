@@ -8,9 +8,9 @@ typedef struct {
 } EntityCounter;
 
 MCL_PRIVATE MclStatus MclEventService_CountEntity(const MclEntity *entity, void *arg) {
-	EntityCounter *count = (EntityCounter*)arg;
+	EntityCounter *counter = (EntityCounter*)arg;
 	MCL_LOG_DBG("Count entity (%u : %u)", MclEntity_GetId(entity), MclEntity_GetValue(entity));
-	(*count)++;
+	counter->count++;
 	return MCL_SUCCESS;
 }
 
@@ -23,7 +23,7 @@ MclStatus MclEventService_On1sTimeout() {
 
 
 MCL_PRIVATE MclStatus MclEventService_DoubleEntity(MclEntity *entity, void *arg) {
-	MCL_ASSERT_VALID_PTR(MclEntity_DoubleValue(entity));
+	MCL_ASSERT_SUCC_CALL(MclEntity_DoubleValue(entity));
 	return MCL_SUCCESS;
 }
 

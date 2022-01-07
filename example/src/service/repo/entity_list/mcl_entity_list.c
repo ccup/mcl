@@ -44,7 +44,7 @@ typedef struct {
 } MclEntityVisitor;
 
 
-bool MclEntityVisitor_Visit(MclListDataVisitor *visitor, MclListData data) {
+MclStatus MclEntityVisitor_Visit(MclListDataVisitor *visitor, MclListData data) {
 	MclEntityVisitor *self = MCL_TYPE_REDUCT(visitor, MclEntityVisitor, visitorIntf);
 	return self->visit((MclEntity*)data, self->arg);
 }
@@ -57,8 +57,8 @@ typedef struct {
 } MclEntityVisitorConst;
 
 
-bool MclEntityVisitorConst_Visit(MclListDataVisitor *visitor, MclListData data) {
-	MclEntityVisitorConst *self = MCL_TYPE_REDUCT(visitor, MclEntityVisitor, visitorIntf);
+MclStatus MclEntityVisitorConst_Visit(MclListDataVisitor *visitor, MclListData data) {
+	MclEntityVisitorConst *self = MCL_TYPE_REDUCT(visitor, MclEntityVisitorConst, visitorIntf);
 	return self->visit((const MclEntity*)data, self->arg);
 }
 
@@ -71,8 +71,8 @@ void MclEntityList_Init(MclEntityList *self) {
 void MclEntityList_Destroy(MclEntityList *self, MclEntityList_EntityDestroy destroy) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
-	MclEntityDeleter deleter = {.deleterInft = MCL_LIST_DATA_DELETER(MclEntityDeleter_Delete), .destroy = destroy};
-	MclList_Clear(self, &deleter);
+	MclEntityDeleter deleter = {.deleterIntf = MCL_LIST_DATA_DELETER(MclEntityDeleter_Delete), .destroy = destroy};
+	MclList_Clear(self, &deleter.deleterIntf);
 }
 
 MclStatus MclEntityList_Insert(MclEntityList *self, MclEntity *entity) {

@@ -1,11 +1,32 @@
 #include "entity/mcl_entity.h"
-#include "entity/private/mcl_entity_private.h"
 #include "mcl/assert.h"
+
+MCL_TYPE(MclEntity) {
+	MclEntityId id;
+	MclInteger value;
+};
+
+size_t MCL_ENTITY_SIZE = sizeof(MclEntity);
 
 MCL_PRIVATE const uint32_t DOUBLE_TIME = 2;
 
+MCL_PRIVATE void MclEntity_Clear(MclEntity *self) {
+	MclInteger_Clear(&self->value);
+}
+
 MCL_PRIVATE bool MclEntity_IsOverflowFor(const MclEntity *self, uint32_t time) {
 	return  ((uint64_t)self->value) * time > MCL_INTEGER_MAX;
+}
+
+MclStatus MclEntity_Init(MclEntity *self, MclEntityId id) {
+	self->id = id;
+	MclEntity_Clear(self);
+	return MCL_SUCCESS;
+}
+
+void MclEntity_Destroy(MclEntity *self) {
+	MclEntity_Clear(self);
+	self->id = MCL_ENTITY_ID_INVALID;
 }
 
 MclEntityId MclEntity_GetId(const MclEntity *self) {

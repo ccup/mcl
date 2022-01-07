@@ -6,7 +6,7 @@
 MclStatus MclConfigService_CreateEntity(MclEntityId entityId) {
 	MCL_ASSERT_TRUE(MclEntityId_IsValid(entityId));
 
-	MclEntity *entity = MclEntityFactory_CreateLockObj();
+	MclEntity *entity = MclEntityFactory_CreateLockObj(entityId);
 	MCL_ASSERT_VALID_PTR(entity);
 
 	if (MCL_FAILED(MclEntityRepo_Insert(entity))) {

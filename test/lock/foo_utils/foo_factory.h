@@ -43,26 +43,6 @@ private:
     }
 };
 
-template<>
-struct FooFactory<FooCreateType::SHARED_PTR> {
-    static Foo* create(FooId id) {
-        auto p = (Foo*)MclSharedPtr_Create(sizeof(Foo), fooDestroy, NULL);
-        MCL_ASSERT_VALID_PTR_NIL(p);
-        auto result = new(p) Foo(id);
-        return result;
-    }
-
-    static void destroy(Foo *f) {
-        MclSharedPtr_Delete(f);
-    }
-
-private:
-    static void fooDestroy(void *p, void *arg) {
-        auto foo = (Foo*)p;
-        foo->~Foo();
-    }
-};
-
 template<FooCreateType type>
 void Foo_ListDelete(MclListDataDeleter *deleter, MclListData data) {
     auto f = (Foo*)data;
@@ -73,11 +53,6 @@ template<FooCreateType type>
 void Foo_HashDelete(MclHashValueDeleter *deleter, MclHashValue value) {
     auto f = (Foo*)value;
     if (f) FooFactory<type>::destroy(f);
-}
-
-MCL_INLINE void Foo_Destruct(void *f, void *arg) {
-    auto foo = (Foo*)f;
-    foo->~Foo();
 }
 
 #endif

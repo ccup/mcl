@@ -23,6 +23,9 @@ MCL_INLINE void MclLockObj_AutoUnLock(void *ppobj) {
 
 #define MCL_LOCK_OBJ_AUTO  MCL_RAII(MclLockObj_AutoUnLock)
 
+#define MCL_LOCK_OBJ_CREATE(TYPE, OBJ) 					\
+TYPE *OBJ = (TYPE*)MclLockObj_Create(sizeof(TYPE))
+
 MCL_STDC_END
 
 #endif

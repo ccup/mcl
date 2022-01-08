@@ -72,13 +72,13 @@ uint32_t MclHashBucket_Remove(MclHashBucket *self, MclHashKey key, MclHashNodeAl
 	return MclHashBucket_RemoveBy(self, MclHashBucket_PredKeyEqual, &key, allocator, destroy);
 }
 
-MclStatus MclHashBucket_Accept(const MclHashBucket *self, MclHashNodeVisitor *visitor) {
+MclStatus MclHashBucket_Accept(const MclHashBucket *self, MclHashNodeVisit visit, void *arg) {
 	MCL_ASSERT_VALID_PTR(self);
-	MCL_ASSERT_VALID_PTR(visitor);
+	MCL_ASSERT_VALID_PTR(visit);
 
 	MclHashNode *node;
 	MCL_LINK_FOREACH(&self->nodes, MclHashNode, link, node) {
-		MclStatus ret = MclHashNodeVisitor_Visit(visitor, node);
+		MclStatus ret = visit(node, arg);
 		if (MCL_DONE(ret)) return MCL_SUCCESS;
 		if (MCL_FAILED(ret)) return ret;
 	}

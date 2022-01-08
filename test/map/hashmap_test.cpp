@@ -36,32 +36,20 @@ namespace {
     	return foo->getId() == (long)arg;
     }
 
-    struct HashNodeVisitor {
-    	MclHashNodeVisitor visitor;
-    	uint32_t sum;
-    };
-
-    MclStatus HashNodeVisitor_Sum(MclHashNodeVisitor *visitor, MclHashNode *node) {
-    	HashNodeVisitor *self = MCL_TYPE_REDUCT(visitor, HashNodeVisitor, visitor);
-    	auto foo = (Foo*)(node->value);
+    MclStatus HashNodeVisit_Sum(MclHashNode *node, void *arg) {
+    	auto foo = (Foo*)MclHashNode_GetValue(node);
     	if (FOO_ID_INVALID == foo->getId()) return MCL_STATUS_DONE;
-    	self->sum += foo->getId();
+    	auto sum = (uint32_t*)arg;
+    	(*sum) += foo->getId();
     	return MCL_SUCCESS;
-    }
-
-    void HashNodeVisitor_Init(HashNodeVisitor *visitor) {
-    	visitor->visitor.visit = HashNodeVisitor_Sum;
-    	visitor->sum = 0;
     }
 }
 
 FIXTURE(HashMapTest) {
     MclHashMap *foos {nullptr};
-    HashNodeVisitor fooVisitor;
 
     BEFORE {
     	foos = MclHashMap_CreateDefault();
-    	HashNodeVisitor_Init(&fooVisitor);
     }
 
     AFTER {
@@ -241,10 +229,9 @@ FIXTURE(HashMapTest) {
 		MclHashMap_Set(foos, FOO_ID_INVALID, Foo_Create(FOO_ID_INVALID));
 		MclHashMap_Set(foos, 15, Foo_Create(15));
 
-//		MclHashMap_Dump(foos);
-
-		MclHashMap_Accept(foos, &fooVisitor.visitor);
-		ASSERT_EQ(39, fooVisitor.sum);
+		uint32_t sum = 0;
+		MclHashMap_Accept(foos, HashNodeVisit_Sum, &sum);
+		ASSERT_EQ(39, sum);
 
 		MclHashMap_Clear(foos, (MclHashValueDestroy)Foo_Delete);
 	}
@@ -272,8 +259,9 @@ FIXTURE(HashMapTest) {
 
 		ASSERT_EQ(2, MclHashMap_GetCount(foos));
 
-		MclHashMap_Accept(foos, &fooVisitor.visitor);
-		ASSERT_EQ(MAX_ELEMS + MAX_ELEMS - 3, fooVisitor.sum);
+		uint32_t sum = 0;
+		MclHashMap_Accept(foos, HashNodeVisit_Sum, &sum);
+		ASSERT_EQ(MAX_ELEMS + MAX_ELEMS - 3, sum);
 
 		MclHashMap_Clear(foos, (MclHashValueDestroy)Foo_Delete);
 	}

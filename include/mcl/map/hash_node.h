@@ -37,27 +37,7 @@ MCL_INLINE MclHashValue MclHashNode_GetValue(const MclHashNode *self) {
 }
 
 typedef bool (*MclHashNodePred)(const MclHashNode*, void*);
-///////////////////////////////////////////////////////////
-//MCL_TYPE(MclHashNodePred) {
-//    bool (*pred)(MclHashNodePred*, const MclHashNode*);
-//};
-//
-//MCL_INLINE bool MclHashNodePred_Predicate(MclHashNodePred *pred, const MclHashNode *node) {
-//    return (pred && pred->pred) ? pred->pred(pred, node) : false;
-//}
-//
-//#define MCL_HASH_NODE_PRED(PRED) {.pred = PRED}
-
-///////////////////////////////////////////////////////////
-MCL_TYPE(MclHashNodeVisitor) {
-    MclStatus (*visit)(MclHashNodeVisitor*, MclHashNode*);
-};
-
-MCL_INLINE MclStatus MclHashNodeVisitor_Visit(MclHashNodeVisitor *visitor, MclHashNode *node) {
-    return (visitor && visitor->visit) ? visitor->visit(visitor, node) : MCL_FAILURE;
-}
-
-#define MCL_HASH_NODE_VISITOR(VISITOR) {.visit = VISITOR}
+typedef MclStatus (*MclHashNodeVisit)(MclHashNode*, void*);
 
 ///////////////////////////////////////////////////////////
 #define MCL_HASH_NODE(KEY, VALUE) {.link = MCL_LINK_NODE_INITIALIZER(), .key = (KEY), .value = (VALUE)}

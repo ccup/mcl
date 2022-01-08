@@ -21,7 +21,7 @@ MclStatus MclHashBucket_RemoveNode(MclHashBucket*, MclHashNode*, MclHashNodeAllo
 uint32_t MclHashBucket_Remove(MclHashBucket*, MclHashKey, MclHashNodeAllocator*, MclHashValueDestroy);
 uint32_t MclHashBucket_RemoveBy(MclHashBucket*, MclHashNodePred, void*, MclHashNodeAllocator*, MclHashValueDestroy);
 
-MclStatus MclHashBucket_Accept(const MclHashBucket*, MclHashNodeVisitor*);
+MclStatus MclHashBucket_Accept(const MclHashBucket*, MclHashNodeVisit, void*);
 
 void MclHashBucket_Dump(const MclHashBucket*);
 

@@ -33,7 +33,7 @@ MclStatus MclHashMap_Set(MclHashMap*, MclHashKey, MclHashValue);
 void MclHashMap_Remove(MclHashMap*, MclHashKey, MclHashValueDestroy);
 void MclHashMap_RemoveBy(MclHashMap*, MclHashNodePred, void*, MclHashValueDestroy);
 
-MclStatus MclHashMap_Accept(const MclHashMap*, MclHashNodeVisitor*);
+MclStatus MclHashMap_Accept(const MclHashMap*, MclHashNodeVisit, void*);
 
 void MclHashMap_Dump(const MclHashMap*);
 

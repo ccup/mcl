@@ -143,12 +143,12 @@ void MclHashMap_RemoveBy(MclHashMap *self, MclHashNodePred pred, void *arg, MclH
 	self->elementCount -= removedCount;
 }
 
-MclStatus MclHashMap_Accept(const MclHashMap *self, MclHashNodeVisitor *visitor) {
+MclStatus MclHashMap_Accept(const MclHashMap *self, MclHashNodeVisit visit, void *arg) {
 	MCL_ASSERT_VALID_PTR(self);
-	MCL_ASSERT_VALID_PTR(visitor);
+	MCL_ASSERT_VALID_PTR(visit);
 
     for (uint32_t i = 0; i < self->bucketCount; i++) {
-        MclStatus ret = MclHashBucket_Accept(&self->buckets[i], visitor);
+        MclStatus ret = MclHashBucket_Accept(&self->buckets[i], visit, arg);
 		if (MCL_DONE(ret)) return MCL_SUCCESS;
 		if (MCL_FAILED(ret)) return ret;
     }

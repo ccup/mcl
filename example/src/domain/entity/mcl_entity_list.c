@@ -2,18 +2,6 @@
 #include "entity/mcl_entity.h"
 #include "mcl/assert.h"
 
-///////////////////////////////////////////////////////////
-typedef struct {
-	MclListDataDestroyIntf destroyIntf;
-	MclEntityList_EntityDestroy destroy;
-} MclEntityDestroy;
-
-MCL_PRIVATE void MclEntityDestroy_Destroy(MclListDataDestroyIntf *destroyIntf, MclListData data) {
-	MclEntityDestroy *self = MCL_TYPE_REDUCT(destroyIntf, MclEntityDestroy, destroyIntf);
-	self->destroy((MclEntity*)data);
-}
-
-///////////////////////////////////////////////////////////
 typedef struct {
 	MclListDataPredIntf predIntf;
 	MclEntityId id;
@@ -68,11 +56,10 @@ void MclEntityList_Init(MclEntityList *self) {
 	MclList_Init(self, MclListNodeAllocator_GetDefault());
 }
 
-void MclEntityList_Destroy(MclEntityList *self, MclEntityList_EntityDestroy destroy) {
+void MclEntityList_Destroy(MclEntityList *self, MclEntityListDataDestroy destroy) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
-	MclEntityDestroy deleter = {.destroyIntf = MCL_LIST_DATA_DESTROY_INTF(MclEntityDestroy_Destroy), .destroy = destroy};
-	MclList_Clear(self, &deleter.destroyIntf);
+	MclList_Clear(self, (MclListDataDestroy)destroy);
 }
 
 MclStatus MclEntityList_Insert(MclEntityList *self, MclEntity *entity) {

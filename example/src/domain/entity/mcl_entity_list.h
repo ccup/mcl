@@ -12,8 +12,8 @@ typedef MclList MclEntityList;
 
 void MclEntityList_Init(MclEntityList*);
 
-typedef void (*MclEntityList_EntityDestroy)(MclEntity*);
-void MclEntityList_Destroy(MclEntityList*, MclEntityList_EntityDestroy);
+typedef void (*MclEntityListDataDestroy)(MclEntity*);
+void MclEntityList_Destroy(MclEntityList*, MclEntityListDataDestroy);
 
 MclStatus  MclEntityList_Insert(MclEntityList*, MclEntity*);
 MclEntity* MclEntityList_Remove(MclEntityList*, MclEntityId);

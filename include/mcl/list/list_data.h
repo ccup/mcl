@@ -32,15 +32,17 @@ MCL_INLINE MclStatus MclListDataVisitor_Visit(MclListDataVisitIntf *visitIntf, M
 #define MCL_LIST_DATA_VISIT_INTF(VISIT) {.visit = VISIT}
 
 /////////////////////////////////////////////////////////
-MCL_INTERFACE(MclListDataDestroyIntf) {
-    void (*destroy)(MclListDataDestroyIntf*, MclListData);
-};
+//MCL_INTERFACE(MclListDataDestroyIntf) {
+//    void (*destroy)(MclListDataDestroyIntf*, MclListData);
+//};
+//
+//MCL_INLINE void MclListDataDestroyIntf_Destroy(MclListDataDestroyIntf *destroyIntf, MclListData data) {
+//    if (destroyIntf && destroyIntf->destroy) destroyIntf->destroy(destroyIntf, data);
+//}
+//
+//#define MCL_LIST_DATA_DESTROY_INTF(DESTROY) {.destroy = DESTROY}
 
-MCL_INLINE void MclListDataDestroyIntf_Destroy(MclListDataDestroyIntf *destroyIntf, MclListData data) {
-    if (destroyIntf && destroyIntf->destroy) destroyIntf->destroy(destroyIntf, data);
-}
-
-#define MCL_LIST_DATA_DESTROY_INTF(DESTROY) {.destroy = DESTROY}
+typedef void (*MclListDataDestroy)(MclListData);
 
 MCL_STDC_END
 

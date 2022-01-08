@@ -20,8 +20,7 @@ namespace {
         }
 
         ~FooRepo() {
-            MclListDataDestroyIntf destroyIntf = MCL_LIST_DATA_DESTROY_INTF(Foo_ListDestroy<FooCreateType::SHARED_PTR>);
-            MclList_Delete(foos, &destroyIntf);
+            MclList_Delete(foos, (MclListDataDestroy)FooFactory<FooCreateType::SHARED_PTR>::destroy);
             MclRwLock_Destroy(&rwlock);
         }
 

@@ -15,10 +15,10 @@ MCL_TYPE(MclList) {
 MclList* MclList_CreateDefault();
 MclList* MclList_Create(MclListNodeAllocator*);
 
-void MclList_Delete(MclList*, MclListDataDestroyIntf*);
+void MclList_Delete(MclList*, MclListDataDestroy);
 
 void MclList_Init(MclList*, MclListNodeAllocator*);
-void MclList_Clear(MclList*, MclListDataDestroyIntf*);
+void MclList_Clear(MclList*, MclListDataDestroy);
 
 ///////////////////////////////////////////////////////////
 MclStatus MclList_PushFrontNode(MclList*, MclListNode*);
@@ -45,7 +45,7 @@ MclListData MclList_RemoveFirst(MclList*);
 MclListData MclList_RemoveLast(MclList*);
 MclListData MclList_RemoveData(MclList*, MclListData);
 MclListData MclList_RemoveByPred(MclList*, MclListDataPredIntf*);
-uint32_t MclList_RemoveAllByPred(MclList *, MclListDataPredIntf*, MclListDataDestroyIntf*);
+uint32_t MclList_RemoveAllByPred(MclList *, MclListDataPredIntf*, MclListDataDestroy);
 
 MclStatus MclList_Accept(const MclList*, MclListDataVisitIntf*);
 

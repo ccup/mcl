@@ -30,11 +30,6 @@ namespace {
 		if (f) delete f;
 	}
 
-	void Foo_ListDelete(MclListDataDestroyIntf *destroyIntf, MclListData data) {
-	    auto f = (Foo*)data;
-	    Foo_Delete(f);
-	}
-
 	void Foo_Sum(const Foo *foo, uint32_t *sum) {
 		(*sum) += foo->getId();
 	}
@@ -53,15 +48,13 @@ namespace {
 FIXTURE(ListTest)
 {
 	MclList *list {nullptr};
-    MclListDataDestroyIntf fooDestroyIntf;
 
 	BEFORE {
 		list = MclList_CreateDefault();
-		fooDestroyIntf.destroy = Foo_ListDelete;
 	}
 
 	AFTER {
-		MclList_Delete(list, &fooDestroyIntf);
+		MclList_Delete(list, (MclListDataDestroy)Foo_Delete);
 		ASSERT_EQ(0, Foo::FOO_COUNT.load());
 	}
 
@@ -254,7 +247,7 @@ FIXTURE(ListTest)
 
 		MclList_PushBack(list, foo);
 
-		MclList_Clear(list, &fooDestroyIntf);
+		MclList_Clear(list, (MclListDataDestroy)Foo_Delete);
 
 		ASSERT_TRUE(MclList_IsEmpty(list));
 	}
@@ -278,7 +271,7 @@ FIXTURE(ListTest)
 
 		ASSERT_EQ(6, sum);
 
-		MclList_Clear(list, &fooDestroyIntf);
+		MclList_Clear(list, (MclListDataDestroy)Foo_Delete);
 	}
 
 	TEST("should travel each node safe on list")
@@ -306,7 +299,7 @@ FIXTURE(ListTest)
 
 		ASSERT_EQ(4, sum);
 
-		MclList_Clear(list, &fooDestroyIntf);
+		MclList_Clear(list, (MclListDataDestroy)Foo_Delete);
 	}
 
 	TEST("should visit each node on list")
@@ -324,7 +317,7 @@ FIXTURE(ListTest)
 		MCL_LIST_FOREACH_CALL(list, Foo, Foo_Sum, &sum);
 		ASSERT_EQ(6, sum);
 
-		MclList_Clear(list, &fooDestroyIntf);
+		MclList_Clear(list, (MclListDataDestroy)Foo_Delete);
 	}
 
 	TEST("should insert before node")
@@ -344,7 +337,7 @@ FIXTURE(ListTest)
 		auto secondNode = MclListNode_GetNext(MclList_GetFirst(list));
 		ASSERT_EQ(MclListNode_GetData(secondNode), foo2);
 
-		MclList_Clear(list, &fooDestroyIntf);
+		MclList_Clear(list, (MclListDataDestroy)Foo_Delete);
 	}
 
 	TEST("should insert after node")
@@ -364,6 +357,6 @@ FIXTURE(ListTest)
 		auto secondNode = MclListNode_GetNext(MclList_GetFirst(list));
 		ASSERT_EQ(MclListNode_GetData(secondNode), foo2);
 
-		MclList_Clear(list, &fooDestroyIntf);
+		MclList_Clear(list, (MclListDataDestroy)Foo_Delete);
 	}
 };

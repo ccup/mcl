@@ -82,16 +82,14 @@ MclHashNode* MclHashMap_FindNode(const MclHashMap *self, MclHashKey key) {
 	return MclHashBucket_FindNode(&self->buckets[bucketId], key);
 }
 
-MclStatus MclHashMap_Get(const MclHashMap *self, MclHashKey key, MclHashValue *value) {
-    MCL_ASSERT_VALID_PTR(self);
-    MCL_ASSERT_VALID_PTR(value);
-    MCL_ASSERT_TRUE(MclHashKey_IsValid(key));
+MclHashValue MclHashMap_Get(const MclHashMap *self, MclHashKey key) {
+    MCL_ASSERT_VALID_PTR_NIL(self);
+    MCL_ASSERT_TRUE_NIL(MclHashKey_IsValid(key));
 
     const MclHashNode *node = MclHashMap_FindNode(self, key);
-    if (!node) return MCL_FAILURE;
+    if (!node) return NULL;
 
-    (*value) = node->value;
-    return MCL_SUCCESS;
+    return node->value;
 }
 
 MclHashValue MclHashMap_Set(MclHashMap *self, MclHashKey key, MclHashValue value) {

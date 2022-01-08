@@ -66,7 +66,7 @@ FIXTURE(HashMapTest) {
 	{
 		ASSERT_TRUE(MclHashMap_IsEmpty(foos));
 		ASSERT_EQ(0, MclHashMap_GetCount(foos));
-		ASSERT_TRUE(MCL_FAILED(MclHashMap_Get(foos, 0, NULL)));
+		ASSERT_FALSE(MclHashValue_IsValid(MclHashMap_Get(foos, 0)));
 	}
 
 	TEST("should add element to map")
@@ -77,10 +77,8 @@ FIXTURE(HashMapTest) {
 		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
 		ASSERT_EQ(1, MclHashMap_GetCount(foos));
 
-		Foo *f {nullptr};
-		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(foos, 1, (MclHashValue*)(&f))));
+		auto f = (Foo*)MclHashMap_Get(foos, 1);
 		ASSERT_TRUE(f != nullptr);
-
 		ASSERT_EQ(1, f->getId());
 	}
 
@@ -99,15 +97,15 @@ FIXTURE(HashMapTest) {
 
 		Foo *f {nullptr};
 
-		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(foos, 1, (MclHashValue*)(&f))));
+		f = (Foo*)MclHashMap_Get(foos, 1);
 		ASSERT_TRUE(f != nullptr);
 		ASSERT_EQ(1, f->getId());
 
-		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(foos, 2, (MclHashValue*)(&f))));
+		f = (Foo*)MclHashMap_Get(foos, 2);
 		ASSERT_TRUE(f != nullptr);
 		ASSERT_EQ(2, f->getId());
 
-		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(foos, 3, (MclHashValue*)(&f))));
+		f = (Foo*)MclHashMap_Get(foos, 3);
 		ASSERT_TRUE(f != nullptr);
 		ASSERT_EQ(3, f->getId());
 	}
@@ -147,7 +145,8 @@ FIXTURE(HashMapTest) {
 		ASSERT_TRUE(MclHashMap_IsEmpty(foos));
 		ASSERT_EQ(0, MclHashMap_GetCount(foos));
 
-		ASSERT_TRUE(MCL_FAILED(MclHashMap_Get(foos, 1, (MclHashValue*)(result))));
+		result = (Foo*)MclHashMap_Get(foos, 1);
+		ASSERT_TRUE(result == NULL);
 
 		Foo_Delete(result);
 	}
@@ -249,10 +248,15 @@ FIXTURE(HashMapTest) {
 		ASSERT_EQ(2, MclHashMap_GetCount(foos));
 
 		Foo *f {nullptr};
-		ASSERT_TRUE(MCL_FAILED(MclHashMap_Get(foos, 2, (MclHashValue*)(&f))));
 
-		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(foos, 1, (MclHashValue*)(&f))));
-		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(foos, 3, (MclHashValue*)(&f))));
+		f = (Foo*)MclHashMap_Get(foos, 2);
+		ASSERT_TRUE(f == NULL);
+
+		f = (Foo*)MclHashMap_Get(foos, 1);
+		ASSERT_TRUE(f != NULL);
+
+		f = (Foo*)MclHashMap_Get(foos, 3);
+		ASSERT_TRUE(f != NULL);
 
 		MclHashMap_Clear(foos, (MclHashValueDestroy)Foo_Delete);
 	}
@@ -305,9 +309,8 @@ FIXTURE(HashMapTest) {
 		ASSERT_EQ(MAX_ELEMS, MclHashMap_GetCount(foos));
 
 		for (uint32_t i = 0; i < MAX_ELEMS; i++) {
-			Foo *f {nullptr};
-			ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(foos, i, (MclHashValue*)(&f))));
-			ASSERT_TRUE(f != nullptr);
+			auto f = (Foo*)MclHashMap_Get(foos, i);
+			ASSERT_TRUE(f != NULL);
 			ASSERT_EQ(i, f->getId());
 		}
 

@@ -40,13 +40,14 @@ FIXTURE(HashMapStaticTest) {
 
 		long value{0};
 
-		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(foos, 1, (MclHashValue*)(&value))));
+		value = (long)MclHashMap_Get(foos, 1);
 		ASSERT_EQ(1, value);
 
-		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(foos, 2, (MclHashValue*)(&value))));
+		value = (long)MclHashMap_Get(foos, 2);
 		ASSERT_EQ(2, value);
 
-		ASSERT_TRUE(MCL_FAILED(MclHashMap_Get(foos, 4, (MclHashValue*)(&value))));
+		value = (long)MclHashMap_Get(foos, 4);
+		ASSERT_EQ(0, value);
 
 		auto result = MclHashMap_FindNode(foos, 5);
 		ASSERT_TRUE(result != NULL);

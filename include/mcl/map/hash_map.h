@@ -28,7 +28,7 @@ MclStatus MclHashMap_RemoveNode(MclHashMap*, MclHashNode*, MclHashValueDestroy);
 MclHashNode* MclHashMap_FindNode(const MclHashMap*, MclHashKey);
 
 ///////////////////////////////////////////////////////////
-MclStatus MclHashMap_Get(const MclHashMap*, MclHashKey, MclHashValue*);
+MclHashValue MclHashMap_Get(const MclHashMap*, MclHashKey);
 MclHashValue MclHashMap_Set(MclHashMap*, MclHashKey, MclHashValue);
 
 MclHashValue MclHashMap_FindByPred(const MclHashMap*, MclHashNodePred, void*);

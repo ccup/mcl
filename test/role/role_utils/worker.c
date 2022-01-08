@@ -11,12 +11,12 @@ typedef struct WorkerObject {
 	}energy_mem;
 } WorkerObject;
 
-MCL_ALLOCATOR_TYPE_DEF(WorkerObjectAllocator, WorkerObject, 2);
+MCL_ALLOCATOR_TYPE_DEF(WorkerObjectAllocator, WorkerObject, sizeof(WorkerObject), 2);
 
 MCL_PRIVATE WorkerObjectAllocator allocator;
 
 MCL_CTOR void WorkerObjectAllocator_Ctor() {
-    WorkerObjectAllocator_Init(&allocator);
+	MCL_ALLOCATOR_INIT(WorkerObjectAllocator, allocator);
 }
 
 MCL_PRIVATE void worker_init(Worker* self, Energy *role) {
@@ -46,7 +46,7 @@ MCL_PRIVATE MclStatus worker_object_init(WorkerObject* self, WorkerType type, ui
 }
 
 Worker* worker_create(WorkerType type, uint8_t energy) {
-	WorkerObject* self = WorkerObjectAllocator_Alloc(&allocator);
+	WorkerObject* self = MCL_ALLOCATOR_ALLOC(WorkerObjectAllocator, allocator);
 	if (self == NULL) return NULL;
 	MCL_ASSERT_SUCC_CALL_NIL(worker_object_init(self, type, energy));
 	return MCL_ROLE_SELF_P(Worker);
@@ -54,7 +54,7 @@ Worker* worker_create(WorkerType type, uint8_t energy) {
 
 void worker_release(Worker* self) {
 	MCL_ROLE_CAST_TO(Worker, self, WorkerObject, obj);
-    WorkerObjectAllocator_Free(&allocator, obj);
+	MCL_ALLOCATOR_FREE(WorkerObjectAllocator, allocator, obj);
 }
 
 void worker_produce(Worker* self) {

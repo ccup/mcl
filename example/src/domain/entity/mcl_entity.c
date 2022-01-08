@@ -14,7 +14,7 @@ MCL_PRIVATE void MclEntity_Clear(MclEntity *self) {
 	MclInteger_Clear(&self->value);
 }
 
-MCL_PRIVATE bool MclEntity_IsOverflowFor(const MclEntity *self, uint32_t time) {
+MCL_PRIVATE bool MclEntity_IsOverflowByTime(const MclEntity *self, uint32_t time) {
 	return  ((uint64_t)self->value) * time > MCL_INTEGER_MAX;
 }
 
@@ -40,9 +40,9 @@ MclInteger MclEntity_GetValue(const MclEntity *self) {
 MclStatus MclEntity_DoubleValue(MclEntity *self) {
 	MCL_ASSERT_VALID_PTR(self);
 
-	if (self->value == 0) return MCL_SUCCESS;
+	if (self->value == 0) return MCL_STATUS_NOTHING_CHANGED;
 
-	if (MclEntity_IsOverflowFor(self, DOUBLE_TIME)) return MCL_FAILURE;
+	if (MclEntity_IsOverflowByTime(self, DOUBLE_TIME)) return MCL_FAILURE;
 
 	self->value *= DOUBLE_TIME;
 	return MCL_SUCCESS;

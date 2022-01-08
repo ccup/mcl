@@ -41,16 +41,16 @@ namespace {
 
     constexpr static uint32_t NODE_NUM_MAX = 6;
 
-    MCL_ALLOCATOR_TYPE_DEF(MclListNodeStaticAllocator, MclListNode, NODE_NUM_MAX);
+    MCL_ALLOCATOR_TYPE_DEF(MclListNodeStaticAllocator, MclListNode, sizeof(MclListNode), NODE_NUM_MAX);
 
     MclListNodeStaticAllocator nodeAllocator;
 
     MclListNode* ListNode_StaticAlloc(MclListNodeAllocator *allocator) {
-    	return MclListNodeStaticAllocator_Alloc(&nodeAllocator);
+    	return MCL_ALLOCATOR_ALLOC(MclListNodeStaticAllocator, nodeAllocator);
     }
 
     void ListNode_StaticFree(MclListNodeAllocator *allocator, MclListNode *node) {
-    	MclListNodeStaticAllocator_Free(&nodeAllocator, node);
+    	MCL_ALLOCATOR_FREE(MclListNodeStaticAllocator, nodeAllocator, node);
     }
 
     MclList list = MCL_LIST(list, NULL);
@@ -62,7 +62,7 @@ FIXTURE(ListStaticTest)
 	MclListNode invalidNode;
 
 	ListStaticTest() {
-		MclListNodeStaticAllocator_Init(&nodeAllocator);
+		MCL_ALLOCATOR_INIT(MclListNodeStaticAllocator, nodeAllocator);
 
 		for (long i = 0; i < NODE_NUM_MAX; i++) {
 		    MclListNode_Init(&nodes[i], (MclListData)i);

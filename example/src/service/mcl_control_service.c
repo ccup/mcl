@@ -10,8 +10,13 @@ MclStatus MclConfigService_DoubleEntity(MclEntityId entityId) {
 	MCL_LOCK_OBJ_AUTO MclEntity *entity = MclEntityRepo_Fetch(entityId);
 	MCL_ASSERT_VALID_PTR(entity);
 
-	MCL_ASSERT_SUCC_CALL(MclEntity_DoubleValue(entity));
+	MclStatus ret = MclEntity_DoubleValue(entity);
+	MCL_ASSERT_TRUE(!MCL_FAILED(ret));
 
-	MCL_LOG_SUCC("Control Service: Double entity (%u) OK!", entityId);
+	if (MclStatus_IsNothingChanged(ret)) {
+		MCL_LOG_SUCC("Control Service: Entity (%u) not changed!", entityId);
+	} else {
+		MCL_LOG_SUCC("Control Service: Double entity (%u) OK!", entityId);
+	}
 	return MCL_SUCCESS;
 }

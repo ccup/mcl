@@ -10,7 +10,7 @@ MCL_STDC_BEGIN
 typedef enum {
 	MCL_SUCCESS = 0,
 	MCL_STATUS_DONE,
-	MCL_STATUS_NOTHING_HAPPEN,
+	MCL_STATUS_NOTHING_CHANGED,
 
 	MCL_FAILURE = 0x80000001,
 	MCL_NULLPTR,
@@ -22,8 +22,8 @@ typedef enum {
 } MclStatus;
 
 
-MCL_INLINE bool MclStatus_IsOK(MclStatus status) {
-    return MCL_SUCCESS == status;
+MCL_INLINE bool MclStatus_IsSucc(MclStatus status) {
+    return status == MCL_SUCCESS;
 }
 
 MCL_INLINE bool MclStatus_IsFailed(MclStatus status) {
@@ -31,7 +31,11 @@ MCL_INLINE bool MclStatus_IsFailed(MclStatus status) {
 }
 
 MCL_INLINE bool MclStatus_IsDone(MclStatus status) {
-	return MCL_STATUS_DONE == status;
+	return status == MCL_STATUS_DONE;
+}
+
+MCL_INLINE bool MclStatus_IsNothingChanged(MclStatus status) {
+	return status == MCL_STATUS_NOTHING_CHANGED;
 }
 
 ///////////////////////////////////////////////////////////

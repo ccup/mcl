@@ -119,13 +119,13 @@ FIXTURE(ListTest)
 		MclList_PushFront(list, foo3);
 
 		FooIdEqualPred equal2 = {.predIntf = MCL_LIST_DATA_PRED_INTF(FooIdEqualPred_IsEqual), .id = 2};
-		auto result = (Foo*)MclList_FindFirst(list, &equal2.predIntf);
+		auto result = (Foo*)MclList_FindByPred(list, &equal2.predIntf);
 
 		ASSERT_TRUE(result != NULL);
 		ASSERT_EQ(2, result->getId());
 
 		FooIdEqualPred equal4 = {.predIntf = MCL_LIST_DATA_PRED_INTF(FooIdEqualPred_IsEqual), .id = 4};
-		result = (Foo*)MclList_FindFirst(list, &equal4.predIntf);
+		result = (Foo*)MclList_FindByPred(list, &equal4.predIntf);
 		ASSERT_TRUE(result == NULL);
 	}
 
@@ -184,28 +184,28 @@ FIXTURE(ListTest)
 		MclList_PushFront(list, foo3);
 
 		FooIdEqualPred equal2 = {.predIntf = MCL_LIST_DATA_PRED_INTF(FooIdEqualPred_IsEqual), .id = 2};
-		auto result = (Foo*)MclList_RemovePred(list, &equal2.predIntf);
+		auto result = (Foo*)MclList_RemoveByPred(list, &equal2.predIntf);
 		ASSERT_EQ(2, MclList_GetCount(list));
 
 		ASSERT_TRUE(result != NULL);
 		ASSERT_EQ(2, result->getId());
 		Foo_Delete(result);
 
-		result = (Foo*)MclList_RemovePred(list, &equal2.predIntf);
+		result = (Foo*)MclList_RemoveByPred(list, &equal2.predIntf);
 		ASSERT_EQ(2, MclList_GetCount(list));
 		ASSERT_TRUE(result == NULL);
 
 		FooIdEqualPred equal3 = {.predIntf = MCL_LIST_DATA_PRED_INTF(FooIdEqualPred_IsEqual), .id = 3};
-		result = (Foo*)MclList_RemovePred(list, &equal3.predIntf);
+		result = (Foo*)MclList_RemoveByPred(list, &equal3.predIntf);
 		ASSERT_EQ(1, MclList_GetCount(list));
 		ASSERT_TRUE(result != NULL);
 		Foo_Delete(result);
 
-		result = (Foo*)MclList_FindFirst(list, &equal3.predIntf);
+		result = (Foo*)MclList_FindByPred(list, &equal3.predIntf);
 		ASSERT_TRUE(result == NULL);
 
 		FooIdEqualPred equal1 = {.predIntf = MCL_LIST_DATA_PRED_INTF(FooIdEqualPred_IsEqual), .id = 1};
-		result = (Foo*)MclList_FindFirst(list, &equal1.predIntf);
+		result = (Foo*)MclList_FindByPred(list, &equal1.predIntf);
 		ASSERT_TRUE(result != NULL);
 		ASSERT_EQ(1, result->getId());
 	}

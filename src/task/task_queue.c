@@ -41,7 +41,7 @@ MCL_PRIVATE bool MclTaskKeyPred_IsEqual(MclListDataPredIntf *predIntf, MclListDa
 
 MCL_PRIVATE void TaskQueue_Remove(TaskQueue *queue, MclTaskKey key) {
 	MclTaskKeyPred isKeyEqual = {.predIntf = MCL_LIST_DATA_PRED_INTF(MclTaskKeyPred_IsEqual), .key = key};
-	MclList_RemovePredAll(&queue->tasks, &isKeyEqual.predIntf, &taskDestroyIntf);
+	MclList_RemoveAllByPred(&queue->tasks, &isKeyEqual.predIntf, &taskDestroyIntf);
 }
 
 MCL_PRIVATE bool TaskQueue_IsEmpty(const TaskQueue *queue) {

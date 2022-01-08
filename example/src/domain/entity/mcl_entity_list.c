@@ -88,7 +88,7 @@ MclEntity* MclEntityList_Remove(MclEntityList *self, MclEntityId id) {
 	MCL_ASSERT_TRUE_NIL(MclEntityId_IsValid(id));
 
 	MclEntityIdPred isIdEqual = {.predIntf = MCL_LIST_DATA_PRED_INTF(MclEntityIdPred_IsEqual), .id = id};
-	return MclList_RemovePred(self, &isIdEqual.predIntf);
+	return MclList_RemoveByPred(self, &isIdEqual.predIntf);
 }
 
 MclEntity* MclEntityList_Find(const MclEntityList *self, MclEntityId id) {
@@ -96,7 +96,7 @@ MclEntity* MclEntityList_Find(const MclEntityList *self, MclEntityId id) {
 	MCL_ASSERT_TRUE_NIL(MclEntityId_IsValid(id));
 
 	MclEntityIdPred isIdEqual = {.predIntf = MCL_LIST_DATA_PRED_INTF(MclEntityIdPred_IsEqual), .id = id};
-	return MclList_FindFirst(self, &isIdEqual.predIntf);
+	return MclList_FindByPred(self, &isIdEqual.predIntf);
 }
 
 MclEntity*  MclEntityList_FindBy(const MclEntityList *self, MclEntityList_EntityPred entityPred, void *arg) {
@@ -104,7 +104,7 @@ MclEntity*  MclEntityList_FindBy(const MclEntityList *self, MclEntityList_Entity
 	MCL_ASSERT_VALID_PTR_NIL(entityPred);
 
 	MclEntityPred pred = {.predIntf = MCL_LIST_DATA_PRED_INTF(MclEntityIdPred_IsEqual), .pred = entityPred, .arg = arg};
-	return MclList_FindFirst(self, &pred.predIntf);
+	return MclList_FindByPred(self, &pred.predIntf);
 }
 
 bool MclEntityList_HasEntity(const MclEntityList *self, MclEntityId id) {
@@ -112,7 +112,7 @@ bool MclEntityList_HasEntity(const MclEntityList *self, MclEntityId id) {
 	MCL_ASSERT_TRUE_BOOL(MclEntityId_IsValid(id));
 
 	MclEntityIdPred isIdEqual = {.predIntf = MCL_LIST_DATA_PRED_INTF(MclEntityIdPred_IsEqual), .id = id};
-	return MclList_FindFirst(self, &isIdEqual.predIntf) != NULL;
+	return MclList_FindByPred(self, &isIdEqual.predIntf) != NULL;
 }
 
 bool MclEntityList_IsEmpty(const MclEntityList *self) {

@@ -126,6 +126,17 @@ MclListData MclList_RemoveFirst(MclList *self) {
 	return data;
 }
 
+MclListData MclList_RemoveLast(MclList *self) {
+	MCL_ASSERT_VALID_PTR_NIL(self);
+
+	MclListNode *node = MclList_GetLast(self);
+	if (!node) return NULL;
+
+	MclListData data = MclListNode_GetData(node);
+	MclList_RemoveNodeFromList(self, node, NULL);
+	return data;
+}
+
 MclListData MclList_RemoveNode(MclList *self, MclListNode *node) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
 	MCL_ASSERT_VALID_PTR_NIL(node);
@@ -146,7 +157,7 @@ MclListData MclList_RemoveData(MclList *self, MclListData data) {
 	return data;
 }
 
-MclListData MclList_RemovePred(MclList *self, MclListDataPredIntf *predIntf) {
+MclListData MclList_RemoveByPred(MclList *self, MclListDataPredIntf *predIntf) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
 	MCL_ASSERT_VALID_PTR_NIL(predIntf);
 
@@ -162,7 +173,7 @@ MclListData MclList_RemovePred(MclList *self, MclListDataPredIntf *predIntf) {
     return NULL;
 }
 
-uint32_t MclList_RemovePredAll(MclList *self, MclListDataPredIntf *predIntf, MclListDataDestroyIntf *destroyIntf) {
+uint32_t MclList_RemoveAllByPred(MclList *self, MclListDataPredIntf *predIntf, MclListDataDestroyIntf *destroyIntf) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
 	MCL_ASSERT_VALID_PTR_NIL(predIntf);
 
@@ -189,7 +200,7 @@ MclListNode* MclList_FindNode(const MclList *self, MclListData data) {
     return NULL;
 }
 
-MclListData  MclList_FindFirst(const MclList *self, MclListDataPredIntf *predIntf) {
+MclListData  MclList_FindByPred(const MclList *self, MclListDataPredIntf *predIntf) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
 	MCL_ASSERT_VALID_PTR_NIL(predIntf);
 
@@ -203,7 +214,7 @@ MclListData  MclList_FindFirst(const MclList *self, MclListDataPredIntf *predInt
 	return NULL;
 }
 
-void MclList_FindBy(const MclList *self, MclListDataPredIntf *predIntf, MclList *result) {
+void MclList_FindAllByPred(const MclList *self, MclListDataPredIntf *predIntf, MclList *result) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 	MCL_ASSERT_VALID_PTR_VOID(predIntf);
 	MCL_ASSERT_VALID_PTR_VOID(result);

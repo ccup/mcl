@@ -14,33 +14,38 @@ MCL_TYPE(MclList) {
 
 MclList* MclList_CreateDefault();
 MclList* MclList_Create(MclListNodeAllocator*);
+
 void MclList_Delete(MclList*, MclListDataDestroyIntf*);
 
 void MclList_Init(MclList*, MclListNodeAllocator*);
 void MclList_Clear(MclList*, MclListDataDestroyIntf*);
 
+///////////////////////////////////////////////////////////
 MclStatus MclList_PushFrontNode(MclList*, MclListNode*);
 MclStatus MclList_PushBackNode(MclList*, MclListNode*);
 
 MclStatus MclList_InsertNodeBefore(MclList*, MclListNode* nextNode, MclListNode*);
 MclStatus MclList_InsertNodeAfter(MclList*, MclListNode* prevNode, MclListNode*);
 
+MclListNode* MclList_FindNode(const MclList*, MclListData);
+
+MclListData MclList_RemoveNode(MclList*, MclListNode*);
+
+///////////////////////////////////////////////////////////
 MclStatus MclList_PushFront(MclList*, MclListData);
 MclStatus MclList_PushBack(MclList*, MclListData);
 
 MclStatus MclList_InsertBefore(MclList*, MclListNode* nextNode, MclListData);
 MclStatus MclList_InsertAfter(MclList*, MclListNode* prevNode, MclListData);
 
+MclListData  MclList_FindByPred(const MclList*, MclListDataPredIntf*);
+void MclList_FindAllByPred(const MclList*, MclListDataPredIntf*, MclList *result);
+
 MclListData MclList_RemoveFirst(MclList*);
-MclListData MclList_RemoveNode(MclList*, MclListNode*);
+MclListData MclList_RemoveLast(MclList*);
 MclListData MclList_RemoveData(MclList*, MclListData);
-MclListData MclList_RemovePred(MclList*, MclListDataPredIntf*);
-
-uint32_t MclList_RemovePredAll(MclList *, MclListDataPredIntf*, MclListDataDestroyIntf*);
-
-MclListNode* MclList_FindNode(const MclList*, MclListData);
-MclListData  MclList_FindFirst(const MclList*, MclListDataPredIntf*);
-void MclList_FindBy(const MclList*, MclListDataPredIntf*, MclList *result);
+MclListData MclList_RemoveByPred(MclList*, MclListDataPredIntf*);
+uint32_t MclList_RemoveAllByPred(MclList *, MclListDataPredIntf*, MclListDataDestroyIntf*);
 
 MclStatus MclList_Accept(const MclList*, MclListDataVisitIntf*);
 

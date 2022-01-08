@@ -85,7 +85,7 @@ FIXTURE(ListStaticTest)
         MclList result = MCL_LIST(result, &allocator);
 
         auto isLargerThan = DataPred_Create(2);
-		MclList_FindBy(&list, &isLargerThan.predIntf, &result);
+		MclList_FindAllByPred(&list, &isLargerThan.predIntf, &result);
 
 		ASSERT_EQ(2, MclList_GetCount(&result));
 
@@ -106,7 +106,7 @@ FIXTURE(ListStaticTest)
         MclList_PushBackNode(&list, &nodes[2]);
 
         auto isLargerThan = DataPred_Create(2);
-        ASSERT_EQ(2, MclList_RemovePredAll(&list, &isLargerThan.predIntf, NULL));
+        ASSERT_EQ(2, MclList_RemoveAllByPred(&list, &isLargerThan.predIntf, NULL));
 
         ASSERT_EQ(2, MclList_GetCount(&list));
 

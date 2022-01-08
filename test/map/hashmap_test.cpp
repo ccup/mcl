@@ -7,7 +7,7 @@ namespace {
 	constexpr FooId FOO_ID_INVALID = 0xFFFFFFFF;
 
 	struct Foo {
-		static std::atomic<uint16_t> FOO_COUNT;
+		static size_t FOO_COUNT;
 
 		Foo (FooId id) : id {id} {
 		}
@@ -19,7 +19,7 @@ namespace {
 		FooId id {FOO_ID_INVALID};
 	};
 
-	std::atomic<uint16_t> Foo::FOO_COUNT {0};
+	size_t Foo::FOO_COUNT {0};
 
 	Foo* Foo_Create(FooId id = FOO_ID_INVALID) {
 		Foo::FOO_COUNT++;
@@ -31,25 +31,9 @@ namespace {
 		if (f) delete f;
 	}
 
-	void Foo_HashDelete(MclHashValueDeleter *deleter, MclHashValue value) {
-		auto f = (Foo*)value;
-		if (f) Foo_Delete(f);
-	}
-
-    struct HashNodePred {
-    	MclHashNodePred pred;
-    	uint32_t id;
-    };
-
-    bool HashNodePred_IsEqual(MclHashNodePred *pred, const MclHashNode *node) {
-    	HashNodePred *self = MCL_TYPE_REDUCT(pred, HashNodePred, pred);
-    	auto foo = (Foo*)(node->value);
-    	return self->id == foo->getId();
-    }
-
-    void HashNodePred_Init(HashNodePred *pred) {
-    	pred->pred.pred = HashNodePred_IsEqual;
-    	pred->id = FOO_ID_INVALID;
+    bool HashNodePred_IsEqual(const MclHashNode *node, void *arg) {
+    	auto foo = (Foo*)MclHashNode_GetValue(node);
+    	return foo->getId() == (long)arg;
     }
 
     struct HashNodeVisitor {
@@ -73,20 +57,16 @@ namespace {
 
 FIXTURE(HashMapTest) {
     MclHashMap *foos {nullptr};
-    MclHashValueDeleter fooDeleter;
-    HashNodePred fooIdPred;
     HashNodeVisitor fooVisitor;
 
     BEFORE {
     	foos = MclHashMap_CreateDefault();
-    	fooDeleter.destroy = Foo_HashDelete;
-    	HashNodePred_Init(&fooIdPred);
     	HashNodeVisitor_Init(&fooVisitor);
     }
 
     AFTER {
-		MclHashMap_Delete(foos, &fooDeleter);
-		ASSERT_EQ(0, Foo::FOO_COUNT.load());
+		MclHashMap_Delete(foos, (MclHashValueDestroy)Foo_Delete);
+		ASSERT_EQ(0, Foo::FOO_COUNT);
     }
 
 	TEST("should be empty when initialized")
@@ -191,7 +171,7 @@ FIXTURE(HashMapTest) {
 		auto foo = Foo_Create(1);
 
 		MclHashMap_Set(foos, 1, foo);
-		MclHashMap_Remove(foos, 1, &fooDeleter);
+		MclHashMap_Remove(foos, 1, (MclHashValueDestroy)Foo_Delete);
 
 		ASSERT_TRUE(MclHashMap_IsEmpty(foos));
 	}
@@ -206,13 +186,13 @@ FIXTURE(HashMapTest) {
 		MclHashMap_Set(foos, 2, foo2);
 		MclHashMap_Set(foos, 3, foo3);
 
-		MclHashMap_Remove(foos, 3, &fooDeleter);
-		MclHashMap_Remove(foos, 2, &fooDeleter);
+		MclHashMap_Remove(foos, 3, (MclHashValueDestroy)Foo_Delete);
+		MclHashMap_Remove(foos, 2, (MclHashValueDestroy)Foo_Delete);
 
 		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
 		ASSERT_EQ(1, MclHashMap_GetCount(foos));
 
-		MclHashMap_Remove(foos, 1, &fooDeleter);
+		MclHashMap_Remove(foos, 1, (MclHashValueDestroy)Foo_Delete);
 
 		ASSERT_TRUE(MclHashMap_IsEmpty(foos));
 		ASSERT_EQ(0, MclHashMap_GetCount(foos));
@@ -224,7 +204,7 @@ FIXTURE(HashMapTest) {
 
 		MclHashMap_Set(foos, 1, foo);
 
-		MclHashMap_Clear(foos, &fooDeleter);
+		MclHashMap_Clear(foos, (MclHashValueDestroy)Foo_Delete);
 
 		ASSERT_TRUE(MclHashMap_IsEmpty(foos));
 	}
@@ -239,8 +219,7 @@ FIXTURE(HashMapTest) {
 		MclHashMap_Set(foos, 2, foo2);
 		MclHashMap_Set(foos, 3, foo3);
 
-		fooIdPred.id = 2;
-		MclHashMap_RemoveBy(foos, &fooIdPred.pred, &fooDeleter);
+		MclHashMap_RemoveBy(foos, HashNodePred_IsEqual, (void*)2, (MclHashValueDestroy)Foo_Delete);
 
 		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
 		ASSERT_EQ(2, MclHashMap_GetCount(foos));
@@ -251,7 +230,7 @@ FIXTURE(HashMapTest) {
 		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(foos, 1, (MclHashValue*)(&f))));
 		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(foos, 3, (MclHashValue*)(&f))));
 
-		MclHashMap_Clear(foos, &fooDeleter);
+		MclHashMap_Clear(foos, (MclHashValueDestroy)Foo_Delete);
 	}
 
 	TEST("should visit nodes in map by condition")
@@ -267,7 +246,7 @@ FIXTURE(HashMapTest) {
 		MclHashMap_Accept(foos, &fooVisitor.visitor);
 		ASSERT_EQ(39, fooVisitor.sum);
 
-		MclHashMap_Clear(foos, &fooDeleter);
+		MclHashMap_Clear(foos, (MclHashValueDestroy)Foo_Delete);
 	}
 
 	TEST("should add more elements")
@@ -288,7 +267,7 @@ FIXTURE(HashMapTest) {
 		}
 
 		for (uint32_t i = 0; i < MAX_ELEMS - 2; i++) {
-			MclHashMap_Remove(foos, i, &fooDeleter);
+			MclHashMap_Remove(foos, i, (MclHashValueDestroy)Foo_Delete);
 		}
 
 		ASSERT_EQ(2, MclHashMap_GetCount(foos));
@@ -296,6 +275,6 @@ FIXTURE(HashMapTest) {
 		MclHashMap_Accept(foos, &fooVisitor.visitor);
 		ASSERT_EQ(MAX_ELEMS + MAX_ELEMS - 3, fooVisitor.sum);
 
-		MclHashMap_Clear(foos, &fooDeleter);
+		MclHashMap_Clear(foos, (MclHashValueDestroy)Foo_Delete);
 	}
 };

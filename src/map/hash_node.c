@@ -10,9 +10,9 @@ MclHashNode* MclHashNode_Create(MclHashKey key, MclHashValue value, MclHashNodeA
 	return self;
 }
 
-void MclHashNode_Delete(MclHashNode *self, MclHashNodeAllocator *allocator, MclHashValueDeleter *valueDeleter) {
+void MclHashNode_Delete(MclHashNode *self, MclHashNodeAllocator *allocator, MclHashValueDestroy destroy) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
-    MclHashValueDeleter_Destroy(valueDeleter, self->value);
+    if (destroy) destroy(self->value);
     MclHashNodeAllocator_Release(allocator, self);
 }

@@ -27,10 +27,10 @@ MclHashMap* MclHashMap_Create(uint32_t bucketCount, MclHashNodeAllocator *alloca
     return self;
 }
 
-void MclHashMap_Delete(MclHashMap *self, MclHashValueDeleter *valueDeleter) {
+void MclHashMap_Delete(MclHashMap *self, MclHashValueDestroy destroy) {
     MCL_ASSERT_VALID_PTR_VOID(self);
 
-    MclHashMap_Clear(self, valueDeleter);
+    MclHashMap_Clear(self, destroy);
     MCL_FREE(self);
 }
 
@@ -47,9 +47,9 @@ void MclHashMap_Init(MclHashMap *self, uint32_t bucketCount, MclHashBucket *buck
     }
 }
 
-void MclHashMap_Clear(MclHashMap *self, MclHashValueDeleter *valueDeleter) {
+void MclHashMap_Clear(MclHashMap *self, MclHashValueDestroy destroy) {
 	for (uint32_t i = 0; i < self->bucketCount; i++) {
-		MclHashBucket_Clear(&self->buckets[i], self->allocator, valueDeleter);
+		MclHashBucket_Clear(&self->buckets[i], self->allocator, destroy);
 	}
 	self->elementCount = 0;
 }
@@ -79,12 +79,12 @@ MclStatus MclHashMap_InsertNode(MclHashMap *self, MclHashNode *node) {
     return MCL_SUCCESS;
 }
 
-MclStatus MclHashMap_RemoveNode(MclHashMap *self, MclHashNode *node, MclHashValueDeleter *valueDeleter) {
+MclStatus MclHashMap_RemoveNode(MclHashMap *self, MclHashNode *node, MclHashValueDestroy destroy) {
     MCL_ASSERT_VALID_PTR(self);
     MCL_ASSERT_VALID_PTR(node);
 
     uint32_t bucketId = MclHashMap_GetBucketId(self, node->key);
-    MCL_ASSERT_SUCC_CALL(MclHashBucket_RemoveNode(&self->buckets[bucketId], node, self->allocator, valueDeleter));
+    MCL_ASSERT_SUCC_CALL(MclHashBucket_RemoveNode(&self->buckets[bucketId], node, self->allocator, destroy));
     self->elementCount--;
     return MCL_SUCCESS;
 }
@@ -120,24 +120,24 @@ MclStatus MclHashMap_Set(MclHashMap *self, MclHashKey key, MclHashValue value) {
     return MCL_SUCCESS;
 }
 
-void MclHashMap_Remove(MclHashMap *self, MclHashKey key, MclHashValueDeleter *valueDeleter) {
+void MclHashMap_Remove(MclHashMap *self, MclHashKey key, MclHashValueDestroy destroy) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
 	uint32_t bucketId = MclHashMap_GetBucketId(self, key);
 
-	uint32_t removedCount = MclHashBucket_Remove(&self->buckets[bucketId], key, self->allocator, valueDeleter);
+	uint32_t removedCount = MclHashBucket_Remove(&self->buckets[bucketId], key, self->allocator, destroy);
 	MCL_ASSERT_TRUE_VOID(removedCount <= self->elementCount);
 	self->elementCount -= removedCount;
 }
 
-void MclHashMap_RemoveBy(MclHashMap *self, MclHashNodePred *pred, MclHashValueDeleter *valueDeleter) {
+void MclHashMap_RemoveBy(MclHashMap *self, MclHashNodePred pred, void *arg, MclHashValueDestroy destroy) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 	MCL_ASSERT_VALID_PTR_VOID(pred);
 
 	uint32_t removedCount = 0;
 
     for (uint32_t i = 0; i < self->bucketCount; i++) {
-    	removedCount += MclHashBucket_RemoveBy(&self->buckets[i], pred, self->allocator, valueDeleter);
+    	removedCount += MclHashBucket_RemoveBy(&self->buckets[i], pred, arg, self->allocator, destroy);
     }
 	MCL_ASSERT_TRUE_VOID(removedCount <= self->elementCount);
 	self->elementCount -= removedCount;

@@ -4,6 +4,8 @@
 #include "mcl/map/hash_key.h"
 #include "mcl/map/hash_value.h"
 #include "mcl/link/link.h"
+#include "mcl/keyword.h"
+#include "mcl/status.h"
 
 MCL_STDC_BEGIN
 
@@ -24,18 +26,27 @@ MCL_INLINE void MclHashNode_Init(MclHashNode *self, MclHashKey key, MclHashValue
 }
 
 MclHashNode* MclHashNode_Create(MclHashKey, MclHashValue, MclHashNodeAllocator*);
-void MclHashNode_Delete(MclHashNode*, MclHashNodeAllocator*, MclHashValueDeleter*);
+void MclHashNode_Delete(MclHashNode*, MclHashNodeAllocator*, MclHashValueDestroy);
 
-///////////////////////////////////////////////////////////
-MCL_TYPE(MclHashNodePred) {
-    bool (*pred)(MclHashNodePred*, const MclHashNode*);
-};
-
-MCL_INLINE bool MclHashNodePred_Predicate(MclHashNodePred *pred, const MclHashNode *node) {
-    return (pred && pred->pred) ? pred->pred(pred, node) : false;
+MCL_INLINE MclHashKey MclHashNode_GetKey(const MclHashNode *self) {
+	return self ? self->key : MCL_HASH_KEY_INVALID;
 }
 
-#define MCL_HASH_NODE_PRED(PRED) {.pred = PRED}
+MCL_INLINE MclHashValue MclHashNode_GetValue(const MclHashNode *self) {
+	return self ? self->value : NULL;
+}
+
+typedef bool (*MclHashNodePred)(const MclHashNode*, void*);
+///////////////////////////////////////////////////////////
+//MCL_TYPE(MclHashNodePred) {
+//    bool (*pred)(MclHashNodePred*, const MclHashNode*);
+//};
+//
+//MCL_INLINE bool MclHashNodePred_Predicate(MclHashNodePred *pred, const MclHashNode *node) {
+//    return (pred && pred->pred) ? pred->pred(pred, node) : false;
+//}
+//
+//#define MCL_HASH_NODE_PRED(PRED) {.pred = PRED}
 
 ///////////////////////////////////////////////////////////
 MCL_TYPE(MclHashNodeVisitor) {

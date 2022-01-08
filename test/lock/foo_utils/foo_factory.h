@@ -43,10 +43,4 @@ private:
     }
 };
 
-template<FooCreateType type>
-void Foo_HashDestroy(MclHashValueDeleter *deleter, MclHashValue value) {
-    auto f = (Foo*)value;
-    if (f) FooFactory<type>::destroy(f);
-}
-
 #endif

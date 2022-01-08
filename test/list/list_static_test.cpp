@@ -106,7 +106,7 @@ FIXTURE(ListStaticTest)
         MclList_PushBackNode(&list, &nodes[2]);
 
         auto isLargerThan = DataPred_Create(2);
-        ASSERT_EQ(2, MclList_RemoveAll(&list, &isLargerThan.pred, NULL));
+        ASSERT_EQ(2, MclList_RemovePredAll(&list, &isLargerThan.pred, NULL));
 
         ASSERT_EQ(2, MclList_GetCount(&list));
 

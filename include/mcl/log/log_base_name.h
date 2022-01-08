@@ -5,7 +5,7 @@
 
 MCL_STDC_BEGIN
 
-const char* MclLog_GetBaseName(const char* absPath);
+const char* MclLogBaseName_GetFile(const char* absPath);
 
 MCL_STDC_END
 

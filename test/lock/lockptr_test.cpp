@@ -144,7 +144,7 @@ namespace {
             MCL_LIST_FOREACH_SAFE(this->foos, node, tmpNode) {
                 auto fptr = (MclLockPtr*)node->data;
                 if (id == ((Foo*)MclLockPtr_Get(fptr))->getId()) {
-                    MclList_RemoveNode(this->foos, node, NULL);
+                    MclList_RemoveNode(this->foos, node);
                     return fptr;
                 }
             }

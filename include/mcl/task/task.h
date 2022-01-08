@@ -16,6 +16,10 @@ MCL_TYPE(MclTask) {
 MclStatus MclTask_Execute(MclTask*);
 void MclTask_Destroy(MclTask*);
 
+MCL_INLINE MclTaskKey MclTaskKey_GetKey(const MclTask *self) {
+	return self ? self->key : MCL_TASK_KEY_INVALID;
+}
+
 ///////////////////////////////////////////////////////////
 #define MCL_TASK(KEY, EXECUTE, DESTROY)             \
 {.key = KEY, .execute = EXEVUTE, .destroy = DESTROY}

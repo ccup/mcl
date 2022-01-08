@@ -88,7 +88,7 @@ MclEntity* MclEntityList_Remove(MclEntityList *self, MclEntityId id) {
 	MCL_ASSERT_TRUE_NIL(MclEntityId_IsValid(id));
 
 	MclEntityIdPred isIdEqual = {.predIntf = MCL_LIST_DATA_PRED(MclEntityIdPred_IsEqual), .id = id};
-	return MclList_RemoveFirst(self, &isIdEqual.predIntf, NULL);
+	return MclList_RemovePred(self, &isIdEqual.predIntf);
 }
 
 MclEntity* MclEntityList_Find(const MclEntityList *self, MclEntityId id) {

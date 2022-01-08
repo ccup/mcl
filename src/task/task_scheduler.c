@@ -161,6 +161,7 @@ MclStatus MclTaskScheduler_SubmitTask(MclTaskScheduler *self, MclTask *task, uin
 
 MclStatus MclTaskScheduler_RemoveTask(MclTaskScheduler *self, MclTaskKey key, uint32_t priority) {
 	MCL_ASSERT_VALID_PTR(self);
+	MCL_ASSERT_TRUE(MclTaskKey_IsValid(key));
 	MCL_ASSERT_TRUE(priority < MCL_TASK_SCHEDULER_LEVEL_MAX);
 
 	MCL_ASSERT_SUCC_CALL(MclTaskQueue_DelTask(self->taskQueue, key, priority));

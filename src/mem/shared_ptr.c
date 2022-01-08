@@ -4,15 +4,15 @@
 #include "mcl/mem/align.h"
 #include "mcl/assert.h"
 
-static const uint64_t MCL_SHARED_PTR_SENTINEL = 0xdeadc0de;
-
-MCL_TYPE(MclSharedPtr) {
+typedef struct {
     uint64_t sentinel;
     MclSharedPtrDestructor dtor;
     void* dtorArg;
     MclAtom refCount;
     void* ptr;
-};
+} MclSharedPtr;
+
+MCL_PRIVATE const uint64_t MCL_SHARED_PTR_SENTINEL = 0xdeadc0de;
 
 MCL_PRIVATE size_t MclSharedPtr_HeaderSize() {
     return MclAlign_GetSizeOf(sizeof(MclSharedPtr));

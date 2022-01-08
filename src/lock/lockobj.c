@@ -4,13 +4,13 @@
 #include "mcl/mem/align.h"
 #include "mcl/assert.h"
 
-static const uint64_t MCL_LOCK_OBJ_SENTINEL = 0xdeadc0de;
-
-MCL_TYPE(MclLockObj) {
+typedef struct {
 	uint64_t sentinel;
 	MclRwLock rwlock;
 	void *ptr;
-};
+} MclLockObj;
+
+MCL_PRIVATE const uint64_t MCL_LOCK_OBJ_SENTINEL = 0xdeadc0de;
 
 MCL_PRIVATE size_t MclLockObj_HeaderSize() {
     return MclAlign_GetSizeOf(sizeof(MclLockObj));

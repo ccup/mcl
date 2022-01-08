@@ -6,12 +6,11 @@
 #include "mcl/mem/malloc.h"
 #include "mcl/assert.h"
 
-///////////////////////////////////////////////////////////
-MCL_TYPE(TaskQueue) {
+typedef struct {
 	MclList  tasks;
 	uint32_t threshold;
 	uint32_t poppedCount;
-};
+} TaskQueue;
 
 MCL_PRIVATE void TaskQueue_Init(TaskQueue *queue, uint32_t threshold) {
 	MclList_Init(&queue->tasks, MclListNodeAllocator_GetDefault());
@@ -43,14 +42,19 @@ MCL_PRIVATE void TaskQueue_ResetPoppedCount(TaskQueue *queue) {
 	queue->poppedCount = 0;
 }
 
+typedef struct {
+	MclListDataPred predIntf;
+	MclTaskKey key;
+} MclTaskKeyPred;
+
+MCL_PRIVATE bool MclTaskKeyPred_IsEqual(MclListDataPred *pred, MclListData data) {
+	MclTaskKeyPred *self = MCL_TYPE_REDUCT(pred, MclTaskKeyPred, predIntf);
+	return self->key == MclTaskKey_GetKey((MclTask*)data);
+}
+
 MCL_PRIVATE void TaskQueue_Remove(TaskQueue *queue, MclTaskKey key) {
-	MclListNode *taskNode = NULL;
-	MclListNode *tmpNode = NULL;
-	MCL_LIST_FOREACH_SAFE(&queue->tasks, taskNode, tmpNode) {
-		MclTask *task = (MclTask*)MclListNode_GetData(taskNode);
-		if (task && task->key != key) continue;
-		(void)MclList_RemoveNode(&queue->tasks, taskNode, &taskDeleter);
-	}
+	MclTaskKeyPred isKeyEqual = {.predIntf = MCL_LIST_DATA_PRED(MclTaskKeyPred_IsEqual), .key = key};
+	MclList_RemovePredAll(&queue->tasks, &isKeyEqual.predIntf, &taskDeleter);
 }
 
 MCL_PRIVATE void TaskQueue_Push(TaskQueue *queue, MclTask *task) {
@@ -60,11 +64,10 @@ MCL_PRIVATE void TaskQueue_Push(TaskQueue *queue, MclTask *task) {
 MCL_PRIVATE MclTask* TaskQueue_Pop(TaskQueue *queue) {
 	if (MclList_IsEmpty(&queue->tasks)) return NULL;
 
-	MclListNode *node = MclList_GetFirst(&queue->tasks);
-	MCL_ASSERT_VALID_PTR_NIL(node);
+	MclTask *task = (MclTask*)MclList_RemoveFirst(&queue->tasks);
+	if (!task) return NULL;
 
-	MclTask *task = (MclTask*)MclListNode_GetData(node);
-	queue->poppedCount += MclList_RemoveNode(&queue->tasks, node, NULL);
+	queue->poppedCount += 1;
 	return task;
 }
 
@@ -195,6 +198,7 @@ MclStatus MclTaskQueue_AddTask(MclTaskQueue *self, MclTask *task, uint32_t prior
 
 MclStatus MclTaskQueue_DelTask(MclTaskQueue *self, MclTaskKey key, uint32_t priority) {
 	MCL_ASSERT_VALID_PTR(self);
+	MCL_ASSERT_TRUE(MclTaskKey_IsValid(key));
 	MCL_ASSERT_TRUE(priority < self->queueCount);
 
 	MCL_LOCK_AUTO(self->mutex);

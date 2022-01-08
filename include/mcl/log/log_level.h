@@ -5,8 +5,7 @@
 
 MCL_STDC_BEGIN
 
-typedef enum MclLogLevel
-{
+typedef enum {
 	MCL_LOG_LEVEL_NONE    = 0x0,
     MCL_LOG_LEVEL_DEBUG   = 0x01,
 	MCL_LOG_LEVEL_INFO    = 0x02,

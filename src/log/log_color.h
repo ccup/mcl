@@ -5,7 +5,7 @@
 
 MCL_STDC_BEGIN
 
-typedef enum MclLogColor {
+typedef enum {
 	MCL_LOG_COLOR_RED,
 	MCL_LOG_COLOR_GREEN,
 	MCL_LOG_COLOR_YELLOW,

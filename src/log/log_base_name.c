@@ -1,8 +1,7 @@
 #include "mcl/log/log_base_name.h"
 #include "mcl/stdtype.h"
 
-
-const char* MclLog_GetBaseName(const char* absPath) {
+const char* MclLogBaseName_GetFile(const char* absPath) {
 	if (!absPath) return "";
 
 	const char* p = absPath + strlen(absPath);

@@ -119,7 +119,7 @@ FIXTURE(ListTest)
 		auto foo = Foo_Create();
 
 		MclList_PushFront(list, foo);
-        ASSERT_EQ(foo, MclList_RemoveData(list, foo));
+        ASSERT_EQ(MCL_SUCCESS, MclList_RemoveData(list, foo, NULL));
 
 		ASSERT_TRUE(MclList_IsEmpty(list));
 		ASSERT_EQ(0, MclList_GetCount(list));
@@ -138,24 +138,20 @@ FIXTURE(ListTest)
 		MclList_PushFront(list, foo2);
 		MclList_PushFront(list, foo3);
 
-        MclList_RemoveData(list, foo2);
-		Foo_Delete(foo2);
+        MclList_RemoveData(list, foo2, (MclListDataDestroy)Foo_Delete);
 
 		ASSERT_FALSE(MclList_IsEmpty(list));
 		ASSERT_EQ(2, MclList_GetCount(list));
 
-        MclList_RemoveData(list, foo1);
+        MclList_RemoveData(list, foo1, (MclListDataDestroy)Foo_Delete);
 
 		ASSERT_FALSE(MclList_IsEmpty(list));
 		ASSERT_EQ(1, MclList_GetCount(list));
 
-        MclList_RemoveData(list, foo3);
+        MclList_RemoveData(list, foo3, (MclListDataDestroy)Foo_Delete);
 
 		ASSERT_TRUE(MclList_IsEmpty(list));
 		ASSERT_EQ(0, MclList_GetCount(list));
-
-		Foo_Delete(foo1);
-		Foo_Delete(foo3);
 	}
 
 	TEST("should remove satisfied element in list")
@@ -198,8 +194,7 @@ FIXTURE(ListTest)
 
 		MclList_PushBack(list, foo);
 
-        auto result = (Foo*)MclList_RemoveData(list, foo);
-        Foo_Delete(result);
+        auto result = (Foo*)MclList_RemoveData(list, foo, (MclListDataDestroy)Foo_Delete);
 
 		ASSERT_TRUE(MclList_IsEmpty(list));
 	}
@@ -214,17 +209,14 @@ FIXTURE(ListTest)
 		MclList_PushFront(list, foo2);
 		MclList_PushFront(list, foo3);
 
-        auto result = (Foo*)MclList_RemoveData(list, foo3);
-        Foo_Delete(result);
+        auto result = (Foo*)MclList_RemoveData(list, foo3, (MclListDataDestroy)Foo_Delete);
 
-        result = (Foo*)MclList_RemoveData(list, foo2);
-        Foo_Delete(result);
+        result = (Foo*)MclList_RemoveData(list, foo2, (MclListDataDestroy)Foo_Delete);
 
 		ASSERT_FALSE(MclList_IsEmpty(list));
 		ASSERT_EQ(1, MclList_GetCount(list));
 
-        result = (Foo*)MclList_RemoveData(list, foo1);
-        Foo_Delete(result);
+        result = (Foo*)MclList_RemoveData(list, foo1, (MclListDataDestroy)Foo_Delete);
 
 		ASSERT_TRUE(MclList_IsEmpty(list));
 		ASSERT_EQ(0, MclList_GetCount(list));
@@ -279,8 +271,7 @@ FIXTURE(ListTest)
 		MclListNode *tmpNode = NULL;
 		MCL_LIST_FOREACH_SAFE(list, node, tmpNode) {
 			if (node->data == foo2) {
-				auto f = (Foo*)MclList_RemoveNode(list, node);
-				Foo_Delete(f);
+				auto f = (Foo*)MclList_RemoveNode(list, node, (MclListDataDestroy)Foo_Delete);
 				continue;
 			}
 			sum += ((Foo*)node->data)->getId();

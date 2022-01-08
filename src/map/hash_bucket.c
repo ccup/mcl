@@ -1,6 +1,14 @@
 #include "mcl/map/hash_bucket.h"
 #include "mcl/assert.h"
 
+MCL_PRIVATE MclStatus MclHashBucket_RemoveNodeFromBucket(MclHashBucket* self,
+		MclHashNode *node, MclHashNodeAllocator *allocator, MclHashValueDestroy destroy) {
+	MCL_ASSERT_TRUE(MCL_LINK_NODE_IS_IN_LINK(node, link));
+	MCL_LINK_REMOVE(node, link);
+	MclHashNode_Delete(node, allocator, destroy);
+	return MCL_SUCCESS;
+}
+
 void MclHashBucket_Init(MclHashBucket *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 	MCL_LINK_INIT(&self->nodes, MclHashNode, link);
@@ -11,7 +19,7 @@ void MclHashBucket_Clear(MclHashBucket *self, MclHashNodeAllocator *allocator, M
 
 	MclHashNode *node, *tmpNode;
 	MCL_LINK_FOREACH_SAFE(&self->nodes, MclHashNode, link, node, tmpNode) {
-        (void)MclHashBucket_RemoveNode(self, node, allocator, destroy);
+        (void)MclHashBucket_RemoveNodeFromBucket(self, node, allocator, destroy);
 	}
 }
 
@@ -42,9 +50,9 @@ MclStatus MclHashBucket_PushBackNode(MclHashBucket *self, MclHashNode *node) {
 
 MclStatus MclHashBucket_RemoveNode(MclHashBucket *self, MclHashNode *node, MclHashNodeAllocator *allocator, MclHashValueDestroy destroy) {
 	MCL_ASSERT_VALID_PTR(self);
-    MCL_ASSERT_TRUE(MCL_LINK_NODE_IS_IN_LINK(node, link));
-	MCL_LINK_REMOVE(node, link);
-	MclHashNode_Delete(node, allocator, destroy);
+	MCL_ASSERT_VALID_PTR(node);
+
+	MCL_ASSERT_SUCC_CALL(MclHashBucket_RemoveNodeFromBucket(self, node, allocator, destroy));
 	return MCL_SUCCESS;
 }
 
@@ -56,7 +64,7 @@ uint32_t MclHashBucket_RemoveBy(MclHashBucket *self, MclHashNodePred pred, void 
 	MclHashNode *node, *tmpNode;
 	MCL_LINK_FOREACH_SAFE(&self->nodes, MclHashNode, link, node, tmpNode) {
 		if (MclHashNode_Pred(node, pred, arg)) {
-			if (!MCL_FAILED(MclHashBucket_RemoveNode(self, node, allocator, destroy))) {
+			if (MclHashBucket_RemoveNodeFromBucket(self, node, allocator, destroy)) {
 			    removedCount++;
 			}
 		}

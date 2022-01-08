@@ -99,6 +99,15 @@ MclStatus MclList_InsertNodeAfter(MclList *self, MclListNode* prevNode, MclListN
     return MCL_SUCCESS;
 }
 
+MclStatus MclList_RemoveNode(MclList *self, MclListNode *node, MclListDataDestroy destroy) {
+	MCL_ASSERT_VALID_PTR_NIL(self);
+	MCL_ASSERT_VALID_PTR_NIL(node);
+	MCL_ASSERT_TRUE_NIL(MclListNode_IsInList(node));
+
+	MclList_RemoveNodeFromList(self, node, destroy);
+	return MCL_SUCCESS;
+}
+
 MclListNode* MclList_FindNode(const MclList *self, MclListData data) {
     MCL_ASSERT_VALID_PTR_NIL(self);
 
@@ -107,16 +116,6 @@ MclListNode* MclList_FindNode(const MclList *self, MclListData data) {
         if (data == MclListNode_GetData(node)) return node;
     }
     return NULL;
-}
-
-MclListData MclList_RemoveNode(MclList *self, MclListNode *node) {
-	MCL_ASSERT_VALID_PTR_NIL(self);
-	MCL_ASSERT_VALID_PTR_NIL(node);
-	MCL_ASSERT_TRUE_NIL(MclListNode_IsInList(node));
-
-	MclListData data = MclListNode_GetData(node);
-	MclList_RemoveNodeFromList(self, node, NULL);
-	return data;
 }
 
 MclStatus MclList_PushFront(MclList *self, MclListData data) {
@@ -133,34 +132,6 @@ MclStatus MclList_InsertBefore(MclList *self, MclListNode *nextNode, MclListData
 
 MclStatus MclList_InsertAfter(MclList *self, MclListNode *prevNode, MclListData data) {
     return MclList_InsertNodeAfter(self, prevNode, MclListNode_Create(data, self->allocator));
-}
-
-MclListData  MclList_FindByPred(const MclList *self, MclListDataPred pred, void *arg) {
-	MCL_ASSERT_VALID_PTR_NIL(self);
-	MCL_ASSERT_VALID_PTR_NIL(pred);
-
-	MclListNode *node = NULL;
-	MCL_LIST_FOREACH((MclList*)self, node) {
-		MclListData data = MclListNode_GetData(node);
-        if (pred(data, arg)) {
-            return data;
-        }
-    }
-	return NULL;
-}
-
-void MclList_FindAllByPred(const MclList *self, MclListDataPred pred, void *arg, MclList *result) {
-	MCL_ASSERT_VALID_PTR_VOID(self);
-	MCL_ASSERT_VALID_PTR_VOID(pred);
-	MCL_ASSERT_VALID_PTR_VOID(result);
-
-	MclListNode *node = NULL;
-	MCL_LIST_FOREACH((MclList*)self, node) {
-		MclListData data = MclListNode_GetData(node);
-        if (pred(data, arg)) {
-            MclList_PushBack(result, data);
-        }
-    }
 }
 
 MclListData MclList_RemoveFirst(MclList *self) {
@@ -185,14 +156,14 @@ MclListData MclList_RemoveLast(MclList *self) {
 	return data;
 }
 
-MclListData MclList_RemoveData(MclList *self, MclListData data) {
-	MCL_ASSERT_VALID_PTR_NIL(self);
+MclStatus MclList_RemoveData(MclList *self, MclListData data, MclListDataDestroy destroy) {
+	MCL_ASSERT_VALID_PTR(self);
 
 	MclListNode *node = MclList_FindNode(self, data);
-	if (!node) return NULL;
+	if (!node) return MCL_FAILURE;
 
-	MclList_RemoveNodeFromList(self, node, NULL);
-	return data;
+	MclList_RemoveNodeFromList(self, node, destroy);
+	return MCL_SUCCESS;
 }
 
 MclListData MclList_RemoveByPred(MclList *self, MclListDataPred pred, void *arg) {
@@ -225,6 +196,34 @@ uint32_t MclList_RemoveAllByPred(MclList *self, MclListDataPred pred, void *arg,
         }
     }
     return removedCount;
+}
+
+MclListData  MclList_FindByPred(const MclList *self, MclListDataPred pred, void *arg) {
+	MCL_ASSERT_VALID_PTR_NIL(self);
+	MCL_ASSERT_VALID_PTR_NIL(pred);
+
+	MclListNode *node = NULL;
+	MCL_LIST_FOREACH((MclList*)self, node) {
+		MclListData data = MclListNode_GetData(node);
+        if (pred(data, arg)) {
+            return data;
+        }
+    }
+	return NULL;
+}
+
+void MclList_FindAllByPred(const MclList *self, MclListDataPred pred, void *arg, MclList *result) {
+	MCL_ASSERT_VALID_PTR_VOID(self);
+	MCL_ASSERT_VALID_PTR_VOID(pred);
+	MCL_ASSERT_VALID_PTR_VOID(result);
+
+	MclListNode *node = NULL;
+	MCL_LIST_FOREACH((MclList*)self, node) {
+		MclListData data = MclListNode_GetData(node);
+        if (pred(data, arg)) {
+            MclList_PushBack(result, data);
+        }
+    }
 }
 
 MclStatus MclList_Accept(const MclList *self, MclListDataVisit visit, void *arg) {

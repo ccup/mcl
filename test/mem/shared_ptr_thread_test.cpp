@@ -110,7 +110,7 @@ namespace {
             MCL_LIST_FOREACH_SAFE(this->foos, node, tmpNode) {
                 auto foo = (Foo*)node->data;
                 if (id == foo->getId()) {
-                    MclList_RemoveNode(this->foos, node);
+                    MclList_RemoveNode(this->foos, node, NULL);
                     return foo;
                 }
             }

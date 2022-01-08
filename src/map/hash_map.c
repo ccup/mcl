@@ -54,21 +54,6 @@ void MclHashMap_Clear(MclHashMap *self, MclHashValueDestroy destroy) {
 	self->elementCount = 0;
 }
 
-uint32_t MclHashMap_GetCount(const MclHashMap *self) {
-    return self ? self->elementCount : 0;
-}
-
-bool MclHashMap_IsEmpty(const MclHashMap *self) {
-    return MclHashMap_GetCount(self) == 0;
-}
-
-MclHashNode* MclHashMap_FindNode(const MclHashMap *self, MclHashKey key) {
-    MCL_ASSERT_VALID_PTR_NIL(self);
-
-	uint32_t bucketId = MclHashMap_GetBucketId(self, key);
-	return MclHashBucket_FindNode(&self->buckets[bucketId], key);
-}
-
 MclStatus MclHashMap_InsertNode(MclHashMap *self, MclHashNode *node) {
     MCL_ASSERT_VALID_PTR(self);
     MCL_ASSERT_VALID_PTR(node);
@@ -89,9 +74,18 @@ MclStatus MclHashMap_RemoveNode(MclHashMap *self, MclHashNode *node, MclHashValu
     return MCL_SUCCESS;
 }
 
+MclHashNode* MclHashMap_FindNode(const MclHashMap *self, MclHashKey key) {
+    MCL_ASSERT_VALID_PTR_NIL(self);
+    MCL_ASSERT_TRUE_NIL(MclHashKey_IsValid(key));
+
+	uint32_t bucketId = MclHashMap_GetBucketId(self, key);
+	return MclHashBucket_FindNode(&self->buckets[bucketId], key);
+}
+
 MclStatus MclHashMap_Get(const MclHashMap *self, MclHashKey key, MclHashValue *value) {
     MCL_ASSERT_VALID_PTR(self);
     MCL_ASSERT_VALID_PTR(value);
+    MCL_ASSERT_TRUE(MclHashKey_IsValid(key));
 
     const MclHashNode *node = MclHashMap_FindNode(self, key);
     if (!node) return MCL_FAILURE;
@@ -102,6 +96,7 @@ MclStatus MclHashMap_Get(const MclHashMap *self, MclHashKey key, MclHashValue *v
 
 MclStatus MclHashMap_Set(MclHashMap *self, MclHashKey key, MclHashValue value) {
     MCL_ASSERT_VALID_PTR(self);
+    MCL_ASSERT_TRUE(MclHashKey_IsValid(key));
 
     MclHashNode *node = MclHashMap_FindNode(self, key);
     if (node) {
@@ -122,6 +117,7 @@ MclStatus MclHashMap_Set(MclHashMap *self, MclHashKey key, MclHashValue value) {
 
 void MclHashMap_Remove(MclHashMap *self, MclHashKey key, MclHashValueDestroy destroy) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
+	MCL_ASSERT_TRUE_VOID(MclHashKey_IsValid(key));
 
 	uint32_t bucketId = MclHashMap_GetBucketId(self, key);
 

@@ -15,20 +15,23 @@ MCL_TYPE(MclHashMap) {
 
 MclHashMap* MclHashMap_CreateDefault();
 MclHashMap* MclHashMap_Create(uint32_t bucketCount, MclHashNodeAllocator*);
-void MclHashMap_Delete(MclHashMap*, MclHashValueDestroy);
 
-uint32_t MclHashMap_GetCount(const MclHashMap*);
-bool MclHashMap_IsEmpty(const MclHashMap*);
+void MclHashMap_Delete(MclHashMap*, MclHashValueDestroy);
 
 void MclHashMap_Init(MclHashMap*, uint32_t bucketCount, MclHashBucket*, MclHashNodeAllocator*);
 void MclHashMap_Clear(MclHashMap*, MclHashValueDestroy);
 
-MclHashNode* MclHashMap_FindNode(const MclHashMap*, MclHashKey);
+///////////////////////////////////////////////////////////
 MclStatus MclHashMap_InsertNode(MclHashMap*, MclHashNode*);
 MclStatus MclHashMap_RemoveNode(MclHashMap*, MclHashNode*, MclHashValueDestroy);
 
+MclHashNode* MclHashMap_FindNode(const MclHashMap*, MclHashKey);
+
+///////////////////////////////////////////////////////////
 MclStatus MclHashMap_Get(const MclHashMap*, MclHashKey, MclHashValue*);
 MclStatus MclHashMap_Set(MclHashMap*, MclHashKey, MclHashValue);
+
+MclHashValue MclHashMap_FindByPred(const MclHashMap*, MclHashNodePred, void*);
 
 void MclHashMap_Remove(MclHashMap*, MclHashKey, MclHashValueDestroy);
 void MclHashMap_RemoveBy(MclHashMap*, MclHashNodePred, void*, MclHashValueDestroy);
@@ -36,6 +39,15 @@ void MclHashMap_RemoveBy(MclHashMap*, MclHashNodePred, void*, MclHashValueDestro
 MclStatus MclHashMap_Accept(const MclHashMap*, MclHashNodeVisit, void*);
 
 void MclHashMap_Dump(const MclHashMap*);
+
+///////////////////////////////////////////////////////////
+MCL_INLINE uint32_t MclHashMap_GetCount(const MclHashMap *self) {
+    return self ? self->elementCount : 0;
+}
+
+MCL_INLINE bool MclHashMap_IsEmpty(const MclHashMap *self) {
+    return MclHashMap_GetCount(self) == 0;
+}
 
 ///////////////////////////////////////////////////////////
 #define MCL_HASHMAP_BUCKET_COUNT_DEFAULT 127

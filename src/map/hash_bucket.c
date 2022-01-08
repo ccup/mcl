@@ -64,7 +64,7 @@ uint32_t MclHashBucket_RemoveBy(MclHashBucket *self, MclHashNodePred pred, void 
 	MclHashNode *node, *tmpNode;
 	MCL_LINK_FOREACH_SAFE(&self->nodes, MclHashNode, link, node, tmpNode) {
 		if (MclHashNode_Pred(node, pred, arg)) {
-			if (MclHashBucket_RemoveNodeFromBucket(self, node, allocator, destroy)) {
+			if (!MCL_FAILED(MclHashBucket_RemoveNodeFromBucket(self, node, allocator, destroy))) {
 			    removedCount++;
 			}
 		}

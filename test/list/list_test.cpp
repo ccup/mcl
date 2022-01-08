@@ -310,7 +310,11 @@ FIXTURE(ListTest)
 		MclList_PushBack(list, foo3);
 
 		auto node = MclList_FindNode(list, foo3);
-		ASSERT_EQ(MCL_SUCCESS, MclList_InsertBefore(list, node, foo2));
+		auto newNode = MclList_InsertBefore(list, node, foo2);
+		ASSERT_TRUE(newNode != NULL);
+
+		auto f = (Foo*)MclListNode_GetData(newNode);
+		ASSERT_EQ(2, f->getId());
 
 		ASSERT_EQ(3, MclList_GetCount(list));
 
@@ -330,7 +334,11 @@ FIXTURE(ListTest)
 		MclList_PushBack(list, foo3);
 
 		auto node = MclList_FindNode(list, foo1);
-		ASSERT_EQ(MCL_SUCCESS, MclList_InsertAfter(list, node, foo2));
+		auto newNode = MclList_InsertAfter(list, node, foo2);
+		ASSERT_TRUE(newNode != NULL);
+
+		auto f = (Foo*)MclListNode_GetData(newNode);
+		ASSERT_EQ(2, f->getId());
 
 		ASSERT_EQ(3, MclList_GetCount(list));
 

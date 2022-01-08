@@ -5,22 +5,12 @@
 namespace {
 	const long INVALID_DATA = 0xFFFFFFFF;
 
-	struct DataVisitor {
-	    MclListDataVisitIntf visitIntf;
-	    long sum;
-	};
-
-    MclStatus DataVisitor_Sum(MclListDataVisitIntf *visitIntf, MclListData data) {
+    MclStatus DataVisitor_Sum(MclListData data, void *arg) {
         auto v = (long)data;
         if (v == INVALID_DATA) return MCL_STATUS_DONE;
-        DataVisitor *self = MCL_TYPE_REDUCT(visitIntf, DataVisitor, visitIntf);
-        self->sum += v;
+        long *sum = (long*)arg;
+        (*sum) += v;
         return MCL_SUCCESS;
-    }
-
-    DataVisitor DataVisitor_Create() {
-        DataVisitor visitor = {.visitIntf = MCL_LIST_DATA_VISIT_INTF(DataVisitor_Sum), .sum = 0};
-        return visitor;
     }
 
     bool DataPred_IsLargerThan(MclListData data, void *arg) {
@@ -109,9 +99,9 @@ FIXTURE(ListStaticTest)
         MclList_PushBackNode(&list, &nodes[3]);
         MclList_PushBackNode(&list, &nodes[5]);
 
-        auto sumVisitor = DataVisitor_Create();
-		ASSERT_EQ(MCL_SUCCESS, MclList_Accept(&list, &sumVisitor.visitIntf));
-		ASSERT_EQ(9, sumVisitor.sum);
+        long sum = 0;
+		ASSERT_EQ(MCL_SUCCESS, MclList_Accept(&list, DataVisitor_Sum, &sum));
+		ASSERT_EQ(9, sum);
 	}
 
 	TEST("should visit nodes until invalid")
@@ -121,8 +111,8 @@ FIXTURE(ListStaticTest)
         MclList_PushBackNode(&list, &invalidNode);
         MclList_PushBackNode(&list, &nodes[5]);
 
-        auto sumVisitor = DataVisitor_Create();
-		ASSERT_EQ(MCL_SUCCESS, MclList_Accept(&list, &sumVisitor.visitIntf));
-		ASSERT_EQ(4, sumVisitor.sum);
+        long sum = 0;
+		ASSERT_EQ(MCL_SUCCESS, MclList_Accept(&list, DataVisitor_Sum, &sum));
+		ASSERT_EQ(4, sum);
 	}
 };

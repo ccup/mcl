@@ -2,33 +2,6 @@
 #include "entity/mcl_entity.h"
 #include "mcl/assert.h"
 
-///////////////////////////////////////////////////////////
-typedef struct {
-	MclListDataVisitIntf visitIntf;
-	MclEntityList_EntityVisit visit;
-	void* arg;
-} MclEntityVisitor;
-
-
-MclStatus MclEntityVisitor_Visit(MclListDataVisitIntf *visitIntf, MclListData data) {
-	MclEntityVisitor *self = MCL_TYPE_REDUCT(visitIntf, MclEntityVisitor, visitIntf);
-	return self->visit((MclEntity*)data, self->arg);
-}
-
-///////////////////////////////////////////////////////////
-typedef struct {
-	MclListDataVisitIntf visitIntf;
-	MclEntityList_EntityVisitConst visit;
-	void* arg;
-} MclEntityVisitorConst;
-
-
-MclStatus MclEntityVisitorConst_Visit(MclListDataVisitIntf *visitIntf, MclListData data) {
-	MclEntityVisitorConst *self = MCL_TYPE_REDUCT(visitIntf, MclEntityVisitorConst, visitIntf);
-	return self->visit((const MclEntity*)data, self->arg);
-}
-
-///////////////////////////////////////////////////////////
 void MclEntityList_Init(MclEntityList *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 	MclList_Init(self, MclListNodeAllocator_GetDefault());
@@ -101,18 +74,20 @@ size_t MclEntityList_GetCount(const MclEntityList *self) {
 	return MclList_GetCount(self);
 }
 
-MclStatus MclEntityList_Accept(const MclEntityList *self, MclEntityList_EntityVisit visit, void *arg) {
-	MCL_ASSERT_VALID_PTR(self);
-	MCL_ASSERT_VALID_PTR(visit);
+typedef struct {
+	MclEntityListDataVisit visit;
+	void* arg;
+} MclEntityVisitor;
 
-	MclEntityVisitor visitor = {.visitIntf = MCL_LIST_DATA_VISIT_INTF(MclEntityVisitor_Visit), .visit = visit, .arg = arg};
-	return MclList_Accept(self, &visitor.visitIntf);
+MCL_PRIVATE MclStatus MclEntityVisitor_Visit(MclListData data, void *arg) {
+	MclEntityVisitor *visitor = (MclEntityVisitor*)arg;
+	return visitor->visit((MclEntity*)data, visitor->arg);
 }
 
-MclStatus MclEntityList_AcceptConst(const MclEntityList *self, MclEntityList_EntityVisitConst visit, void *arg) {
+MclStatus MclEntityList_Accept(const MclEntityList *self, MclEntityListDataVisit visit, void *arg) {
 	MCL_ASSERT_VALID_PTR(self);
 	MCL_ASSERT_VALID_PTR(visit);
 
-	MclEntityVisitorConst visitor = {.visitIntf = MCL_LIST_DATA_VISIT_INTF(MclEntityVisitorConst_Visit), .visit = visit, .arg = arg};
-	return MclList_Accept(self, &visitor.visitIntf);
+	MclEntityVisitor visitor = {.visit = visit, .arg = arg};
+	return MclList_Accept(self, MclEntityVisitor_Visit, &visitor);
 }

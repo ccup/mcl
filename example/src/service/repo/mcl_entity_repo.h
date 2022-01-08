@@ -25,11 +25,11 @@ bool   MclEntityRepo_HasEntity(MclEntityId);
 bool   MclEntityRepo_IsEmpty();
 size_t MclEntityRepo_GetCount();
 
-typedef MclStatus (*MclEntity_Visit)(MclEntity*, void*);
-MclStatus MclEntityRepo_Accept(MclEntity_Visit, void*);
+typedef MclStatus (*MclEntityVisit)(MclEntity*, void*);
+MclStatus MclEntityRepo_Accept(MclEntityVisit, void*);
 
-typedef MclStatus (*MclEntity_VisitConst)(const MclEntity*, void*);
-MclStatus MclEntityRepo_AcceptConst(MclEntity_VisitConst, void*);
+typedef MclStatus (*MclEntityVisitConst)(const MclEntity*, void*);
+MclStatus MclEntityRepo_AcceptConst(MclEntityVisitConst, void*);
 
 MCL_STDC_END
 

@@ -28,11 +28,8 @@ MclEntity* MclEntityList_FindByPred(const MclEntityList*, MclEntityListDataPred,
 bool   MclEntityList_IsEmpty(const MclEntityList*);
 size_t MclEntityList_GetCount(const MclEntityList*);
 
-typedef MclStatus (*MclEntityList_EntityVisit)(MclEntity*, void*);
-MclStatus MclEntityList_Accept(const MclEntityList*, MclEntityList_EntityVisit, void*);
-
-typedef MclStatus (*MclEntityList_EntityVisitConst)(const MclEntity*, void*);
-MclStatus MclEntityList_AcceptConst(const MclEntityList*, MclEntityList_EntityVisitConst, void*);
+typedef MclStatus (*MclEntityListDataVisit)(MclEntity*, void*);
+MclStatus MclEntityList_Accept(const MclEntityList*, MclEntityListDataVisit, void*);
 
 MCL_STDC_END
 

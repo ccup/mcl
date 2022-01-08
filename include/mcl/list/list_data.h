@@ -2,8 +2,6 @@
 #define MCL_F2A54BFBC3EF41079397B09166E3F21B
 
 #include "mcl/status.h"
-#include "mcl/typedef.h"
-#include "mcl/keyword.h"
 
 MCL_STDC_BEGIN
 
@@ -11,29 +9,7 @@ typedef void* MclListData;
 
 typedef void (*MclListDataDestroy)(MclListData);
 typedef bool (*MclListDataPred)(MclListData, void*);
-
-/////////////////////////////////////////////////////////
-//MCL_INTERFACE(MclListDataPredIntf) {
-//    bool (*pred)(MclListDataPredIntf*, MclListData);
-//};
-//
-//MCL_INLINE bool MclListDataPred_Predicate(MclListDataPredIntf *predIntf, MclListData data) {
-//    return (predIntf && predIntf->pred) ? predIntf->pred(predIntf, data) : false;
-//}
-//
-//#define MCL_LIST_DATA_PRED_INTF(PRED) {.pred = PRED}
-
-/////////////////////////////////////////////////////////
-MCL_INTERFACE(MclListDataVisitIntf) {
-    MclStatus (*visit)(MclListDataVisitIntf*, MclListData);
-};
-
-MCL_INLINE MclStatus MclListDataVisitor_Visit(MclListDataVisitIntf *visitIntf, MclListData data) {
-    return (visitIntf && visitIntf->visit) ? visitIntf->visit(visitIntf, data) : MCL_FAILURE;
-}
-
-#define MCL_LIST_DATA_VISIT_INTF(VISIT) {.visit = VISIT}
-
+typedef MclStatus (*MclListDataVisit)(MclListData, void*);
 
 MCL_STDC_END
 

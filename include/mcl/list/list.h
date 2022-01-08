@@ -47,7 +47,7 @@ MclListData MclList_RemoveData(MclList*, MclListData);
 MclListData MclList_RemoveByPred(MclList*, MclListDataPred, void*);
 uint32_t MclList_RemoveAllByPred(MclList *, MclListDataPred, void*, MclListDataDestroy);
 
-MclStatus MclList_Accept(const MclList*, MclListDataVisitIntf*);
+MclStatus MclList_Accept(const MclList*, MclListDataVisit, void*);
 
 ///////////////////////////////////////////////////////////////
 MCL_INLINE uint32_t MclList_GetCount(const MclList *self) {

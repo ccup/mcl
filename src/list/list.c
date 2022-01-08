@@ -227,13 +227,13 @@ uint32_t MclList_RemoveAllByPred(MclList *self, MclListDataPred pred, void *arg,
     return removedCount;
 }
 
-MclStatus MclList_Accept(const MclList *self, MclListDataVisitIntf *visitIntf) {
+MclStatus MclList_Accept(const MclList *self, MclListDataVisit visit, void *arg) {
 	MCL_ASSERT_VALID_PTR(self);
-	MCL_ASSERT_VALID_PTR(visitIntf);
+	MCL_ASSERT_VALID_PTR(visit);
 
 	MclListNode *node = NULL;
 	MCL_LIST_FOREACH((MclList*)self, node) {
-		MclStatus ret = MclListDataVisitor_Visit(visitIntf, MclListNode_GetData(node));
+		MclStatus ret = visit(MclListNode_GetData(node), arg);
 		if (MCL_DONE(ret)) return MCL_SUCCESS;
 		if (MCL_FAILED(ret)) return ret;
 	}

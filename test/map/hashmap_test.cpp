@@ -117,13 +117,21 @@ FIXTURE(HashMapTest) {
 
 		auto result = (Foo*)MclHashMap_Set(foos, 1, foo1);
 		ASSERT_EQ(result , foo1);
+		ASSERT_EQ(1, MclHashMap_GetCount(foos));
 
 		auto foo2 = Foo_Create(2);
 		result = (Foo*)MclHashMap_Set(foos, 1, foo2);
 		ASSERT_EQ(result , foo1);
+		ASSERT_EQ(1, MclHashMap_GetCount(foos));
 
 		result = (Foo*)MclHashMap_Set(foos, 1, Foo_Create(3));
 		ASSERT_EQ(result , foo2);
+		ASSERT_EQ(1, MclHashMap_GetCount(foos));
+
+		Foo_Delete(foo1);
+		Foo_Delete(foo2);
+
+		MclHashMap_Clear(foos, (MclHashValueDestroy)Foo_Delete);
 	}
 
 	TEST("should remove element from map")
@@ -258,12 +266,14 @@ FIXTURE(HashMapTest) {
 
 		auto count = MclHashMap_RemoveAllByPred(foos, HashNodePred_IsLargeThan, (void*)1, (MclHashValueDestroy)Foo_Delete);
 		ASSERT_EQ(2, count);
-
 		ASSERT_EQ(1, MclHashMap_GetCount(foos));
 
 		count = MclHashMap_RemoveAllByPred(foos, HashNodePred_IsLargeThan, (void*)1, NULL);
-		ASSERT_EQ(1, count);
+		ASSERT_EQ(0, count);
+		ASSERT_EQ(1, MclHashMap_GetCount(foos));
 
+		count = MclHashMap_RemoveAllByPred(foos, HashNodePred_IsLargeThan, (void*)0, NULL);
+		ASSERT_EQ(1, count);
 		ASSERT_EQ(0, MclHashMap_GetCount(foos));
 
 		Foo_Delete(foo1);

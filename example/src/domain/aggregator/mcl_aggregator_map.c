@@ -4,7 +4,7 @@
 
 void MclAggregatorMap_Init(MclAggregatorMap *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
-	MclHashMap_Init(self, MclHashNodeAllocator_GetDefault());
+//	MclHashMap_Init(self, MclHashNodeAllocator_GetDefault());
 }
 
 void MclAggregatorMap_Destroy(MclAggregatorMap *self, MclAggregatorMapElemDestroy destroy) {
@@ -21,7 +21,7 @@ MclStatus  MclAggregatorMap_Insert(MclAggregatorMap *self, MclAggregator *aggreg
 //
 //	MclListNode *node = MclList_PushBack(self, entity);
 //	MCL_ASSERT_VALID_PTR(node);
-//	return MCL_SUCCESS;
+	return MCL_SUCCESS;
 }
 //
 //MCL_PRIVATE bool MclEntityIdPred_IsEqual(MclListData data, void *arg) {

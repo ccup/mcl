@@ -55,7 +55,7 @@ uint32_t MclHashBucket_RemoveBy(MclHashBucket *self, MclHashNodePred pred, void 
 	uint32_t removedCount = 0;
 	MclHashNode *node, *tmpNode;
 	MCL_LINK_FOREACH_SAFE(&self->nodes, MclHashNode, link, node, tmpNode) {
-		if (pred(node, arg)) {
+		if (MclHashNode_Pred(node, pred, arg)) {
 			if (!MCL_FAILED(MclHashBucket_RemoveNode(self, node, allocator, destroy))) {
 			    removedCount++;
 			}
@@ -78,7 +78,7 @@ MclStatus MclHashBucket_Accept(const MclHashBucket *self, MclHashNodeVisit visit
 
 	MclHashNode *node;
 	MCL_LINK_FOREACH(&self->nodes, MclHashNode, link, node) {
-		MclStatus ret = visit(node, arg);
+		MclStatus ret = MclHashNode_Visit(node, visit, arg);
 		if (MCL_DONE(ret)) return MCL_SUCCESS;
 		if (MCL_FAILED(ret)) return ret;
 	}

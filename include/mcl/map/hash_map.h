@@ -29,7 +29,7 @@ MclHashNode* MclHashMap_FindNode(const MclHashMap*, MclHashKey);
 
 ///////////////////////////////////////////////////////////
 MclStatus MclHashMap_Get(const MclHashMap*, MclHashKey, MclHashValue*);
-MclStatus MclHashMap_Set(MclHashMap*, MclHashKey, MclHashValue);
+MclHashValue MclHashMap_Set(MclHashMap*, MclHashKey, MclHashValue);
 
 MclHashValue MclHashMap_FindByPred(const MclHashMap*, MclHashNodePred, void*);
 

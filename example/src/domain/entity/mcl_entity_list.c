@@ -7,7 +7,7 @@ void MclEntityList_Init(MclEntityList *self) {
 	MclList_Init(self, MclListNodeAllocator_GetDefault());
 }
 
-void MclEntityList_Destroy(MclEntityList *self, MclEntityListDataDestroy destroy) {
+void MclEntityList_Destroy(MclEntityList *self, MclEntityListElemDestroy destroy) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
 	MclList_Clear(self, (MclListDataDestroy)destroy);
@@ -41,7 +41,7 @@ MclEntity* MclEntityList_FindById(const MclEntityList *self, MclEntityId id) {
 }
 
 typedef struct {
-	MclEntityListDataPred pred;
+	MclEntityListElemPred pred;
 	void *arg;
 } MclEntityPred;
 
@@ -50,7 +50,7 @@ MCL_PRIVATE bool MclEntityPred_Pred(MclListData data, void *arg) {
 	return pred->pred((MclEntity*)data, pred->arg);
 }
 
-MclEntity*  MclEntityList_FindByPred(const MclEntityList *self, MclEntityListDataPred entityPred, void *arg) {
+MclEntity*  MclEntityList_FindByPred(const MclEntityList *self, MclEntityListElemPred entityPred, void *arg) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
 	MCL_ASSERT_VALID_PTR_NIL(entityPred);
 
@@ -76,7 +76,7 @@ size_t MclEntityList_GetCount(const MclEntityList *self) {
 }
 
 typedef struct {
-	MclEntityListDataVisit visit;
+	MclEntityListElemVisit visit;
 	void* arg;
 } MclEntityVisitor;
 
@@ -85,7 +85,7 @@ MCL_PRIVATE MclStatus MclEntityVisitor_Visit(MclListData data, void *arg) {
 	return visitor->visit((MclEntity*)data, visitor->arg);
 }
 
-MclStatus MclEntityList_Accept(const MclEntityList *self, MclEntityListDataVisit visit, void *arg) {
+MclStatus MclEntityList_Accept(const MclEntityList *self, MclEntityListElemVisit visit, void *arg) {
 	MCL_ASSERT_VALID_PTR(self);
 	MCL_ASSERT_VALID_PTR(visit);
 

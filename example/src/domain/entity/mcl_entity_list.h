@@ -12,8 +12,8 @@ typedef MclList MclEntityList;
 
 void MclEntityList_Init(MclEntityList*);
 
-typedef void (*MclEntityListDataDestroy)(MclEntity*);
-void MclEntityList_Destroy(MclEntityList*, MclEntityListDataDestroy);
+typedef void (*MclEntityListElemDestroy)(MclEntity*);
+void MclEntityList_Destroy(MclEntityList*, MclEntityListElemDestroy);
 
 MclStatus  MclEntityList_Insert(MclEntityList*, MclEntity*);
 MclEntity* MclEntityList_Remove(MclEntityList*, MclEntityId);
@@ -22,14 +22,14 @@ bool   MclEntityList_HasEntity(const MclEntityList*, MclEntityId);
 
 MclEntity* MclEntityList_FindById(const MclEntityList*, MclEntityId);
 
-typedef bool (*MclEntityListDataPred)(const MclEntity*, void*);
-MclEntity* MclEntityList_FindByPred(const MclEntityList*, MclEntityListDataPred, void*);
+typedef bool (*MclEntityListElemPred)(const MclEntity*, void*);
+MclEntity* MclEntityList_FindByPred(const MclEntityList*, MclEntityListElemPred, void*);
 
 bool   MclEntityList_IsEmpty(const MclEntityList*);
 size_t MclEntityList_GetCount(const MclEntityList*);
 
-typedef MclStatus (*MclEntityListDataVisit)(MclEntity*, void*);
-MclStatus MclEntityList_Accept(const MclEntityList*, MclEntityListDataVisit, void*);
+typedef MclStatus (*MclEntityListElemVisit)(MclEntity*, void*);
+MclStatus MclEntityList_Accept(const MclEntityList*, MclEntityListElemVisit, void*);
 
 MCL_STDC_END
 

@@ -94,26 +94,27 @@ MclStatus MclHashMap_Get(const MclHashMap *self, MclHashKey key, MclHashValue *v
     return MCL_SUCCESS;
 }
 
-MclStatus MclHashMap_Set(MclHashMap *self, MclHashKey key, MclHashValue value) {
-    MCL_ASSERT_VALID_PTR(self);
-    MCL_ASSERT_TRUE(MclHashKey_IsValid(key));
-    MCL_ASSERT_TRUE(MclHashValue_IsValid(value));
+MclHashValue MclHashMap_Set(MclHashMap *self, MclHashKey key, MclHashValue value) {
+    MCL_ASSERT_VALID_PTR_NIL(self);
+    MCL_ASSERT_TRUE_NIL(MclHashKey_IsValid(key));
+    MCL_ASSERT_TRUE_NIL(MclHashValue_IsValid(value));
 
     MclHashNode *node = MclHashMap_FindNode(self, key);
     if (node) {
+    	MclHashValue oriValue = node->value;
 		node->value = value;
-    	return MCL_SUCCESS;
+    	return oriValue;
     }
 
     node = MclHashNode_Create(key, value, self->allocator);
-	MCL_ASSERT_VALID_PTR(node);
+	MCL_ASSERT_VALID_PTR_NIL(node);
 
 	if (MCL_FAILED(MclHashMap_InsertNode(self, node))) {
 		MCL_LOG_ERR("Add node (%llu) to map failed when setting!", key);
 		MclHashNode_Delete(node, self->allocator, NULL);
-		return MCL_FAILURE;
+		return NULL;
 	}
-    return MCL_SUCCESS;
+    return value;
 }
 
 MclHashValue MclHashMap_Remove(MclHashMap *self, MclHashKey key) {

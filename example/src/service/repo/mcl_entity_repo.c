@@ -142,5 +142,5 @@ MclStatus MclEntityRepo_AcceptConst(MclEntityVisitConst visit, void *arg) {
 
 	MCL_LOCK_READ_AUTO(entityRepo.rwlock);
 
-	return MclEntityList_Accept(&entityRepo.entities, (MclEntityListDataVisit)MclEntityRepoVisitor_VisitConst, &visitor);
+	return MclEntityList_Accept(&entityRepo.entities, (MclEntityListElemVisit)MclEntityRepoVisitor_VisitConst, &visitor);
 }

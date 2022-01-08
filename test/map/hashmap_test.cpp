@@ -112,6 +112,20 @@ FIXTURE(HashMapTest) {
 		ASSERT_EQ(3, f->getId());
 	}
 
+	TEST("should replace element in map") {
+		auto foo1 = Foo_Create(1);
+
+		auto result = (Foo*)MclHashMap_Set(foos, 1, foo1);
+		ASSERT_EQ(result , foo1);
+
+		auto foo2 = Foo_Create(2);
+		result = (Foo*)MclHashMap_Set(foos, 1, foo2);
+		ASSERT_EQ(result , foo1);
+
+		result = (Foo*)MclHashMap_Set(foos, 1, Foo_Create(3));
+		ASSERT_EQ(result , foo2);
+	}
+
 	TEST("should remove element from map")
 	{
 		auto foo = Foo_Create(1);

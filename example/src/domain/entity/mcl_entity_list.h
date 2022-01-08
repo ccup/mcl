@@ -18,12 +18,13 @@ void MclEntityList_Destroy(MclEntityList*, MclEntityListDataDestroy);
 MclStatus  MclEntityList_Insert(MclEntityList*, MclEntity*);
 MclEntity* MclEntityList_Remove(MclEntityList*, MclEntityId);
 
-MclEntity* MclEntityList_Find(const MclEntityList*, MclEntityId);
-
-typedef bool (*MclEntityList_EntityPred)(const MclEntity*, void*);
-MclEntity* MclEntityList_FindBy(const MclEntityList*, MclEntityList_EntityPred, void*);
-
 bool   MclEntityList_HasEntity(const MclEntityList*, MclEntityId);
+
+MclEntity* MclEntityList_FindById(const MclEntityList*, MclEntityId);
+
+typedef bool (*MclEntityListDataPred)(const MclEntity*, void*);
+MclEntity* MclEntityList_FindByPred(const MclEntityList*, MclEntityListDataPred, void*);
+
 bool   MclEntityList_IsEmpty(const MclEntityList*);
 size_t MclEntityList_GetCount(const MclEntityList*);
 

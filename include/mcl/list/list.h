@@ -38,14 +38,14 @@ MclStatus MclList_PushBack(MclList*, MclListData);
 MclStatus MclList_InsertBefore(MclList*, MclListNode* nextNode, MclListData);
 MclStatus MclList_InsertAfter(MclList*, MclListNode* prevNode, MclListData);
 
-MclListData  MclList_FindByPred(const MclList*, MclListDataPredIntf*);
-void MclList_FindAllByPred(const MclList*, MclListDataPredIntf*, MclList *result);
+MclListData  MclList_FindByPred(const MclList*, MclListDataPred, void*);
+void MclList_FindAllByPred(const MclList*, MclListDataPred, void*, MclList *result);
 
 MclListData MclList_RemoveFirst(MclList*);
 MclListData MclList_RemoveLast(MclList*);
 MclListData MclList_RemoveData(MclList*, MclListData);
-MclListData MclList_RemoveByPred(MclList*, MclListDataPredIntf*);
-uint32_t MclList_RemoveAllByPred(MclList *, MclListDataPredIntf*, MclListDataDestroy);
+MclListData MclList_RemoveByPred(MclList*, MclListDataPred, void*);
+uint32_t MclList_RemoveAllByPred(MclList *, MclListDataPred, void*, MclListDataDestroy);
 
 MclStatus MclList_Accept(const MclList*, MclListDataVisitIntf*);
 

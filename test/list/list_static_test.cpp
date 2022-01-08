@@ -23,21 +23,9 @@ namespace {
         return visitor;
     }
 
-	struct DataPred {
-	    MclListDataPredIntf predIntf;
-        long arg;
-	};
-
-	bool DataPred_IsLargerThan(MclListDataPredIntf *predIntf, MclListData data) {
-	    auto v = (long)data;
-        DataPred *self = MCL_TYPE_REDUCT(predIntf, DataPred, predIntf);
-        return v > self->arg;
-	}
-
-    DataPred DataPred_Create(long arg) {
-        DataPred pred = {.predIntf = MCL_LIST_DATA_PRED_INTF(DataPred_IsLargerThan), .arg = arg};
-        return pred;
-	}
+    bool DataPred_IsLargerThan(MclListData data, void *arg) {
+    	return (long)data > (long)arg;
+    }
 
     constexpr static uint32_t NODE_NUM_MAX = 6;
 
@@ -84,8 +72,7 @@ FIXTURE(ListStaticTest)
 		MclListNodeAllocator allocator = MCL_LIST_NODE_ALLOCATOR(ListNode_StaticAlloc, ListNode_StaticFree);
         MclList result = MCL_LIST(result, &allocator);
 
-        auto isLargerThan = DataPred_Create(2);
-		MclList_FindAllByPred(&list, &isLargerThan.predIntf, &result);
+		MclList_FindAllByPred(&list, DataPred_IsLargerThan, (MclListData)2, &result);
 
 		ASSERT_EQ(2, MclList_GetCount(&result));
 
@@ -105,8 +92,7 @@ FIXTURE(ListStaticTest)
         MclList_PushBackNode(&list, &nodes[5]);
         MclList_PushBackNode(&list, &nodes[2]);
 
-        auto isLargerThan = DataPred_Create(2);
-        ASSERT_EQ(2, MclList_RemoveAllByPred(&list, &isLargerThan.predIntf, NULL));
+        ASSERT_EQ(2, MclList_RemoveAllByPred(&list, DataPred_IsLargerThan, (MclListData)2, NULL));
 
         ASSERT_EQ(2, MclList_GetCount(&list));
 

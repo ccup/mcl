@@ -44,7 +44,7 @@ MclEntity* MclEntityRepo_Fetch(MclEntityId id) {
 
 	MclEntity *result = NULL;
 	MCL_LOCK_READ_SCOPE(entityRepo.rwlock) {
-		result = MclEntityList_Find(&entityRepo.entities, id);
+		result = MclEntityList_FindById(&entityRepo.entities, id);
 		MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_WrLock(result));
 	}
 	return result;
@@ -55,7 +55,7 @@ const MclEntity* MclEntityRepo_FetchConst(MclEntityId id) {
 
 	const MclEntity *result = NULL;
 	MCL_LOCK_READ_SCOPE(entityRepo.rwlock) {
-		result = MclEntityList_Find(&entityRepo.entities, id);
+		result = MclEntityList_FindById(&entityRepo.entities, id);
 		MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_RdLock((void*)result));
 	}
 	return result;
@@ -66,7 +66,7 @@ MclEntity* MclEntityList_FetchBy(MclEntity_Pred pred, void *arg) {
 
 	MclEntity *result = NULL;
 	MCL_LOCK_READ_SCOPE(entityRepo.rwlock) {
-		result = MclEntityList_FindBy(&entityRepo.entities, pred, arg);
+		result = MclEntityList_FindByPred(&entityRepo.entities, pred, arg);
 		MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_WrLock(result));
 	}
 	return result;
@@ -77,7 +77,7 @@ const MclEntity* MclEntityList_FetchConstBy(MclEntity_Pred pred, void *arg) {
 
 	const MclEntity *result = NULL;
 	MCL_LOCK_READ_SCOPE(entityRepo.rwlock) {
-		result = MclEntityList_FindBy(&entityRepo.entities, pred, arg);
+		result = MclEntityList_FindByPred(&entityRepo.entities, pred, arg);
 		MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_RdLock((void*)result));
 	}
 	return result;

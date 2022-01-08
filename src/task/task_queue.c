@@ -22,19 +22,12 @@ MCL_PRIVATE void TaskQueue_Destroy(TaskQueue *queue) {
 	MclList_Clear(&queue->tasks, (MclListDataDestroy)MclTask_Destroy);
 }
 
-typedef struct {
-	MclListDataPredIntf predIntf;
-	MclTaskKey key;
-} MclTaskKeyPred;
-
-MCL_PRIVATE bool MclTaskKeyPred_IsEqual(MclListDataPredIntf *predIntf, MclListData data) {
-	MclTaskKeyPred *self = MCL_TYPE_REDUCT(predIntf, MclTaskKeyPred, predIntf);
-	return self->key == MclTaskKey_GetKey((MclTask*)data);
+MCL_PRIVATE bool MclTaskKeyPred_IsEqual(MclListData data, void *arg) {
+	return MclTaskKey_GetKey((MclTask*)data) == *(MclTaskKey*)arg;
 }
 
 MCL_PRIVATE void TaskQueue_Remove(TaskQueue *queue, MclTaskKey key) {
-	MclTaskKeyPred isKeyEqual = {.predIntf = MCL_LIST_DATA_PRED_INTF(MclTaskKeyPred_IsEqual), .key = key};
-	MclList_RemoveAllByPred(&queue->tasks, &isKeyEqual.predIntf, (MclListDataDestroy)MclTask_Destroy);
+	MclList_RemoveAllByPred(&queue->tasks, MclTaskKeyPred_IsEqual, &key, (MclListDataDestroy)MclTask_Destroy);
 }
 
 MCL_PRIVATE bool TaskQueue_IsEmpty(const TaskQueue *queue) {

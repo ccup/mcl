@@ -9,16 +9,19 @@ MCL_STDC_BEGIN
 
 typedef void* MclListData;
 
+typedef void (*MclListDataDestroy)(MclListData);
+typedef bool (*MclListDataPred)(MclListData, void*);
+
 /////////////////////////////////////////////////////////
-MCL_INTERFACE(MclListDataPredIntf) {
-    bool (*pred)(MclListDataPredIntf*, MclListData);
-};
-
-MCL_INLINE bool MclListDataPred_Predicate(MclListDataPredIntf *predIntf, MclListData data) {
-    return (predIntf && predIntf->pred) ? predIntf->pred(predIntf, data) : false;
-}
-
-#define MCL_LIST_DATA_PRED_INTF(PRED) {.pred = PRED}
+//MCL_INTERFACE(MclListDataPredIntf) {
+//    bool (*pred)(MclListDataPredIntf*, MclListData);
+//};
+//
+//MCL_INLINE bool MclListDataPred_Predicate(MclListDataPredIntf *predIntf, MclListData data) {
+//    return (predIntf && predIntf->pred) ? predIntf->pred(predIntf, data) : false;
+//}
+//
+//#define MCL_LIST_DATA_PRED_INTF(PRED) {.pred = PRED}
 
 /////////////////////////////////////////////////////////
 MCL_INTERFACE(MclListDataVisitIntf) {
@@ -31,18 +34,6 @@ MCL_INLINE MclStatus MclListDataVisitor_Visit(MclListDataVisitIntf *visitIntf, M
 
 #define MCL_LIST_DATA_VISIT_INTF(VISIT) {.visit = VISIT}
 
-/////////////////////////////////////////////////////////
-//MCL_INTERFACE(MclListDataDestroyIntf) {
-//    void (*destroy)(MclListDataDestroyIntf*, MclListData);
-//};
-//
-//MCL_INLINE void MclListDataDestroyIntf_Destroy(MclListDataDestroyIntf *destroyIntf, MclListData data) {
-//    if (destroyIntf && destroyIntf->destroy) destroyIntf->destroy(destroyIntf, data);
-//}
-//
-//#define MCL_LIST_DATA_DESTROY_INTF(DESTROY) {.destroy = DESTROY}
-
-typedef void (*MclListDataDestroy)(MclListData);
 
 MCL_STDC_END
 

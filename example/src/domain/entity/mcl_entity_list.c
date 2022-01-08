@@ -2,28 +2,6 @@
 #include "entity/mcl_entity.h"
 #include "mcl/assert.h"
 
-typedef struct {
-	MclListDataPredIntf predIntf;
-	MclEntityId id;
-} MclEntityIdPred;
-
-bool MclEntityIdPred_IsEqual(MclListDataPredIntf *predIntf, MclListData data) {
-	MclEntityIdPred *self = MCL_TYPE_REDUCT(predIntf, MclEntityIdPred, predIntf);
-	return self->id == MclEntity_GetId((MclEntity*)data);
-}
-
-///////////////////////////////////////////////////////////
-typedef struct {
-	MclListDataPredIntf predIntf;
-	MclEntityList_EntityPred pred;
-	void* arg;
-} MclEntityPred;
-
-bool MclEntityPred_Pred(MclListDataPredIntf *predIntf, MclListData data) {
-	MclEntityPred *self = MCL_TYPE_REDUCT(predIntf, MclEntityPred, predIntf);
-	return self->pred((MclEntity*)data, self->arg);
-}
-
 ///////////////////////////////////////////////////////////
 typedef struct {
 	MclListDataVisitIntf visitIntf;
@@ -70,36 +48,47 @@ MclStatus MclEntityList_Insert(MclEntityList *self, MclEntity *entity) {
 	return MCL_SUCCESS;
 }
 
+MCL_PRIVATE bool MclEntityIdPred_IsEqual(MclListData data, void *arg) {
+	return (*(MclEntityId*)arg) == MclEntity_GetId((MclEntity*)data);
+}
+
 MclEntity* MclEntityList_Remove(MclEntityList *self, MclEntityId id) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
 	MCL_ASSERT_TRUE_NIL(MclEntityId_IsValid(id));
 
-	MclEntityIdPred isIdEqual = {.predIntf = MCL_LIST_DATA_PRED_INTF(MclEntityIdPred_IsEqual), .id = id};
-	return MclList_RemoveByPred(self, &isIdEqual.predIntf);
+	return MclList_RemoveByPred(self, MclEntityIdPred_IsEqual, &id);
 }
 
-MclEntity* MclEntityList_Find(const MclEntityList *self, MclEntityId id) {
+MclEntity* MclEntityList_FindById(const MclEntityList *self, MclEntityId id) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
 	MCL_ASSERT_TRUE_NIL(MclEntityId_IsValid(id));
 
-	MclEntityIdPred isIdEqual = {.predIntf = MCL_LIST_DATA_PRED_INTF(MclEntityIdPred_IsEqual), .id = id};
-	return MclList_FindByPred(self, &isIdEqual.predIntf);
+	return MclList_FindByPred(self, MclEntityIdPred_IsEqual, &id);
 }
 
-MclEntity*  MclEntityList_FindBy(const MclEntityList *self, MclEntityList_EntityPred entityPred, void *arg) {
+typedef struct {
+	MclEntityListDataPred pred;
+	void *arg;
+} MclEntityPred;
+
+MCL_PRIVATE bool MclEntityPred_Pred(MclListData data, void *arg) {
+	MclEntityPred *pred = (MclEntityPred*)arg;
+	return pred->pred((MclEntity*)data, pred->arg);
+}
+
+MclEntity*  MclEntityList_FindByPred(const MclEntityList *self, MclEntityListDataPred entityPred, void *arg) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
 	MCL_ASSERT_VALID_PTR_NIL(entityPred);
 
-	MclEntityPred pred = {.predIntf = MCL_LIST_DATA_PRED_INTF(MclEntityIdPred_IsEqual), .pred = entityPred, .arg = arg};
-	return MclList_FindByPred(self, &pred.predIntf);
+	MclEntityPred pred = {.pred = entityPred, .arg = arg};
+	return MclList_FindByPred(self, MclEntityPred_Pred, &pred);
 }
 
 bool MclEntityList_HasEntity(const MclEntityList *self, MclEntityId id) {
 	MCL_ASSERT_VALID_PTR_BOOL(self);
 	MCL_ASSERT_TRUE_BOOL(MclEntityId_IsValid(id));
 
-	MclEntityIdPred isIdEqual = {.predIntf = MCL_LIST_DATA_PRED_INTF(MclEntityIdPred_IsEqual), .id = id};
-	return MclList_FindByPred(self, &isIdEqual.predIntf) != NULL;
+	return MclList_FindByPred(self, MclEntityIdPred_IsEqual, &id) != NULL;
 }
 
 bool MclEntityList_IsEmpty(const MclEntityList *self) {

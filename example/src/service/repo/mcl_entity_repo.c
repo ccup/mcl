@@ -1,6 +1,6 @@
 #include "repo/mcl_entity_repo.h"
-#include "repo/entity_list/mcl_entity_list.h"
 #include "factory/mcl_entity_factory.h"
+#include "entity/mcl_entity_list.h"
 #include "mcl/lock/rwlock.h"
 #include "mcl/lock/lockobj.h"
 
@@ -95,9 +95,9 @@ bool MclEntityRepo_IsEmpty() {
 	return MclEntityList_IsEmpty(&entityRepo.entities);
 }
 
-size_t MclEntityRepo_GetSize() {
+size_t MclEntityRepo_GetCount() {
 	MCL_LOCK_READ_AUTO(entityRepo.rwlock);
-	return MclEntityList_GetSize(&entityRepo.entities);
+	return MclEntityList_GetCount(&entityRepo.entities);
 }
 
 typedef struct {

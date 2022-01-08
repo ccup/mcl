@@ -43,7 +43,7 @@ MCL_INLINE void MclListNode_RemoveFromList(MclListNode *self) {
 }
 
 MclListNode* MclListNode_Create(MclListData, MclListNodeAllocator*);
-void MclListNode_Delete(MclListNode*, MclListNodeAllocator*, MclListDataDeleter*);
+void MclListNode_Delete(MclListNode*, MclListNodeAllocator*, MclListDataDestroyIntf*);
 
 ///////////////////////////////////////////////////////////////
 #define MCL_LIST_NODE(DATA) {.link = MCL_LINK_NODE_INITIALIZER(), .data = (DATA)}

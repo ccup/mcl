@@ -6,8 +6,8 @@
 
 typedef struct {
     uint64_t sentinel;
-    MclSharedPtrDestructor dtor;
-    void* dtorArg;
+    MclSharedPtrDestroy destroy;
+    void* destroyArg;
     MclAtom refCount;
     void* ptr;
 } MclSharedPtr;
@@ -27,21 +27,21 @@ MCL_PRIVATE MclSharedPtr* MclSharedPtr_GetSelf(void *p) {
     return MclSharedPtr_IsValid(self, p) ? self : NULL;
 }
 
-MCL_PRIVATE void MclSharedPtr_Init(MclSharedPtr *self, MclSharedPtrDestructor dtor, void* dtorArg) {
+MCL_PRIVATE void MclSharedPtr_Init(MclSharedPtr *self, MclSharedPtrDestroy destroy, void* destroyArg) {
     self->sentinel = MCL_SHARED_PTR_SENTINEL;
-    self->dtor = dtor;
-    self->dtorArg = dtorArg;
+    self->destroy = destroy;
+    self->destroyArg = destroyArg;
     MclAtom_Set(&self->refCount, 1);
     self->ptr = (uint8_t*)self + MclSharedPtr_HeaderSize();
 }
 
-void* MclSharedPtr_Create(size_t size, MclSharedPtrDestructor dtor, void* dtorArg) {
+void* MclSharedPtr_Create(size_t size, MclSharedPtrDestroy destroy, void* destroyArg) {
     MCL_ASSERT_TRUE_NIL(size > 0);
 
     MclSharedPtr *self = MCL_MALLOC(MclSharedPtr_HeaderSize() + MclAlign_GetSizeOf(size));
     MCL_ASSERT_VALID_PTR_NIL(self);
 
-    MclSharedPtr_Init(self, dtor, dtorArg);
+    MclSharedPtr_Init(self, destroy, destroyArg);
     return self->ptr;
 }
 
@@ -53,7 +53,7 @@ void  MclSharedPtr_Delete(void *ptr) {
 
     if (MclAtom_Sub(&self->refCount, 1)) return;
 
-    if(self->dtor) self->dtor(ptr, self->dtorArg);
+    if(self->destroy) self->destroy(ptr, self->destroyArg);
     MCL_FREE(self);
 }
 

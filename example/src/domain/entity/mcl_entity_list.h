@@ -25,7 +25,7 @@ MclEntity* MclEntityList_FindBy(const MclEntityList*, MclEntityList_EntityPred, 
 
 bool   MclEntityList_HasEntity(const MclEntityList*, MclEntityId);
 bool   MclEntityList_IsEmpty(const MclEntityList*);
-size_t MclEntityList_GetSize(const MclEntityList*);
+size_t MclEntityList_GetCount(const MclEntityList*);
 
 typedef MclStatus (*MclEntityList_EntityVisit)(MclEntity*, void*);
 MclStatus MclEntityList_Accept(const MclEntityList*, MclEntityList_EntityVisit, void*);

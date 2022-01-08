@@ -10,7 +10,7 @@
 using namespace std::string_literals;
 
 namespace {
-    void FooLockPtr_DeletePtr(Foo *f, void* arg) {
+    void FooLockPtr_DestroyPtr(Foo *f, void* arg) {
         FooFactory<FooCreateType::NORMAL>::destroy(f);
     }
 
@@ -25,8 +25,8 @@ namespace {
         }
 
         ~FooRepo() {
-            MclListDataDeleter fooDeleter{.destroy = Foo_ListDelete<FooCreateType::NORMAL>};
-            MclList_Delete(foos, &fooDeleter);
+            MclListDataDestroyIntf destroyIntf = MCL_LIST_DATA_DESTROY_INTF(Foo_ListDestroy<FooCreateType::NORMAL>);
+            MclList_Delete(foos, &destroyIntf);
             MclRwLock_Destroy(&rwlock);
         }
 
@@ -50,7 +50,7 @@ namespace {
                 auto result = removeById(id);
                 MCL_ASSERT_VALID_PTR_VOID(result);
                 MCL_LOG_DBG("FooRepo: begin delete foo of id %d", id);
-                MclLockPtr_Delete(result, (MclLockPtrDeleter)FooLockPtr_DeletePtr, NULL);
+                MclLockPtr_Delete(result, (MclLockPtrDestroy)FooLockPtr_DestroyPtr, NULL);
                 MCL_LOG_DBG("FooRepo: end delete foo of id %d", id);
                 MCL_LOG_DBG("FooRepo: end remove foo of id %d", id);
             }

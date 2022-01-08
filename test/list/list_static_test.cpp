@@ -6,36 +6,36 @@ namespace {
 	const long INVALID_DATA = 0xFFFFFFFF;
 
 	struct DataVisitor {
-	    MclListDataVisitor visitor;
+	    MclListDataVisitIntf visitIntf;
 	    long sum;
 	};
 
-    MclStatus DataVisitor_Sum(MclListDataVisitor *visitor, MclListData data) {
+    MclStatus DataVisitor_Sum(MclListDataVisitIntf *visitIntf, MclListData data) {
         auto v = (long)data;
         if (v == INVALID_DATA) return MCL_STATUS_DONE;
-        DataVisitor *self = MCL_TYPE_REDUCT(visitor, DataVisitor, visitor);
+        DataVisitor *self = MCL_TYPE_REDUCT(visitIntf, DataVisitor, visitIntf);
         self->sum += v;
         return MCL_SUCCESS;
     }
 
     DataVisitor DataVisitor_Create() {
-        DataVisitor visitor = {.visitor = MCL_LIST_DATA_VISITOR(DataVisitor_Sum), .sum = 0};
+        DataVisitor visitor = {.visitIntf = MCL_LIST_DATA_VISIT_INTF(DataVisitor_Sum), .sum = 0};
         return visitor;
     }
 
 	struct DataPred {
-	    MclListDataPred pred;
+	    MclListDataPredIntf predIntf;
         long arg;
 	};
 
-	bool DataPred_IsLargerThan(MclListDataPred *pred, MclListData data) {
+	bool DataPred_IsLargerThan(MclListDataPredIntf *predIntf, MclListData data) {
 	    auto v = (long)data;
-        DataPred *self = MCL_TYPE_REDUCT(pred, DataPred, pred);
+        DataPred *self = MCL_TYPE_REDUCT(predIntf, DataPred, predIntf);
         return v > self->arg;
 	}
 
     DataPred DataPred_Create(long arg) {
-        DataPred pred = {.pred = MCL_LIST_DATA_PRED(DataPred_IsLargerThan), .arg = arg};
+        DataPred pred = {.predIntf = MCL_LIST_DATA_PRED_INTF(DataPred_IsLargerThan), .arg = arg};
         return pred;
 	}
 
@@ -85,7 +85,7 @@ FIXTURE(ListStaticTest)
         MclList result = MCL_LIST(result, &allocator);
 
         auto isLargerThan = DataPred_Create(2);
-		MclList_FindBy(&list, &isLargerThan.pred, &result);
+		MclList_FindBy(&list, &isLargerThan.predIntf, &result);
 
 		ASSERT_EQ(2, MclList_GetCount(&result));
 
@@ -106,7 +106,7 @@ FIXTURE(ListStaticTest)
         MclList_PushBackNode(&list, &nodes[2]);
 
         auto isLargerThan = DataPred_Create(2);
-        ASSERT_EQ(2, MclList_RemovePredAll(&list, &isLargerThan.pred, NULL));
+        ASSERT_EQ(2, MclList_RemovePredAll(&list, &isLargerThan.predIntf, NULL));
 
         ASSERT_EQ(2, MclList_GetCount(&list));
 
@@ -124,7 +124,7 @@ FIXTURE(ListStaticTest)
         MclList_PushBackNode(&list, &nodes[5]);
 
         auto sumVisitor = DataVisitor_Create();
-		ASSERT_EQ(MCL_SUCCESS, MclList_Accept(&list, &sumVisitor.visitor));
+		ASSERT_EQ(MCL_SUCCESS, MclList_Accept(&list, &sumVisitor.visitIntf));
 		ASSERT_EQ(9, sumVisitor.sum);
 	}
 
@@ -136,7 +136,7 @@ FIXTURE(ListStaticTest)
         MclList_PushBackNode(&list, &nodes[5]);
 
         auto sumVisitor = DataVisitor_Create();
-		ASSERT_EQ(MCL_SUCCESS, MclList_Accept(&list, &sumVisitor.visitor));
+		ASSERT_EQ(MCL_SUCCESS, MclList_Accept(&list, &sumVisitor.visitIntf));
 		ASSERT_EQ(4, sumVisitor.sum);
 	}
 };

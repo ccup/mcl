@@ -30,7 +30,7 @@ namespace {
 		if (f) delete f;
 	}
 
-	void Foo_ListDelete(MclListDataDeleter *deleter, MclListData data) {
+	void Foo_ListDelete(MclListDataDestroyIntf *destroyIntf, MclListData data) {
 	    auto f = (Foo*)data;
 	    Foo_Delete(f);
 	}
@@ -40,12 +40,12 @@ namespace {
 	}
 
 	struct FooIdEqualPred {
-		MclListDataPred pred;
+		MclListDataPredIntf predIntf;
 		FooId id;
 	};
 
-	bool FooIdEqualPred_IsEqual(MclListDataPred *pred, MclListData data) {
-		FooIdEqualPred *self = MCL_TYPE_REDUCT(pred, FooIdEqualPred, pred);
+	bool FooIdEqualPred_IsEqual(MclListDataPredIntf *predIntf, MclListData data) {
+		FooIdEqualPred *self = MCL_TYPE_REDUCT(predIntf, FooIdEqualPred, predIntf);
 		return self->id == ((Foo*)data)->getId();
 	}
 }
@@ -53,15 +53,15 @@ namespace {
 FIXTURE(ListTest)
 {
 	MclList *list {nullptr};
-    MclListDataDeleter fooDeleter;
+    MclListDataDestroyIntf fooDestroyIntf;
 
 	BEFORE {
 		list = MclList_CreateDefault();
-		fooDeleter.destroy = Foo_ListDelete;
+		fooDestroyIntf.destroy = Foo_ListDelete;
 	}
 
 	AFTER {
-		MclList_Delete(list, &fooDeleter);
+		MclList_Delete(list, &fooDestroyIntf);
 		ASSERT_EQ(0, Foo::FOO_COUNT.load());
 	}
 
@@ -118,14 +118,14 @@ FIXTURE(ListTest)
 		MclList_PushFront(list, foo2);
 		MclList_PushFront(list, foo3);
 
-		FooIdEqualPred equal2 = {.pred = MCL_LIST_DATA_PRED(FooIdEqualPred_IsEqual), .id = 2};
-		auto result = (Foo*)MclList_FindFirst(list, &equal2.pred);
+		FooIdEqualPred equal2 = {.predIntf = MCL_LIST_DATA_PRED_INTF(FooIdEqualPred_IsEqual), .id = 2};
+		auto result = (Foo*)MclList_FindFirst(list, &equal2.predIntf);
 
 		ASSERT_TRUE(result != NULL);
 		ASSERT_EQ(2, result->getId());
 
-		FooIdEqualPred equal4 = {.pred = MCL_LIST_DATA_PRED(FooIdEqualPred_IsEqual), .id = 4};
-		result = (Foo*)MclList_FindFirst(list, &equal4.pred);
+		FooIdEqualPred equal4 = {.predIntf = MCL_LIST_DATA_PRED_INTF(FooIdEqualPred_IsEqual), .id = 4};
+		result = (Foo*)MclList_FindFirst(list, &equal4.predIntf);
 		ASSERT_TRUE(result == NULL);
 	}
 
@@ -183,29 +183,29 @@ FIXTURE(ListTest)
 		MclList_PushFront(list, foo2);
 		MclList_PushFront(list, foo3);
 
-		FooIdEqualPred equal2 = {.pred = MCL_LIST_DATA_PRED(FooIdEqualPred_IsEqual), .id = 2};
-		auto result = (Foo*)MclList_RemovePred(list, &equal2.pred);
+		FooIdEqualPred equal2 = {.predIntf = MCL_LIST_DATA_PRED_INTF(FooIdEqualPred_IsEqual), .id = 2};
+		auto result = (Foo*)MclList_RemovePred(list, &equal2.predIntf);
 		ASSERT_EQ(2, MclList_GetCount(list));
 
 		ASSERT_TRUE(result != NULL);
 		ASSERT_EQ(2, result->getId());
 		Foo_Delete(result);
 
-		result = (Foo*)MclList_RemovePred(list, &equal2.pred);
+		result = (Foo*)MclList_RemovePred(list, &equal2.predIntf);
 		ASSERT_EQ(2, MclList_GetCount(list));
 		ASSERT_TRUE(result == NULL);
 
-		FooIdEqualPred equal3 = {.pred = MCL_LIST_DATA_PRED(FooIdEqualPred_IsEqual), .id = 3};
-		result = (Foo*)MclList_RemovePred(list, &equal3.pred);
+		FooIdEqualPred equal3 = {.predIntf = MCL_LIST_DATA_PRED_INTF(FooIdEqualPred_IsEqual), .id = 3};
+		result = (Foo*)MclList_RemovePred(list, &equal3.predIntf);
 		ASSERT_EQ(1, MclList_GetCount(list));
 		ASSERT_TRUE(result != NULL);
 		Foo_Delete(result);
 
-		result = (Foo*)MclList_FindFirst(list, &equal3.pred);
+		result = (Foo*)MclList_FindFirst(list, &equal3.predIntf);
 		ASSERT_TRUE(result == NULL);
 
-		FooIdEqualPred equal1 = {.pred = MCL_LIST_DATA_PRED(FooIdEqualPred_IsEqual), .id = 1};
-		result = (Foo*)MclList_FindFirst(list, &equal1.pred);
+		FooIdEqualPred equal1 = {.predIntf = MCL_LIST_DATA_PRED_INTF(FooIdEqualPred_IsEqual), .id = 1};
+		result = (Foo*)MclList_FindFirst(list, &equal1.predIntf);
 		ASSERT_TRUE(result != NULL);
 		ASSERT_EQ(1, result->getId());
 	}
@@ -254,7 +254,7 @@ FIXTURE(ListTest)
 
 		MclList_PushBack(list, foo);
 
-		MclList_Clear(list, &fooDeleter);
+		MclList_Clear(list, &fooDestroyIntf);
 
 		ASSERT_TRUE(MclList_IsEmpty(list));
 	}
@@ -278,7 +278,7 @@ FIXTURE(ListTest)
 
 		ASSERT_EQ(6, sum);
 
-		MclList_Clear(list, &fooDeleter);
+		MclList_Clear(list, &fooDestroyIntf);
 	}
 
 	TEST("should travel each node safe on list")
@@ -306,7 +306,7 @@ FIXTURE(ListTest)
 
 		ASSERT_EQ(4, sum);
 
-		MclList_Clear(list, &fooDeleter);
+		MclList_Clear(list, &fooDestroyIntf);
 	}
 
 	TEST("should visit each node on list")
@@ -324,7 +324,7 @@ FIXTURE(ListTest)
 		MCL_LIST_FOREACH_CALL(list, Foo, Foo_Sum, &sum);
 		ASSERT_EQ(6, sum);
 
-		MclList_Clear(list, &fooDeleter);
+		MclList_Clear(list, &fooDestroyIntf);
 	}
 
 	TEST("should insert before node")
@@ -344,7 +344,7 @@ FIXTURE(ListTest)
 		auto secondNode = MclListNode_GetNext(MclList_GetFirst(list));
 		ASSERT_EQ(MclListNode_GetData(secondNode), foo2);
 
-		MclList_Clear(list, &fooDeleter);
+		MclList_Clear(list, &fooDestroyIntf);
 	}
 
 	TEST("should insert after node")
@@ -364,6 +364,6 @@ FIXTURE(ListTest)
 		auto secondNode = MclListNode_GetNext(MclList_GetFirst(list));
 		ASSERT_EQ(MclListNode_GetData(secondNode), foo2);
 
-		MclList_Clear(list, &fooDeleter);
+		MclList_Clear(list, &fooDestroyIntf);
 	}
 };

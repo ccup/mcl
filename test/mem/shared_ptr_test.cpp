@@ -121,13 +121,13 @@ namespace {
 
 	MclAtom Foo::FOO_COUNT = 0;
 
-	void Foo_Destruct(void *p, void *arg) {
+	void Foo_Destroy(void *p, void *arg) {
 		auto foo = (Foo*)p;
 		foo->~Foo();
 	}
 
 	Foo* Foo_Create(int id) {
-        auto p = (Foo*)MclSharedPtr_Create(sizeof(Foo), Foo_Destruct, NULL);
+        auto p = (Foo*)MclSharedPtr_Create(sizeof(Foo), Foo_Destroy, NULL);
         MCL_ASSERT_VALID_PTR_NIL(p);
         auto result = new(p) Foo(id);
         return result;

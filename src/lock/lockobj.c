@@ -32,13 +32,13 @@ MCL_PRIVATE MclStatus MclLockObj_Init(MclLockObj *self) {
 	return MCL_SUCCESS;
 }
 
-MCL_PRIVATE void MclLockObj_DestroyObj(MclLockObj *self, MclLockObjDestructor objDtor, void *arg) {
+MCL_PRIVATE void MclLockObj_DestroyObj(MclLockObj *self, MclLockObjDestroy destroy, void *arg) {
 	MCL_LOCK_WRITE_AUTO(self->rwlock);
-	if(objDtor) objDtor(self->ptr, arg);
+	if(destroy) destroy(self->ptr, arg);
 }
 
-MCL_PRIVATE void MclLockObj_Destroy(MclLockObj *self, MclLockObjDestructor objDtor, void *arg) {
-    MclLockObj_DestroyObj(self, objDtor, arg);
+MCL_PRIVATE void MclLockObj_Destroy(MclLockObj *self, MclLockObjDestroy destroy, void *arg) {
+    MclLockObj_DestroyObj(self, destroy, arg);
     MCL_ASSERT_SUCC_CALL_VOID(MclRwLock_Destroy(&self->rwlock));
 }
 
@@ -57,13 +57,13 @@ void* MclLockObj_Create(size_t size) {
 	return self->ptr;
 }
 
-void  MclLockObj_Delete(void *obj, MclLockObjDestructor objDtor, void *arg) {
+void  MclLockObj_Delete(void *obj, MclLockObjDestroy destroy, void *arg) {
 	MCL_ASSERT_VALID_PTR_VOID(obj);
 
 	MclLockObj *self = MclLockObj_GetSelf(obj);
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
-    MclLockObj_Destroy(self, objDtor, arg);
+    MclLockObj_Destroy(self, destroy, arg);
 	MCL_FREE(self);
 }
 

@@ -5,9 +5,9 @@
 
 MCL_STDC_BEGIN
 
-typedef void (*MclSharedPtrDestructor)(void *ptr, void *arg);
+typedef void (*MclSharedPtrDestroy)(void *ptr, void *arg);
 
-void* MclSharedPtr_Create(size_t, MclSharedPtrDestructor, void* dtorArg);
+void* MclSharedPtr_Create(size_t, MclSharedPtrDestroy, void*arg);
 void  MclSharedPtr_Delete(void *ptr);
 void* MclSharedPtr_Ref(void *ptr);
 
@@ -27,12 +27,12 @@ MCL_INLINE void MclSharedPtr_AutoFree(void *pp) {
     ({                                                                      \
         struct MclSharedTmp {                                               \
             __typeof__(Type) value;                                         \
-            MclSharedPtrDestructor dtor;                                    \
+            MclSharedPtrDestroy destroy;                                    \
             void *arg;                                                      \
         } args = {                                                          \
             __VA_ARGS__                                                     \
         };                                                                  \
-        void *ptr = MclSharedPtr_Create(sizeof(Type), args.dtor, args.arg); \
+        void *ptr = MclSharedPtr_Create(sizeof(Type), args.destroy, args.arg); \
         if (ptr != NULL) memcpy(ptr, &args.value, sizeof(Type));            \
         (Type*)ptr;                                                         \
     })

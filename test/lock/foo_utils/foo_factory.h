@@ -44,13 +44,13 @@ private:
 };
 
 template<FooCreateType type>
-void Foo_ListDelete(MclListDataDeleter *deleter, MclListData data) {
+void Foo_ListDestroy(MclListDataDestroyIntf *destroyIntf, MclListData data) {
     auto f = (Foo*)data;
     if (f) FooFactory<type>::destroy(f);
 }
 
 template<FooCreateType type>
-void Foo_HashDelete(MclHashValueDeleter *deleter, MclHashValue value) {
+void Foo_HashDestroy(MclHashValueDeleter *deleter, MclHashValue value) {
     auto f = (Foo*)value;
     if (f) FooFactory<type>::destroy(f);
 }

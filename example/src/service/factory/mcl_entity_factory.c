@@ -86,8 +86,8 @@ void MclEntityFactory_DeleteLockObj(MclEntity *self) {
 }
 
 ///////////////////////////////////////////////////////////
-MCL_PRIVATE void MclEntityFactory_DeleteEntity(void *obj, void *arg) {
-	MclEntityFactory_Delete((MclEntity*)obj);
+MCL_PRIVATE void MclEntityFactory_DestroyEntityPtr(void *ptr, void *arg) {
+	MclEntityFactory_Delete((MclEntity*)ptr);
 }
 
 MclLockPtr* MclEntityFactory_CreateLockPtr(MclEntityId id) {
@@ -97,7 +97,7 @@ MclLockPtr* MclEntityFactory_CreateLockPtr(MclEntityId id) {
 	MclLockPtr *ptr = MclLockPtr_Create(self);
 	if (!ptr) {
 		MCL_LOG_ERR("Initialize lock ptr (%u) failed!", id);
-		MclLockPtr_Delete(ptr, MclEntityFactory_DeleteEntity, NULL);
+		MclLockPtr_Delete(ptr, MclEntityFactory_DestroyEntityPtr, NULL);
 		return NULL;
 	}
 	MclAtom_Add(&entityCount, 1);
@@ -107,7 +107,7 @@ MclLockPtr* MclEntityFactory_CreateLockPtr(MclEntityId id) {
 void MclEntityFactory_DeleteLockPtr(MclLockPtr *ptr) {
 	MCL_ASSERT_VALID_PTR_VOID(ptr);
 
-	MclLockPtr_Delete(ptr, MclEntityFactory_DeleteEntity, NULL);
+	MclLockPtr_Delete(ptr, MclEntityFactory_DestroyEntityPtr, NULL);
 	MclAtom_Sub(&entityCount, 1);
 }
 

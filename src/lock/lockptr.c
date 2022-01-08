@@ -1,14 +1,14 @@
 #include "mcl/lock/lockptr.h"
 #include "mcl/mem/malloc.h"
 
-MCL_PRIVATE void MclLockPtr_DestroyPtr(MclLockPtr *self, MclLockPtrDeleter ptrDeleter, void *arg) {
+MCL_PRIVATE void MclLockPtr_DestroyPtr(MclLockPtr *self, MclLockPtrDestroy destroy, void *arg) {
 	MCL_LOCK_WRITE_AUTO(self->rwlock);
-    if (ptrDeleter && self->ptr) ptrDeleter(self->ptr, arg);
+    if (destroy && self->ptr) destroy(self->ptr, arg);
     self->ptr = NULL;
 }
 
-MCL_PRIVATE void MclLockPtr_DestroyImpl(MclLockPtr *self, MclLockPtrDeleter ptrDeleter, void *arg) {
-	MclLockPtr_DestroyPtr(self, ptrDeleter, arg);
+MCL_PRIVATE void MclLockPtr_DestroyImpl(MclLockPtr *self, MclLockPtrDestroy destroy, void *arg) {
+	MclLockPtr_DestroyPtr(self, destroy, arg);
 	MCL_ASSERT_SUCC_CALL_VOID(MclRwLock_Destroy(&self->rwlock));
 }
 
@@ -20,9 +20,9 @@ MclStatus MclLockPtr_Init(MclLockPtr *self, void *ptr) {
     return MCL_SUCCESS;
 }
 
-void MclLockPtr_Destroy(MclLockPtr *self, MclLockPtrDeleter ptrDeleter, void *arg) {
+void MclLockPtr_Destroy(MclLockPtr *self, MclLockPtrDestroy destroy, void *arg) {
     MCL_ASSERT_VALID_PTR_VOID(self);
-    MclLockPtr_DestroyImpl(self, ptrDeleter, arg);
+    MclLockPtr_DestroyImpl(self, destroy, arg);
 }
 
 MclLockPtr* MclLockPtr_Create(void *ptr) {
@@ -32,9 +32,9 @@ MclLockPtr* MclLockPtr_Create(void *ptr) {
     return self;
 }
 
-void MclLockPtr_Delete(MclLockPtr *self, MclLockPtrDeleter ptrDeleter, void *arg) {
+void MclLockPtr_Delete(MclLockPtr *self, MclLockPtrDestroy destroy, void *arg) {
     MCL_ASSERT_VALID_PTR_VOID(self);
-    MclLockPtr_DestroyImpl(self, ptrDeleter, arg);
+    MclLockPtr_DestroyImpl(self, destroy, arg);
     MCL_FREE(self);
 }
 

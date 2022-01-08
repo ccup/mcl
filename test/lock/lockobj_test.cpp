@@ -20,8 +20,8 @@ namespace {
         }
 
         ~FooRepo() {
-            MclListDataDeleter fooDeleter{.destroy = Foo_ListDelete<FooCreateType::LOCKOBJ>};
-            MclList_Delete(foos, &fooDeleter);
+            MclListDataDestroyIntf destroyIntf = MCL_LIST_DATA_DESTROY_INTF(Foo_ListDestroy<FooCreateType::LOCKOBJ>);
+            MclList_Delete(foos, &destroyIntf);
             MclRwLock_Destroy(&rwlock);
         }
 

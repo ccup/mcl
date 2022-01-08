@@ -10,9 +10,9 @@ MclListNode* MclListNode_Create(MclListData data, MclListNodeAllocator *allocato
 	return self;
 }
 
-void MclListNode_Delete(MclListNode *self, MclListNodeAllocator *allocator, MclListDataDeleter *dataDeleter) {
+void MclListNode_Delete(MclListNode *self, MclListNodeAllocator *allocator, MclListDataDestroyIntf *destroyIntf) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
-    MclListDataDeleter_Destroy(dataDeleter, self->data);
+    MclListDataDestroyIntf_Destroy(destroyIntf, self->data);
     MclListNodeAllocator_Free(allocator, self);
 }

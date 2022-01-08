@@ -18,19 +18,38 @@ MCL_PRIVATE void TaskQueue_Init(TaskQueue *queue, uint32_t threshold) {
 	queue->poppedCount = 0;
 }
 
-MCL_PRIVATE void TaskQueue_DestroyTask(MclListDataDeleter *deleter, MclListData data) {
+MCL_PRIVATE void TaskQueue_DestroyTask(MclListDataDestroyIntf *destroyIntf, MclListData data) {
     MclTask *task = (MclTask*)data;
     MclTask_Destroy(task);
 }
 
-MCL_PRIVATE MclListDataDeleter taskDeleter = MCL_LIST_DATA_DELETER(TaskQueue_DestroyTask);
+MCL_PRIVATE MclListDataDestroyIntf taskDestroyIntf = MCL_LIST_DATA_DESTROY_INTF(TaskQueue_DestroyTask);
 
 MCL_PRIVATE void TaskQueue_Destroy(TaskQueue *queue) {
-	MclList_Clear(&queue->tasks, &taskDeleter);
+	MclList_Clear(&queue->tasks, &taskDestroyIntf);
+}
+
+typedef struct {
+	MclListDataPredIntf predIntf;
+	MclTaskKey key;
+} MclTaskKeyPred;
+
+MCL_PRIVATE bool MclTaskKeyPred_IsEqual(MclListDataPredIntf *predIntf, MclListData data) {
+	MclTaskKeyPred *self = MCL_TYPE_REDUCT(predIntf, MclTaskKeyPred, predIntf);
+	return self->key == MclTaskKey_GetKey((MclTask*)data);
+}
+
+MCL_PRIVATE void TaskQueue_Remove(TaskQueue *queue, MclTaskKey key) {
+	MclTaskKeyPred isKeyEqual = {.predIntf = MCL_LIST_DATA_PRED_INTF(MclTaskKeyPred_IsEqual), .key = key};
+	MclList_RemovePredAll(&queue->tasks, &isKeyEqual.predIntf, &taskDestroyIntf);
 }
 
 MCL_PRIVATE bool TaskQueue_IsEmpty(const TaskQueue *queue) {
 	return MclList_IsEmpty(&queue->tasks);
+}
+
+MCL_PRIVATE void TaskQueue_Push(TaskQueue *queue, MclTask *task) {
+	MclList_PushBack(&queue->tasks, task);
 }
 
 MCL_PRIVATE bool TaskQueue_IsReachThreshold(const TaskQueue *queue) {
@@ -40,25 +59,6 @@ MCL_PRIVATE bool TaskQueue_IsReachThreshold(const TaskQueue *queue) {
 
 MCL_PRIVATE void TaskQueue_ResetPoppedCount(TaskQueue *queue) {
 	queue->poppedCount = 0;
-}
-
-typedef struct {
-	MclListDataPred predIntf;
-	MclTaskKey key;
-} MclTaskKeyPred;
-
-MCL_PRIVATE bool MclTaskKeyPred_IsEqual(MclListDataPred *pred, MclListData data) {
-	MclTaskKeyPred *self = MCL_TYPE_REDUCT(pred, MclTaskKeyPred, predIntf);
-	return self->key == MclTaskKey_GetKey((MclTask*)data);
-}
-
-MCL_PRIVATE void TaskQueue_Remove(TaskQueue *queue, MclTaskKey key) {
-	MclTaskKeyPred isKeyEqual = {.predIntf = MCL_LIST_DATA_PRED(MclTaskKeyPred_IsEqual), .key = key};
-	MclList_RemovePredAll(&queue->tasks, &isKeyEqual.predIntf, &taskDeleter);
-}
-
-MCL_PRIVATE void TaskQueue_Push(TaskQueue *queue, MclTask *task) {
-	MclList_PushBack(&queue->tasks, task);
 }
 
 MCL_PRIVATE MclTask* TaskQueue_Pop(TaskQueue *queue) {

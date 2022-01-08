@@ -33,8 +33,10 @@ MclStatus MclHashMap_Set(MclHashMap*, MclHashKey, MclHashValue);
 
 MclHashValue MclHashMap_FindByPred(const MclHashMap*, MclHashNodePred, void*);
 
-void MclHashMap_Remove(MclHashMap*, MclHashKey, MclHashValueDestroy);
-void MclHashMap_RemoveBy(MclHashMap*, MclHashNodePred, void*, MclHashValueDestroy);
+MclHashValue MclHashMap_Remove(MclHashMap*, MclHashKey);
+MclHashValue MclHashMap_RemoveByPred(MclHashMap*, MclHashNodePred, void*)
+;
+uint32_t MclHashMap_RemoveAllByPred(MclHashMap*, MclHashNodePred, void*, MclHashValueDestroy);
 
 MclStatus MclHashMap_Accept(const MclHashMap*, MclHashNodeVisit, void*);
 

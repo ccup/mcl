@@ -17,7 +17,8 @@ MclStatus MclEntityList_Insert(MclEntityList *self, MclEntity *entity) {
 	MCL_ASSERT_VALID_PTR(self);
 	MCL_ASSERT_VALID_PTR(entity);
 
-	MCL_ASSERT_SUCC_CALL(MclList_PushBack(self, entity));
+	MclListNode *node = MclList_PushBack(self, entity);
+	MCL_ASSERT_VALID_PTR(node);
 	return MCL_SUCCESS;
 }
 

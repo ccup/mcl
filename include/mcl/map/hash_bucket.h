@@ -12,19 +12,24 @@ MCL_TYPE(MclHashBucket) {
 void MclHashBucket_Init(MclHashBucket*);
 void MclHashBucket_Clear(MclHashBucket*, MclHashNodeAllocator*, MclHashValueDestroy);
 
-bool MclHashBucket_IsEmpty(const MclHashBucket*);
-
 MclStatus MclHashBucket_PushBackNode(MclHashBucket*, MclHashNode*);
 MclStatus MclHashBucket_RemoveNode(MclHashBucket*, MclHashNode*, MclHashNodeAllocator*, MclHashValueDestroy);
 
 MclHashNode* MclHashBucket_FindNode(const MclHashBucket*, MclHashKey);
 
-uint32_t MclHashBucket_Remove(MclHashBucket*, MclHashKey, MclHashNodeAllocator*, MclHashValueDestroy);
-uint32_t MclHashBucket_RemoveBy(MclHashBucket*, MclHashNodePred, void*, MclHashNodeAllocator*, MclHashValueDestroy);
+MclHashValue MclHashBucket_Remove(MclHashBucket*, MclHashKey, MclHashNodeAllocator*);
+MclHashValue MclHashBucket_RemoveByPred(MclHashBucket*, MclHashNodePred, void*, MclHashNodeAllocator*);
+
+uint32_t MclHashBucket_RemoveAllByPred(MclHashBucket*, MclHashNodePred, void*, MclHashNodeAllocator*, MclHashValueDestroy);
 
 MclStatus MclHashBucket_Accept(const MclHashBucket*, MclHashNodeVisit, void*);
 
 void MclHashBucket_Dump(const MclHashBucket*);
+
+///////////////////////////////////////////////////////////
+MCL_INLINE bool MclHashBucket_IsEmpty(const MclHashBucket *self) {
+	return self ? MCL_LINK_EMPTY(&self->nodes, MclHashNode, link) : true;
+}
 
 ///////////////////////////////////////////////////////////
 #define MCL_HASH_BUCKET(BUCKET)   							\

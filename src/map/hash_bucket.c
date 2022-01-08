@@ -23,22 +23,6 @@ void MclHashBucket_Clear(MclHashBucket *self, MclHashNodeAllocator *allocator, M
 	}
 }
 
-bool MclHashBucket_IsEmpty(const MclHashBucket *self) {
-	return self ? MCL_LINK_EMPTY(&self->nodes, MclHashNode, link) : true;
-}
-
-MclHashNode* MclHashBucket_FindNode(const MclHashBucket *self, MclHashKey key) {
-	MCL_ASSERT_VALID_PTR_NIL(self);
-
-	MclHashNode *node;
-	MCL_LINK_FOREACH(&self->nodes, MclHashNode, link, node) {
-		if (node->key == key) {
-			return node;
-		}
-	}
-	return NULL;
-}
-
 MclStatus MclHashBucket_PushBackNode(MclHashBucket *self, MclHashNode *node) {
 	MCL_ASSERT_VALID_PTR(self);
 	MCL_ASSERT_VALID_PTR(node);
@@ -56,7 +40,46 @@ MclStatus MclHashBucket_RemoveNode(MclHashBucket *self, MclHashNode *node, MclHa
 	return MCL_SUCCESS;
 }
 
-uint32_t MclHashBucket_RemoveBy(MclHashBucket *self, MclHashNodePred pred, void *arg, MclHashNodeAllocator *allocator, MclHashValueDestroy destroy) {
+MclHashNode* MclHashBucket_FindNode(const MclHashBucket *self, MclHashKey key) {
+	MCL_ASSERT_VALID_PTR_NIL(self);
+
+	MclHashNode *node;
+	MCL_LINK_FOREACH(&self->nodes, MclHashNode, link, node) {
+		if (node->key == key) {
+			return node;
+		}
+	}
+	return NULL;
+}
+
+MCL_PRIVATE bool MclHashNodeKey_IsEqual(const MclHashNode *node, void *arg) {
+	return MclHashNode_GetKey(node) == *(MclHashKey*)arg;
+}
+
+MclHashValue MclHashBucket_Remove(MclHashBucket *self, MclHashKey key, MclHashNodeAllocator *allocator) {
+	MCL_ASSERT_VALID_PTR_NIL(self);
+	MCL_ASSERT_TRUE_NIL(MclHashKey_IsValid(key));
+
+	return MclHashBucket_RemoveByPred(self, MclHashNodeKey_IsEqual, &key, allocator);
+}
+
+MclHashValue MclHashBucket_RemoveByPred(MclHashBucket *self, MclHashNodePred pred, void *arg, MclHashNodeAllocator *allocator) {
+	MCL_ASSERT_VALID_PTR_NIL(self);
+	MCL_ASSERT_VALID_PTR_NIL(pred);
+
+	MclHashNode *node = NULL, *tmpNode = NULL;
+	MCL_LINK_FOREACH_SAFE(&self->nodes, MclHashNode, link, node, tmpNode) {
+		if (MclHashNode_Pred(node, pred, arg)) {
+			MclHashValue value = MclHashNode_GetValue(node);
+			if (!MCL_FAILED(MclHashBucket_RemoveNodeFromBucket(self, node, allocator, NULL))) {
+			    return value;
+			}
+		}
+	}
+	return NULL;
+}
+
+uint32_t MclHashBucket_RemoveAllByPred(MclHashBucket *self, MclHashNodePred pred, void *arg, MclHashNodeAllocator *allocator, MclHashValueDestroy destroy) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
 	MCL_ASSERT_VALID_PTR_NIL(pred);
 
@@ -70,14 +93,6 @@ uint32_t MclHashBucket_RemoveBy(MclHashBucket *self, MclHashNodePred pred, void 
 		}
 	}
 	return removedCount;
-}
-
-MCL_PRIVATE bool MclHashBucket_PredKeyEqual(const MclHashNode *node, void *arg) {
-	return  MclHashNode_GetKey(node) == *(MclHashKey*)arg;
-}
-
-uint32_t MclHashBucket_Remove(MclHashBucket *self, MclHashKey key, MclHashNodeAllocator *allocator, MclHashValueDestroy destroy) {
-	return MclHashBucket_RemoveBy(self, MclHashBucket_PredKeyEqual, &key, allocator, destroy);
 }
 
 MclStatus MclHashBucket_Accept(const MclHashBucket *self, MclHashNodeVisit visit, void *arg) {

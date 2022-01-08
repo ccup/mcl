@@ -43,6 +43,7 @@ MclStatus MclList_RemoveData(MclList*, MclListData, MclListDataDestroy);
 MclListData MclList_RemoveFirst(MclList*);
 MclListData MclList_RemoveLast(MclList*);
 MclListData MclList_RemoveByPred(MclList*, MclListDataPred, void*);
+
 uint32_t MclList_RemoveAllByPred(MclList *, MclListDataPred, void*, MclListDataDestroy);
 
 MclListData  MclList_FindByPred(const MclList*, MclListDataPred, void*);

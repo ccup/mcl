@@ -97,6 +97,7 @@ MclStatus MclHashMap_Get(const MclHashMap *self, MclHashKey key, MclHashValue *v
 MclStatus MclHashMap_Set(MclHashMap *self, MclHashKey key, MclHashValue value) {
     MCL_ASSERT_VALID_PTR(self);
     MCL_ASSERT_TRUE(MclHashKey_IsValid(key));
+    MCL_ASSERT_TRUE(MclHashValue_IsValid(value));
 
     MclHashNode *node = MclHashMap_FindNode(self, key);
     if (node) {
@@ -115,28 +116,48 @@ MclStatus MclHashMap_Set(MclHashMap *self, MclHashKey key, MclHashValue value) {
     return MCL_SUCCESS;
 }
 
-void MclHashMap_Remove(MclHashMap *self, MclHashKey key, MclHashValueDestroy destroy) {
-	MCL_ASSERT_VALID_PTR_VOID(self);
-	MCL_ASSERT_TRUE_VOID(MclHashKey_IsValid(key));
+MclHashValue MclHashMap_Remove(MclHashMap *self, MclHashKey key) {
+	MCL_ASSERT_VALID_PTR_NIL(self);
+	MCL_ASSERT_TRUE_NIL(MclHashKey_IsValid(key));
 
 	uint32_t bucketId = MclHashMap_GetBucketId(self, key);
 
-	uint32_t removedCount = MclHashBucket_Remove(&self->buckets[bucketId], key, self->allocator, destroy);
-	MCL_ASSERT_TRUE_VOID(removedCount <= self->elementCount);
-	self->elementCount -= removedCount;
+	MclHashValue value = MclHashBucket_Remove(&self->buckets[bucketId], key, self->allocator);
+	if (MclHashValue_IsValid(value)) self->elementCount--;
+	return value;
 }
 
-void MclHashMap_RemoveBy(MclHashMap *self, MclHashNodePred pred, void *arg, MclHashValueDestroy destroy) {
-	MCL_ASSERT_VALID_PTR_VOID(self);
-	MCL_ASSERT_VALID_PTR_VOID(pred);
+MclHashValue MclHashMap_RemoveByPred(MclHashMap *self, MclHashNodePred pred, void *arg) {
+	MCL_ASSERT_VALID_PTR_NIL(self);
+	MCL_ASSERT_VALID_PTR_NIL(pred);
+
+    for (uint32_t i = 0; i < self->bucketCount; i++) {
+    	MclHashValue value = MclHashBucket_RemoveByPred(&self->buckets[i], pred, arg, self->allocator);
+    	if (MclHashValue_IsValid(value)) {
+    		self->elementCount--;
+    		return value;
+    	}
+    }
+	return NULL;
+}
+
+uint32_t MclHashMap_RemoveAllByPred(MclHashMap *self, MclHashNodePred pred, void *arg, MclHashValueDestroy destroy) {
+	MCL_ASSERT_VALID_PTR_NIL(self);
+	MCL_ASSERT_VALID_PTR_NIL(pred);
 
 	uint32_t removedCount = 0;
 
     for (uint32_t i = 0; i < self->bucketCount; i++) {
-    	removedCount += MclHashBucket_RemoveBy(&self->buckets[i], pred, arg, self->allocator, destroy);
+    	removedCount += MclHashBucket_RemoveAllByPred(&self->buckets[i], pred, arg, self->allocator, destroy);
     }
-	MCL_ASSERT_TRUE_VOID(removedCount <= self->elementCount);
-	self->elementCount -= removedCount;
+
+	if (removedCount > self->elementCount) {
+		MCL_LOG_FATAL("Removed overflow (%u) from hash map which only has (%u) elements!", removedCount, self->elementCount);
+		self->elementCount = 0;
+	} else {
+		self->elementCount -= removedCount;
+	}
+	return removedCount;
 }
 
 MclStatus MclHashMap_Accept(const MclHashMap *self, MclHashNodeVisit visit, void *arg) {

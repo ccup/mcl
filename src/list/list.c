@@ -110,6 +110,7 @@ MclStatus MclList_RemoveNode(MclList *self, MclListNode *node, MclListDataDestro
 
 MclListNode* MclList_FindNode(const MclList *self, MclListData data) {
     MCL_ASSERT_VALID_PTR_NIL(self);
+    MCL_ASSERT_TRUE_NIL(MclListData_IsValid(data));
 
     MclListNode *node = NULL;
     MCL_LIST_FOREACH((MclList*)self, node) {
@@ -120,6 +121,7 @@ MclListNode* MclList_FindNode(const MclList *self, MclListData data) {
 
 MclListNode* MclList_PushFront(MclList *self, MclListData data) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
+	MCL_ASSERT_TRUE_NIL(MclListData_IsValid(data));
 
 	MclListNode *node = MclListNode_Create(data, self->allocator);
 	MCL_ASSERT_VALID_PTR_NIL(node);
@@ -130,6 +132,7 @@ MclListNode* MclList_PushFront(MclList *self, MclListData data) {
 
 MclListNode*  MclList_PushBack(MclList *self, MclListData data) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
+	MCL_ASSERT_TRUE_NIL(MclListData_IsValid(data));
 
 	MclListNode *node = MclListNode_Create(data, self->allocator);
 	MCL_ASSERT_VALID_PTR_NIL(node);
@@ -140,6 +143,7 @@ MclListNode*  MclList_PushBack(MclList *self, MclListData data) {
 
 MclListNode* MclList_InsertBefore(MclList *self, MclListNode *nextNode, MclListData data) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
+	MCL_ASSERT_TRUE_NIL(MclListData_IsValid(data));
 
 	MclListNode *node = MclListNode_Create(data, self->allocator);
 	MCL_ASSERT_VALID_PTR_NIL(node);
@@ -150,6 +154,7 @@ MclListNode* MclList_InsertBefore(MclList *self, MclListNode *nextNode, MclListD
 
 MclListNode* MclList_InsertAfter(MclList *self, MclListNode *prevNode, MclListData data) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
+	MCL_ASSERT_TRUE_NIL(MclListData_IsValid(data));
 
 	MclListNode *node = MclListNode_Create(data, self->allocator);
 	MCL_ASSERT_VALID_PTR_NIL(node);
@@ -160,6 +165,7 @@ MclListNode* MclList_InsertAfter(MclList *self, MclListNode *prevNode, MclListDa
 
 MclStatus MclList_RemoveData(MclList *self, MclListData data, MclListDataDestroy destroy) {
 	MCL_ASSERT_VALID_PTR(self);
+	MCL_ASSERT_TRUE(MclListData_IsValid(data));
 
 	MclListNode *node = MclList_FindNode(self, data);
 	if (!node) return MCL_FAILURE;

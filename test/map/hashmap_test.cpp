@@ -36,6 +36,11 @@ namespace {
     	return foo->getId() == (long)arg;
     }
 
+    bool HashNodePred_IsLargeThan(const MclHashNode *node, void *arg) {
+    	auto foo = (Foo*)MclHashNode_GetValue(node);
+    	return foo->getId() > (long)arg;
+    }
+
     MclStatus HashNodeVisit_Sum(MclHashNode *node, void *arg) {
     	auto foo = (Foo*)MclHashNode_GetValue(node);
     	if (FOO_ID_INVALID == foo->getId()) return MCL_STATUS_DONE;
@@ -113,15 +118,16 @@ FIXTURE(HashMapTest) {
 
 		MclHashMap_Set(foos, 1, foo);
 
-        MclHashMap_Remove(foos, 1, NULL);
+        auto result = (Foo*)MclHashMap_Remove(foos, 1);
+        ASSERT_TRUE(result != NULL);
+        ASSERT_EQ(1, result->getId());
 
 		ASSERT_TRUE(MclHashMap_IsEmpty(foos));
 		ASSERT_EQ(0, MclHashMap_GetCount(foos));
 
-		Foo *f {nullptr};
-		ASSERT_TRUE(MCL_FAILED(MclHashMap_Get(foos, 1, (MclHashValue*)(&f))));
+		ASSERT_TRUE(MCL_FAILED(MclHashMap_Get(foos, 1, (MclHashValue*)(result))));
 
-		Foo_Delete(foo);
+		Foo_Delete(result);
 	}
 
 	TEST("should remove elements from map")
@@ -134,18 +140,18 @@ FIXTURE(HashMapTest) {
 		MclHashMap_Set(foos, 2, foo2);
 		MclHashMap_Set(foos, 3, foo3);
 
-		MclHashMap_Remove(foos, 2, NULL);
+		MclHashMap_Remove(foos, 2);
 		Foo_Delete(foo2);
 
 		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
 		ASSERT_EQ(2, MclHashMap_GetCount(foos));
 
-		MclHashMap_Remove(foos, 1, NULL);
+		MclHashMap_Remove(foos, 1);
 
 		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
 		ASSERT_EQ(1, MclHashMap_GetCount(foos));
 
-		MclHashMap_Remove(foos, 3, NULL);
+		MclHashMap_Remove(foos, 3);
 
 		ASSERT_TRUE(MclHashMap_IsEmpty(foos));
 		ASSERT_EQ(0, MclHashMap_GetCount(foos));
@@ -159,7 +165,8 @@ FIXTURE(HashMapTest) {
 		auto foo = Foo_Create(1);
 
 		MclHashMap_Set(foos, 1, foo);
-		MclHashMap_Remove(foos, 1, (MclHashValueDestroy)Foo_Delete);
+		auto result = (Foo*)MclHashMap_Remove(foos, 1);
+		Foo_Delete(result);
 
 		ASSERT_TRUE(MclHashMap_IsEmpty(foos));
 	}
@@ -174,13 +181,17 @@ FIXTURE(HashMapTest) {
 		MclHashMap_Set(foos, 2, foo2);
 		MclHashMap_Set(foos, 3, foo3);
 
-		MclHashMap_Remove(foos, 3, (MclHashValueDestroy)Foo_Delete);
-		MclHashMap_Remove(foos, 2, (MclHashValueDestroy)Foo_Delete);
+		auto result = (Foo*)MclHashMap_Remove(foos, 3);
+		Foo_Delete(result);
+
+		result = (Foo*)MclHashMap_Remove(foos, 2);
+		Foo_Delete(result);
 
 		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
 		ASSERT_EQ(1, MclHashMap_GetCount(foos));
 
-		MclHashMap_Remove(foos, 1, (MclHashValueDestroy)Foo_Delete);
+		result = (Foo*)MclHashMap_Remove(foos, 1);
+		Foo_Delete(result);
 
 		ASSERT_TRUE(MclHashMap_IsEmpty(foos));
 		ASSERT_EQ(0, MclHashMap_GetCount(foos));
@@ -207,7 +218,10 @@ FIXTURE(HashMapTest) {
 		MclHashMap_Set(foos, 2, foo2);
 		MclHashMap_Set(foos, 3, foo3);
 
-		MclHashMap_RemoveBy(foos, HashNodePred_IsEqual, (void*)2, (MclHashValueDestroy)Foo_Delete);
+		auto result = (Foo*)MclHashMap_RemoveByPred(foos, HashNodePred_IsEqual, (void*)2);
+		ASSERT_TRUE(result != NULL);
+		ASSERT_EQ(2, result->getId());
+		Foo_Delete(result);
 
 		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
 		ASSERT_EQ(2, MclHashMap_GetCount(foos));
@@ -219,6 +233,26 @@ FIXTURE(HashMapTest) {
 		ASSERT_TRUE(!MCL_FAILED(MclHashMap_Get(foos, 3, (MclHashValue*)(&f))));
 
 		MclHashMap_Clear(foos, (MclHashValueDestroy)Foo_Delete);
+	}
+
+	TEST("should remove all nodes in map by condition")
+	{
+		auto foo1 = Foo_Create(1);
+		MclHashMap_Set(foos, 1, foo1);
+		MclHashMap_Set(foos, 2, Foo_Create(2));
+		MclHashMap_Set(foos, 3, Foo_Create(3));
+
+		auto count = MclHashMap_RemoveAllByPred(foos, HashNodePred_IsLargeThan, (void*)1, (MclHashValueDestroy)Foo_Delete);
+		ASSERT_EQ(2, count);
+
+		ASSERT_EQ(1, MclHashMap_GetCount(foos));
+
+		count = MclHashMap_RemoveAllByPred(foos, HashNodePred_IsLargeThan, (void*)1, NULL);
+		ASSERT_EQ(1, count);
+
+		ASSERT_EQ(0, MclHashMap_GetCount(foos));
+
+		Foo_Delete(foo1);
 	}
 
 	TEST("should visit nodes in map by condition")
@@ -254,7 +288,8 @@ FIXTURE(HashMapTest) {
 		}
 
 		for (uint32_t i = 0; i < MAX_ELEMS - 2; i++) {
-			MclHashMap_Remove(foos, i, (MclHashValueDestroy)Foo_Delete);
+			auto result = (Foo*)MclHashMap_Remove(foos, i);
+			Foo_Delete(result);
 		}
 
 		ASSERT_EQ(2, MclHashMap_GetCount(foos));

@@ -31,7 +31,6 @@ MclStatus MclAggregatorRepo_Accept(MclAggregatorVisit, void*);
 typedef MclStatus (*MclAggregatorVisitConst)(const MclAggregator*, void*);
 MclStatus MclAggregatorRepo_AcceptConst(MclAggregatorVisitConst, void*);
 
-
 MCL_STDC_END
 
 #endif

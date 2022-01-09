@@ -16,6 +16,7 @@ MclStatus MclHashBucket_PushBackNode(MclHashBucket*, MclHashNode*);
 MclStatus MclHashBucket_RemoveNode(MclHashBucket*, MclHashNode*, MclHashNodeAllocator*, MclHashValueDestroy);
 
 MclHashNode* MclHashBucket_FindNode(const MclHashBucket*, MclHashKey);
+MclHashValue MclHashBucket_FindByPred(const MclHashBucket*, MclHashNodePred, void*);
 
 MclHashValue MclHashBucket_Remove(MclHashBucket*, MclHashKey, MclHashNodeAllocator*);
 MclHashValue MclHashBucket_RemoveByPred(MclHashBucket*, MclHashNodePred, void*, MclHashNodeAllocator*);

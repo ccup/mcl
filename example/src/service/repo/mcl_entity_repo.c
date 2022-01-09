@@ -113,6 +113,7 @@ MCL_PRIVATE MclStatus MclEntityRepoVisitor_Visit(MclEntity *entity, void *arg) {
 	MclEntityRepoVisitor *visitor = (MclEntityRepoVisitor*)arg;
 
 	MclStatus result = MCL_FAILURE;
+
 	MCL_ASSERT_SUCC_CALL(MclLockObj_WrLock(entity));
 	result = visitor->visit(entity, visitor->arg);
 	MCL_ASSERT_SUCC_CALL(MclLockObj_UnLock(entity));
@@ -133,6 +134,7 @@ MCL_PRIVATE MclStatus MclEntityRepoVisitor_VisitConst(const MclEntity *entity, v
 	MclEntityRepoVisitor *visitor = (MclEntityRepoVisitor*)arg;
 
 	MclStatus result = MCL_FAILURE;
+
 	MCL_ASSERT_SUCC_CALL(MclLockObj_RdLock((void*)entity));
 	result = visitor->visit((MclEntity*)entity, visitor->arg);
 	MCL_ASSERT_SUCC_CALL(MclLockObj_UnLock((void*)entity));
@@ -146,5 +148,5 @@ MclStatus MclEntityRepo_AcceptConst(MclEntityVisitConst visit, void *arg) {
 
 	MCL_LOCK_READ_AUTO(entityRepo.rwlock);
 
-	return MclEntityList_Accept(&entityRepo.entities, (MclEntityListElemVisit)MclEntityRepoVisitor_VisitConst, &visitor);
+	return MclEntityList_AcceptConst(&entityRepo.entities, MclEntityRepoVisitor_VisitConst, &visitor);
 }

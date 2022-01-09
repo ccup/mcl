@@ -10,22 +10,18 @@ size_t const MCL_ENTITY_SIZE = sizeof(MclEntity);
 
 MCL_PRIVATE const uint32_t DOUBLE_TIME = 2;
 
-MCL_PRIVATE void MclEntity_Clear(MclEntity *self) {
-	MclInteger_Clear(&self->value);
-}
-
 MCL_PRIVATE bool MclEntity_IsOverflowByTime(const MclEntity *self, uint32_t time) {
 	return  ((uint64_t)self->value) * time > MCL_INTEGER_MAX;
 }
 
 MclStatus MclEntity_Init(MclEntity *self, MclEntityId id) {
 	self->id = id;
-	MclEntity_Clear(self);
+	MclEntity_ClearValue(self);
 	return MCL_SUCCESS;
 }
 
 void MclEntity_Destroy(MclEntity *self) {
-	MclEntity_Clear(self);
+	MclEntity_ClearValue(self);
 	self->id = MCL_ENTITY_ID_INVALID;
 }
 
@@ -46,4 +42,8 @@ MclStatus MclEntity_DoubleValue(MclEntity *self) {
 
 	self->value *= DOUBLE_TIME;
 	return MCL_SUCCESS;
+}
+
+void MclEntity_ClearValue(MclEntity *self) {
+	MclInteger_Clear(&self->value);
 }

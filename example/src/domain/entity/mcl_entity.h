@@ -18,6 +18,7 @@ MclEntityId MclEntity_GetId(const MclEntity*);
 MclInteger  MclEntity_GetValue(const MclEntity*);
 
 MclStatus   MclEntity_DoubleValue(MclEntity*);
+void MclEntity_ClearValue(MclEntity*);
 
 MCL_STDC_END
 

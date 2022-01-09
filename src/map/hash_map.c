@@ -115,6 +115,19 @@ MclHashValue MclHashMap_Set(MclHashMap *self, MclHashKey key, MclHashValue value
     return value;
 }
 
+MclHashValue MclHashMap_FindByPred(const MclHashMap *self, MclHashNodePred pred, void *arg) {
+	MCL_ASSERT_VALID_PTR_NIL(self);
+	MCL_ASSERT_VALID_PTR_NIL(pred);
+
+    for (uint32_t i = 0; i < self->bucketCount; i++) {
+    	MclHashValue value = MclHashBucket_FindByPred(&self->buckets[i], pred, arg);
+    	if (MclHashValue_IsValid(value)) {
+    		return value;
+    	}
+    }
+	return NULL;
+}
+
 MclHashValue MclHashMap_Remove(MclHashMap *self, MclHashKey key) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
 	MCL_ASSERT_TRUE_NIL(MclHashKey_IsValid(key));

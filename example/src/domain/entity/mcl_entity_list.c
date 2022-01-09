@@ -70,3 +70,9 @@ MclStatus MclEntityList_Accept(const MclEntityList *self, MclEntityListElemVisit
 
 	return MclList_Accept(self, (MclListDataVisit)visit, arg);
 }
+
+MclStatus MclEntityList_AcceptConst(const MclEntityList *self, MclEntityListElemVisitConst visit, void *arg) {
+	MCL_ASSERT_SUCC_CALL(MclEntityList_Accept(self, (MclEntityListElemVisit)visit, arg));
+	return MCL_SUCCESS;
+}
+

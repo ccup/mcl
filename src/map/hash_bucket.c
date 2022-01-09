@@ -52,6 +52,19 @@ MclHashNode* MclHashBucket_FindNode(const MclHashBucket *self, MclHashKey key) {
 	return NULL;
 }
 
+MclHashValue MclHashBucket_FindByPred(const MclHashBucket *self, MclHashNodePred pred, void *arg) {
+	MCL_ASSERT_VALID_PTR_NIL(self);
+	MCL_ASSERT_VALID_PTR_NIL(pred);
+
+	MclHashNode *node;
+	MCL_LINK_FOREACH(&self->nodes, MclHashNode, link, node) {
+		if (MclHashNode_Pred(node, pred, arg)) {
+			return MclHashNode_GetValue(node);
+		}
+	}
+	return NULL;
+}
+
 MCL_PRIVATE bool MclHashNodeKey_IsEqual(const MclHashNode *node, void *arg) {
 	return MclHashNode_GetKey(node) == *(MclHashKey*)arg;
 }

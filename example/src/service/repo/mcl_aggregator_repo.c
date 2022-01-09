@@ -129,6 +129,7 @@ MCL_PRIVATE MclStatus MclAggregatorRepoVisitor_Visit(MclAggregator *aggregator, 
 	MclAggregatorRepoVisitor *visitor = (MclAggregatorRepoVisitor*)arg;
 
 	MclStatus result = MCL_FAILURE;
+
 	MCL_ASSERT_SUCC_CALL(MclLockObj_WrLock(aggregator));
 	result = visitor->visit(aggregator, visitor->arg);
 	MCL_ASSERT_SUCC_CALL(MclLockObj_UnLock(aggregator));
@@ -149,6 +150,7 @@ MCL_PRIVATE MclStatus MclAggregatorRepoVisitor_VisitConst(const MclAggregator *a
 	MclAggregatorRepoVisitor *visitor = (MclAggregatorRepoVisitor*)arg;
 
 	MclStatus result = MCL_FAILURE;
+
 	MCL_ASSERT_SUCC_CALL(MclLockObj_RdLock((void*)aggregator));
 	result = visitor->visit((MclAggregator*)aggregator, visitor->arg);
 	MCL_ASSERT_SUCC_CALL(MclLockObj_UnLock((void*)aggregator));

@@ -31,6 +31,9 @@ size_t MclEntityList_GetCount(const MclEntityList*);
 typedef MclStatus (*MclEntityListElemVisit)(MclEntity*, void*);
 MclStatus MclEntityList_Accept(const MclEntityList*, MclEntityListElemVisit, void*);
 
+typedef MclStatus (*MclEntityListElemVisitConst)(const MclEntity*, void*);
+MclStatus MclEntityList_AcceptConst(const MclEntityList*, MclEntityListElemVisitConst, void*);
+
 MCL_STDC_END
 
 #endif

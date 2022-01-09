@@ -6,6 +6,7 @@
 MCL_STDC_BEGIN
 
 MclStatus MclEventService_On1sTimeout();
+MclStatus MclEventService_On5sTimeout();
 MclStatus MclEventService_OnDoubleIsr();
 
 MCL_STDC_END

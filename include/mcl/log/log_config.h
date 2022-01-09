@@ -8,7 +8,7 @@
 
 MCL_STDC_BEGIN
 
-void MclLog_Output(int level , const char* levelstr , const char* file, unsigned int line, const char* fmt, ...);
+void MclLog_Output(int level, const char* levelstr, const char* file, unsigned int line, const char* fmt, ...);
 
 MCL_STDC_END
 

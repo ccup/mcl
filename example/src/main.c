@@ -9,7 +9,8 @@ const static size_t ENTITY_COUNT = 16;
 const static size_t AGGREGATOR_COUNT = 4;
 const static size_t TIME_COUNT = ENTITY_COUNT * 2 + AGGREGATOR_COUNT;
 
-#define SCHEDULE_DELAY(N) sleep(N)
+//#define SCHEDULE_DELAY(N) sleep(N)
+#define SCHEDULE_DELAY(N) MclThread_Yield()
 
 MCL_PRIVATE void* RunAggregatorConfigService(void *data) {
 	MCL_LOG_INFO("MCL Example Aggregator Config Service Start...");

@@ -19,7 +19,7 @@ namespace {
 
     constexpr static uint32_t NODE_NUM_MAX = 6;
 
-    MCL_ALLOCATOR_TYPE_DEF(MclListNodeStaticAllocator, MclListNode, sizeof(MclListNode), NODE_NUM_MAX);
+    MCL_ALLOCATOR_TYPE_DEF(MclListNodeStaticAllocator, MclListNode, NODE_NUM_MAX);
 
     MclListNodeStaticAllocator nodeAllocator;
 

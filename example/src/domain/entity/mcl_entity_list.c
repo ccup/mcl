@@ -40,22 +40,11 @@ MclEntity* MclEntityList_FindById(const MclEntityList *self, MclEntityId id) {
 	return MclList_FindByPred(self, MclEntityIdPred_IsEqual, &id);
 }
 
-typedef struct {
-	MclEntityListElemPred pred;
-	void *arg;
-} MclEntityPred;
-
-MCL_PRIVATE bool MclEntityPred_Pred(MclListData data, void *arg) {
-	MclEntityPred *pred = (MclEntityPred*)arg;
-	return pred->pred((MclEntity*)data, pred->arg);
-}
-
-MclEntity*  MclEntityList_FindByPred(const MclEntityList *self, MclEntityListElemPred entityPred, void *arg) {
+MclEntity*  MclEntityList_FindByPred(const MclEntityList *self, MclEntityListElemPred pred, void *arg) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
-	MCL_ASSERT_VALID_PTR_NIL(entityPred);
+	MCL_ASSERT_VALID_PTR_NIL(pred);
 
-	MclEntityPred pred = {.pred = entityPred, .arg = arg};
-	return MclList_FindByPred(self, MclEntityPred_Pred, &pred);
+	return MclList_FindByPred(self, (MclListDataPred)pred, arg);
 }
 
 bool MclEntityList_HasEntity(const MclEntityList *self, MclEntityId id) {
@@ -75,20 +64,9 @@ size_t MclEntityList_GetCount(const MclEntityList *self) {
 	return MclList_GetCount(self);
 }
 
-typedef struct {
-	MclEntityListElemVisit visit;
-	void* arg;
-} MclEntityVisitor;
-
-MCL_PRIVATE MclStatus MclEntityVisitor_Visit(MclListData data, void *arg) {
-	MclEntityVisitor *visitor = (MclEntityVisitor*)arg;
-	return visitor->visit((MclEntity*)data, visitor->arg);
-}
-
 MclStatus MclEntityList_Accept(const MclEntityList *self, MclEntityListElemVisit visit, void *arg) {
 	MCL_ASSERT_VALID_PTR(self);
 	MCL_ASSERT_VALID_PTR(visit);
 
-	MclEntityVisitor visitor = {.visit = visit, .arg = arg};
-	return MclList_Accept(self, MclEntityVisitor_Visit, &visitor);
+	return MclList_Accept(self, (MclListDataVisit)visit, arg);
 }

@@ -21,7 +21,7 @@ MclEntity* MclEntityFactory_Create(MclEntityId id) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
 
 	if (MCL_FAILED(MclEntity_Init(self, id))) {
-		MCL_LOG_ERR("Initialize object (%u) failed!", id);
+		MCL_LOG_ERR("Initialize entity (%u) failed!", id);
 		MCL_FREE(self);
 		return NULL;
 	}
@@ -32,6 +32,7 @@ MclEntity* MclEntityFactory_Create(MclEntityId id) {
 
 void MclEntityFactory_Delete(MclEntity *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
+
 	MclEntity_Destroy(self);
 	MCL_FREE(self);
 
@@ -48,7 +49,7 @@ MclEntity* MclEntityFactory_CreateSharedPtr(MclEntityId id) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
 
 	if (MCL_FAILED(MclEntity_Init(self, id))) {
-		MCL_LOG_ERR("Initialize shared ptr (%u) failed!", id);
+		MCL_LOG_ERR("Initialize shared ptr (%u) of entity failed!", id);
 		MCL_FREE(self);
 		return NULL;
 	}
@@ -70,7 +71,7 @@ MclEntity* MclEntityFactory_CreateLockObj(MclEntityId id) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
 
 	if (MCL_FAILED(MclEntity_Init(self, id))) {
-		MCL_LOG_ERR("Initialize lock object (%u) failed!", id);
+		MCL_LOG_ERR("Initialize lock entity (%u) failed!", id);
 		MclLockObj_Delete(self, NULL, NULL);
 		return NULL;
 	}
@@ -96,7 +97,7 @@ MclLockPtr* MclEntityFactory_CreateLockPtr(MclEntityId id) {
 
 	MclLockPtr *ptr = MclLockPtr_Create(self);
 	if (!ptr) {
-		MCL_LOG_ERR("Initialize lock ptr (%u) failed!", id);
+		MCL_LOG_ERR("Initialize lock ptr (%u) of entity failed!", id);
 		MclLockPtr_Delete(ptr, MclEntityFactory_DestroyEntityPtr, NULL);
 		return NULL;
 	}
@@ -112,42 +113,42 @@ void MclEntityFactory_DeleteLockPtr(MclLockPtr *ptr) {
 }
 
 /////////////////////////////////////////////////////////
-#define MCL_ENTITY_MEM_SIZE  8
-MCL_PRIVATE const uint16_t MCL_ENTITY_CAPACITY = 16;
-
-MCL_ALLOCATOR_TYPE_DEF(MclEntityAllocator, MclEntity, MCL_ENTITY_MEM_SIZE, MCL_ENTITY_CAPACITY);
-
-MCL_PRIVATE MclEntityAllocator entityAllocator;
-
-MCL_CTOR void MclEntityAllocator_Ctor() {
-	if (MCL_ENTITY_MEM_SIZE < MCL_ENTITY_SIZE) {
-		MCL_LOG_FATAL("Size (%u) of entity memory in allocator is less than actual size (%lu)!"
-				, MCL_ENTITY_MEM_SIZE, MCL_ENTITY_SIZE);
-	}
-	MCL_ALLOCATOR_INIT(MclEntityAllocator, entityAllocator);
-	MCL_LOG_SUCC("Entity allocator init OK!");
-}
-
-MclEntity* MclEntityFactory_CreateStatic(MclEntityId id) {
-	if (MCL_ENTITY_MEM_SIZE < MCL_ENTITY_SIZE) return NULL;
-
-	MclEntity* self = MCL_ALLOCATOR_ALLOC(MclEntityAllocator, entityAllocator);
-	MCL_ASSERT_VALID_PTR_NIL(self);
-
-	if (MCL_FAILED(MclEntity_Init(self, id))) {
-		MCL_LOG_ERR("Initialize static object (%u) failed!", id);
-		MclEntityAllocator_Free(&entityAllocator, self);
-		return NULL;
-	}
-
-	MclAtom_Add(&entityCount, 1);
-	return self;
-
-}
-
-void MclEntityFactory_DeleteStatic(MclEntity *self) {
-	MCL_ASSERT_VALID_PTR_VOID(self);
-
-	MCL_ALLOCATOR_FREE(MclEntityAllocator, entityAllocator, self);
-	MclAtom_Sub(&entityCount, 1);
-}
+//#define MCL_ENTITY_MEM_SIZE  8
+//MCL_PRIVATE const uint16_t MCL_ENTITY_CAPACITY = 16;
+//
+//MCL_ALLOCATOR_TYPE_DEF(MclEntityAllocator, MclEntity, MCL_ENTITY_CAPACITY);
+//
+//MCL_PRIVATE MclEntityAllocator entityAllocator;
+//
+//MCL_CTOR void MclEntityAllocator_Ctor() {
+//	if (MCL_ENTITY_MEM_SIZE < MCL_ENTITY_SIZE) {
+//		MCL_LOG_FATAL("Size (%u) of entity memory in allocator is less than actual size (%lu)!"
+//				, MCL_ENTITY_MEM_SIZE, MCL_ENTITY_SIZE);
+//	}
+//	MCL_ALLOCATOR_INIT(MclEntityAllocator, entityAllocator);
+//	MCL_LOG_SUCC("Entity allocator init OK!");
+//}
+//
+//MclEntity* MclEntityFactory_CreateStatic(MclEntityId id) {
+//	if (MCL_ENTITY_MEM_SIZE < MCL_ENTITY_SIZE) return NULL;
+//
+//	MclEntity* self = MCL_ALLOCATOR_ALLOC(MclEntityAllocator, entityAllocator);
+//	MCL_ASSERT_VALID_PTR_NIL(self);
+//
+//	if (MCL_FAILED(MclEntity_Init(self, id))) {
+//		MCL_LOG_ERR("Initialize static entity (%u) failed!", id);
+//		MclEntityAllocator_Free(&entityAllocator, self);
+//		return NULL;
+//	}
+//
+//	MclAtom_Add(&entityCount, 1);
+//	return self;
+//
+//}
+//
+//void MclEntityFactory_DeleteStatic(MclEntity *self) {
+//	MCL_ASSERT_VALID_PTR_VOID(self);
+//
+//	MCL_ALLOCATOR_FREE(MclEntityAllocator, entityAllocator, self);
+//	MclAtom_Sub(&entityCount, 1);
+//}

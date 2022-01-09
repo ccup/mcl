@@ -12,15 +12,15 @@ MCL_STDC_BEGIN
 #define __MCL_ALLOCATOR_FREE(ALLOCATOR_TYPE) ALLOCATOR_TYPE##_Free
 
 /////////////////////////////////////////////////////////////////////////////////////
-#define MCL_ALLOCATOR_TYPE_DEF(ALLOCATOR_TYPE, TYPE, TYPE_SIZE, CAPACITY)   		\
+#define MCL_ALLOCATOR_TYPE_DEF(ALLOCATOR_TYPE, TYPE, CAPACITY)   					\
 typedef struct ALLOCATOR_TYPE {                                        				\
     MclLinkArray elems;                                                     		\
-    uint8_t buff[CAPACITY * MCL_ALIGN_SIZE(TYPE_SIZE)];              				\
+    uint8_t buff[CAPACITY * MCL_ALIGN_SIZE(sizeof(TYPE))];              		    \
 } ALLOCATOR_TYPE;                                                      				\
                                                                             		\
 MCL_INLINE MclStatus __MCL_ALLOCATOR_INIT(ALLOCATOR_TYPE)(ALLOCATOR_TYPE *self) { 	\
     MCL_ASSERT_VALID_PTR(self);                                             		\
-    MCL_ASSERT_SUCC_CALL(MclLinkArray_Init(&self->elems, CAPACITY, MCL_ALIGN_SIZE(TYPE_SIZE), self->buff)); \
+    MCL_ASSERT_SUCC_CALL(MclLinkArray_Init(&self->elems, CAPACITY, MCL_ALIGN_SIZE(sizeof(TYPE)), self->buff)); \
     return MCL_SUCCESS;                                                     		\
 }                                                                           		\
                                                                             		\

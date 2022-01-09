@@ -17,9 +17,9 @@ MclEntity*  MclEntityRepo_Remove(MclEntityId);
 MclEntity* MclEntityRepo_Fetch(MclEntityId);
 const MclEntity* MclEntityRepo_FetchConst(MclEntityId);
 
-typedef bool (*MclEntity_Pred)(const MclEntity*, void*);
-MclEntity* MclEntityList_FetchBy(MclEntity_Pred, void*);
-const MclEntity* MclEntityList_FetchConstBy(MclEntity_Pred, void*);
+typedef bool (*MclEntityPred)(const MclEntity*, void*);
+MclEntity* MclEntityRepo_FetchBy(MclEntityPred, void*);
+const MclEntity* MclEntityRepo_FetchConstBy(MclEntityPred, void*);
 
 bool   MclEntityRepo_HasEntity(MclEntityId);
 bool   MclEntityRepo_IsEmpty();

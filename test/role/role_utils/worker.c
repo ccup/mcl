@@ -11,7 +11,7 @@ typedef struct WorkerObject {
 	}energy_mem;
 } WorkerObject;
 
-MCL_ALLOCATOR_TYPE_DEF(WorkerObjectAllocator, WorkerObject, sizeof(WorkerObject), 2);
+MCL_ALLOCATOR_TYPE_DEF(WorkerObjectAllocator, WorkerObject, 2);
 
 MCL_PRIVATE WorkerObjectAllocator allocator;
 

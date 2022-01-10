@@ -39,5 +39,7 @@ FIXTURE(FutureTest) {
         ASSERT_EQ(MAX_COUNT - 1, *(int*)(value));
 
         MclFuture_Delete(future);
+
+        MclThread_Join(th, NULL);
     }
 };

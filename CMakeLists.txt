@@ -31,14 +31,14 @@ endif()
 
 if(ENABLE_ASON)
     message(STATUS "AddressSanitizer enabled")
-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address") 
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address") 
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -fsanitize=address")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -fsanitize=address")
 endif()
 
 if(ENABLE_TSAN)
     message(STATUS "ThreadSanitizer enabled")
-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O1 -fsanitize=thread -fno-omit-frame-pointer -fPIC -fPIE")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O1 -fsanitize=thread -fno-omit-frame-pointer -fPIC -fPIE")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -fsanitize=thread -fno-omit-frame-pointer -fPIC -fPIE")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -fsanitize=thread -fno-omit-frame-pointer -fPIC -fPIE")
 endif()
 
 add_subdirectory(src)

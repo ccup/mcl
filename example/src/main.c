@@ -38,10 +38,10 @@ MCL_PRIVATE void* ExampleThread_Execute(void *data) {
 	return NULL;
 }
 
-MCL_PRIVATE MclStatus ExampleThread_Lanuch(ExampleThread* thread) {
+MCL_PRIVATE MclStatus ExampleThread_Launch(ExampleThread* thread) {
 	MCL_ASSERT_SUCC_CALL(MclThread_Create(&thread->thread, NULL, ExampleThread_Execute, thread));
 	return MCL_SUCCESS;
-};
+}
 
 MCL_PRIVATE void ExampleThread_Delay(MclTimeSecDiff sec) {
 	MclTimeSec_Delay(sec);
@@ -174,7 +174,7 @@ MCL_PRIVATE ExampleThread exampleThreads[] = {
 MCL_PRIVATE MclStatus ExampleThreads_Launch() {
 	MCL_LOG_INFO("Mcl Example threads launch...");
 	MCL_LOOP_FOREACH_INDEX(i, MCL_ARRAY_SIZE(exampleThreads)) {
-		MCL_ASSERT_SUCC_CALL(ExampleThread_Lanuch(&exampleThreads[i]));
+		MCL_ASSERT_SUCC_CALL(ExampleThread_Launch(&exampleThreads[i]));
 	}
 	return MCL_SUCCESS;
 }
@@ -185,6 +185,8 @@ MCL_PRIVATE void ExampleThreads_WaitDone() {
 	}
 	MCL_LOG_SUCC("Mcl Example threads done!!!");
 }
+
+#include <stdlib.h>
 
 int main() {
 	MCL_ASSERT_SUCC_CALL(ExampleThreads_Launch());

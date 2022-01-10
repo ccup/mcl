@@ -6,7 +6,7 @@ namespace {
 	constexpr FooId FOO_ID_INVALID = MCL_UINT32_MAX;
 
 	struct Foo {
-		static std::atomic<uint16_t> FOO_COUNT;
+		static size_t FOO_COUNT;
 
 		Foo (FooId id) : id {id} {
 		}
@@ -18,7 +18,7 @@ namespace {
 		FooId id {FOO_ID_INVALID};
 	};
 
-	std::atomic<uint16_t> Foo::FOO_COUNT {0};
+	size_t Foo::FOO_COUNT {0};
 
 	Foo* Foo_Create(FooId id = FOO_ID_INVALID) {
 		Foo::FOO_COUNT++;
@@ -50,7 +50,7 @@ FIXTURE(ListTest)
 
 	AFTER {
 		MclList_Delete(list, (MclListDataDestroy)Foo_Delete);
-		ASSERT_EQ(0, Foo::FOO_COUNT.load());
+		ASSERT_EQ(0, Foo::FOO_COUNT);
 	}
 
 	TEST("should be empty when initialized")

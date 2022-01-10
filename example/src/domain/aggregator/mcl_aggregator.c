@@ -1,6 +1,7 @@
 #include "aggregator/mcl_aggregator.h"
 #include "entity/mcl_entity_list.h"
 #include "entity/mcl_entity.h"
+#include "mcl/lock/lockobj.h"
 #include "mcl/assert.h"
 
 MCL_TYPE(MclAggregator) {
@@ -70,8 +71,12 @@ bool MclAggregator_HasEntity(const MclAggregator *self, MclEntityId entityId) {
 }
 
 MCL_PRIVATE MclStatus MclAggregator_DoubleEntity(MclEntity *entity, void *arg) {
-	MCL_ASSERT_SUCC_CALL(MclEntity_DoubleValue(entity));
-	return MCL_SUCCESS;
+	MclStatus result = MCL_FAILURE;
+
+	MCL_ASSERT_SUCC_CALL(MclLockObj_WrLock(entity));
+	result = MclEntity_DoubleValue(entity);
+	MCL_ASSERT_SUCC_CALL(MclLockObj_UnLock(entity));
+	return result;
 }
 
 MclStatus MclAggregator_DoubleEntities(MclAggregator *self) {
@@ -86,7 +91,10 @@ MclStatus MclAggregator_DoubleEntities(MclAggregator *self) {
 
 MCL_PRIVATE MclStatus MclAggregator_SumEntityValue(const MclEntity *entity, void *arg) {
 	MclInteger *sum = (MclInteger*)arg;
+
+	MCL_ASSERT_SUCC_CALL(MclLockObj_RdLock((void*)entity));
 	(*sum) += MclEntity_GetValue(entity);
+	MCL_ASSERT_SUCC_CALL(MclLockObj_UnLock((void*)entity));
 	return MCL_SUCCESS;
 }
 

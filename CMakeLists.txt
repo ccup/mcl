@@ -14,7 +14,7 @@ option(ENABLE_THREAD       "Enable thread"    ON)
 option(ENABLE_EXAMPLE      "Build example"    ON)
 option(ENABLE_TEST         "Build tests"      ON)
 option(ENABLE_ASON         "Enable AddressSanitizer" OFF)
-option(ENABLE_TSAN         "Enable ThreadSanitizer"  OFF)
+option(ENABLE_TSAN         "Enable ThreadSanitizer"  ON)
 
 include(${PROJECT_SOURCE_DIR}/cmake/ENV.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/CPM.cmake)

@@ -50,8 +50,8 @@ MCL_INLINE MclStatus MclThread_GetName(MclThread self, char *name, size_t len) {
     return pthread_getname_np(self, name, len) ? MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE uintptr_t MclThread_GetId() {
-    return (uintptr_t)pthread_self();
+MCL_INLINE MclThread MclThread_GetId() {
+    return pthread_self();
 }
 
 MCL_STDC_END

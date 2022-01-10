@@ -16,30 +16,31 @@ MCL_TYPE(MclTaskScheduler) {
 	MclTaskQueue *taskQueue;
 };
 
-MCL_PRIVATE void MclTaskScheduler_ExecuteTaskInThread(MclTaskScheduler *self, uint64_t threadId) {
-    MCL_LOG_DBG("Thread (0x%llx) try to pop task...", threadId);
+MCL_PRIVATE void MclTaskScheduler_ExecuteTaskInThread(MclTaskScheduler *self) {
+    MCL_LOG_DBG("Task thread try to pop task...");
     MclTask *task = MclTaskQueue_PopTask(self->taskQueue);
     if (task) {
-        MCL_LOG_DBG("Thread (0x%llx) popped task (%u).", threadId, task->key);
+        MCL_LOG_DBG("Task thread popped task (%u).", task->key);
         MCL_ASSERT_SUCC_CALL_VOID(MclTask_Execute(task));
         MclTask_Destroy(task);
     } else {
-        MCL_LOG_WARN("Thread (0x%llx) popped none task.", threadId);
+        MCL_LOG_WARN("Task Thread popped none task.");
     }
 }
 
 MCL_PRIVATE void* MclTaskScheduler_ThreadExecute(void *data) {
     MclTaskScheduler *self = (MclTaskScheduler*)data;
-
     if (!self) return NULL;
 
-    uint64_t threadId = MclThread_GetId();
-    MCL_LOG_DBG("Thread (0x%llx) in scheduler begin!", threadId);
+    MclThread tid = MclThread_GetId();
+    MCL_ASSERT_SUCC_CALL_NIL(MclThread_SetName(tid, "TaskScheduler"));
+
+    MCL_LOG_DBG("Task thread in scheduler begin!");
 
     while (MclAtom_IsTrue(&self->isRunning)) {
-        MclTaskScheduler_ExecuteTaskInThread(self, threadId);
+        MclTaskScheduler_ExecuteTaskInThread(self);
     }
-    MCL_LOG_DBG("Thread (0x%llx) in scheduler done!", threadId);
+    MCL_LOG_DBG("Task thread in scheduler done!");
     return NULL;
 }
 
@@ -174,14 +175,12 @@ void MclTaskScheduler_LocalExecute(MclTaskScheduler *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 	MCL_ASSERT_VALID_PTR_VOID(self->taskQueue);
 
-    uint64_t threadId = MclThread_GetId();
-
-    MCL_LOG_DBG("Thread (0x%llx) executed in local begin...", threadId);
+    MCL_LOG_DBG("Task thread execute in local begin!");
 
 	while (!MclTaskQueue_IsEmpty(self->taskQueue)) {
-        MclTaskScheduler_ExecuteTaskInThread(self, threadId);
+        MclTaskScheduler_ExecuteTaskInThread(self);
 	}
-	MCL_LOG_DBG("Thread (0x%llx) executed in local done!", threadId);
+	MCL_LOG_DBG("Task thread executed in local done!");
 }
 
 void MclTaskScheduler_WaitDone(MclTaskScheduler *self) {
@@ -189,9 +188,11 @@ void MclTaskScheduler_WaitDone(MclTaskScheduler *self) {
     MCL_ASSERT_VALID_PTR_VOID(self->taskQueue);
     MCL_ASSERT_TRUE_VOID(MclAtom_IsTrue(&self->isRunning));
 
+    MCL_LOG_DBG("Task scheduler wait begin.");
+
     while (!MclTaskQueue_IsEmpty(self->taskQueue)) {
         if (self->threadCount == 0) {
-            MclTaskScheduler_ExecuteTaskInThread(self, MclThread_GetId());
+            MclTaskScheduler_ExecuteTaskInThread(self);
         } else {
             MclThread_Yield();
         }

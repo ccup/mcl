@@ -11,12 +11,14 @@
 #include "mcl/lock/mutex.h"
 
 MCL_PRIVATE MclMutex mclLogMutex = MCL_MUTEX();
+
+#define MCL_LOG_THREAD_NAME_LEN 16
 #endif
 
-#define MCL_LOG_LENGTH_MAX    256
+#define MCL_LOG_STR_LEN_MAX    256
 
 MCL_PRIVATE void MclLog_FormatPrintf(int level, const char* levelstr, const char* file, unsigned int line, const char* fmt, va_list args) {
-		char str[MCL_LOG_LENGTH_MAX] = {0};
+		char str[MCL_LOG_STR_LEN_MAX] = {0};
 
         va_list argsCopy;
         va_copy(argsCopy, args);
@@ -24,8 +26,8 @@ MCL_PRIVATE void MclLog_FormatPrintf(int level, const char* levelstr, const char
         int length = vsnprintf(NULL, 0, fmt, argsCopy);
         va_end(argsCopy);
 
-        if (length > MCL_LOG_LENGTH_MAX) {
-        	printf("[MclLog]: Drop log (%s:%u) because length (%u) exceeds max length (%u)\n", file, line, length, MCL_LOG_LENGTH_MAX);
+        if (length > MCL_LOG_STR_LEN_MAX) {
+        	printf("[MclLog]: Drop log (%s:%u) because length (%u) exceeds max length (%u)\n", file, line, length, MCL_LOG_STR_LEN_MAX);
         	return;
         }
 		va_copy(argsCopy, args);
@@ -36,9 +38,12 @@ MCL_PRIVATE void MclLog_FormatPrintf(int level, const char* levelstr, const char
 			printf("%s", str);
 		} else {
 #ifdef MCL_THREAD_ENABLED
-				printf("[tid:%p] [%s:0x%x] %s:%u: %s\n", MclThread_GetId, levelstr, level, file, line, str);
+			MclThread tid = MclThread_GetId();
+			char threadName[MCL_LOG_THREAD_NAME_LEN] = {0};
+			MclThread_GetName(tid, threadName, MCL_LOG_THREAD_NAME_LEN);
+			printf("[%s:0x%lx] [%s:0x%x] %s:%u: %s\n", threadName, (uintptr_t)tid, levelstr, level, file, line, str);
 #else
-				printf("[%s:0x%x] %s:%u: %s\n", levelstr, level, file, line, str);
+			printf("[%s:0x%x] %s:%u: %s\n", levelstr, level, file, line, str);
 #endif
 		}
 }

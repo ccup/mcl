@@ -161,14 +161,14 @@ MCL_PRIVATE ExampleConfig fastConfig = {
 #define EXAMPLE_THREAD(NAME, EXECUTE) {.name = NAME, .execute = EXECUTE, .config = &fastConfig}
 
 MCL_PRIVATE ExampleThread exampleThreads[] = {
-		EXAMPLE_THREAD("aggregator config", ExampleThread_ConfigAggregator),
-		EXAMPLE_THREAD("entity config"    , ExampleThread_ConfigEntity),
-		EXAMPLE_THREAD("relation control" , ExampleThread_ControlRelation),
-		EXAMPLE_THREAD("value control"    , ExampleThread_ControlValue),
-		EXAMPLE_THREAD("timer event"      , ExampleThread_EventOnTimer),
-		EXAMPLE_THREAD("isr event"        , ExampleThread_EventOnIsr),
-		EXAMPLE_THREAD("status query"     , ExampleThread_QueryStatus),
-		EXAMPLE_THREAD("value query"      , ExampleThread_QueryValue),
+		EXAMPLE_THREAD("AggCfg" , ExampleThread_ConfigAggregator),
+		EXAMPLE_THREAD("EntyCfg", ExampleThread_ConfigEntity),
+		EXAMPLE_THREAD("RelCtrl", ExampleThread_ControlRelation),
+		EXAMPLE_THREAD("ValCtrl", ExampleThread_ControlValue),
+		EXAMPLE_THREAD("TimeEnv", ExampleThread_EventOnTimer),
+		EXAMPLE_THREAD("IsrEnv" , ExampleThread_EventOnIsr),
+		EXAMPLE_THREAD("StatQry", ExampleThread_QueryStatus),
+		EXAMPLE_THREAD("ValQry" , ExampleThread_QueryValue),
 };
 
 MCL_PRIVATE MclStatus ExampleThreads_Launch() {

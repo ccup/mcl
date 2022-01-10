@@ -14,7 +14,7 @@ option(ENABLE_THREAD       "Enable thread"    ON)
 option(ENABLE_EXAMPLE      "Build example"    ON)
 option(ENABLE_TEST         "Build tests"      ON)
 option(ENABLE_ASON         "Enable AddressSanitizer" OFF)
-option(ENABLE_TSAN         "Enable ThreadSanitizer"  ON)
+option(ENABLE_TSAN         "Enable ThreadSanitizer"  OFF)
 
 include(${PROJECT_SOURCE_DIR}/cmake/ENV.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/CPM.cmake)
@@ -31,11 +31,13 @@ endif()
 
 if(ENABLE_ASON)
     message(STATUS "AddressSanitizer enabled")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address") 
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address") 
 endif()
 
 if(ENABLE_TSAN)
     message(STATUS "ThreadSanitizer enabled")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O1 -fsanitize=thread -fno-omit-frame-pointer -fPIC -fPIE")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O1 -fsanitize=thread -fno-omit-frame-pointer -fPIC -fPIE")
 endif()
 

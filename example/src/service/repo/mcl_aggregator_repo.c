@@ -125,10 +125,12 @@ typedef struct {
 	void *arg;
 } MclAggregatorRepoVisitor;
 
-MCL_PRIVATE MclStatus MclAggregatorRepoVisitor_Visit(MclAggregator *aggregator, void *arg) {
+MCL_PRIVATE MclStatus MclAggregatorRepoVisitor_Visit(MclHashNode *aggregatorNode, void *arg) {
 	MclAggregatorRepoVisitor *visitor = (MclAggregatorRepoVisitor*)arg;
 
 	MclStatus result = MCL_FAILURE;
+
+	MclAggregator *aggregator = (MclAggregator*)MclHashNode_GetValue(aggregatorNode);
 
 	MCL_ASSERT_SUCC_CALL(MclLockObj_WrLock(aggregator));
 	result = visitor->visit(aggregator, visitor->arg);
@@ -146,10 +148,12 @@ MclStatus MclAggregatorRepo_Accept(MclAggregatorVisit visit, void *arg) {
 	return MclHashMap_Accept(&aggregatorRepo.aggregtors, (MclHashNodeVisit)MclAggregatorRepoVisitor_Visit, &visitor);
 }
 
-MCL_PRIVATE MclStatus MclAggregatorRepoVisitor_VisitConst(const MclAggregator *aggregator, void *arg) {
+MCL_PRIVATE MclStatus MclAggregatorRepoVisitor_VisitConst(const MclHashNode *aggregatorNode, void *arg) {
 	MclAggregatorRepoVisitor *visitor = (MclAggregatorRepoVisitor*)arg;
 
 	MclStatus result = MCL_FAILURE;
+
+	const MclAggregator *aggregator = (const MclAggregator*)MclHashNode_GetValue(aggregatorNode);
 
 	MCL_ASSERT_SUCC_CALL(MclLockObj_RdLock((void*)aggregator));
 	result = visitor->visit((MclAggregator*)aggregator, visitor->arg);

@@ -17,6 +17,7 @@ MCL_PRIVATE size_t MclLockObj_HeaderSize() {
 }
 
 MCL_PRIVATE bool MclLockObj_IsValid(MclLockObj* self, void *obj) {
+//	MCL_LOG_DBG("lock obj check: self %p, ptr %p, obj %p", self, self->ptr, obj);
 	return (self && self->sentinel == MCL_LOCK_OBJ_SENTINEL && self->ptr == obj);
 }
 
@@ -29,6 +30,8 @@ MCL_PRIVATE MclStatus MclLockObj_Init(MclLockObj *self) {
 	MCL_ASSERT_SUCC_CALL(MclRwLock_Init(&self->rwlock, NULL));
 	self->sentinel = MCL_LOCK_OBJ_SENTINEL;
 	self->ptr = (uint8_t*)self + MclLockObj_HeaderSize();
+
+//	MCL_LOG_DBG("lock obj init: self %p, ptr %p", self, self->ptr);
 	return MCL_SUCCESS;
 }
 

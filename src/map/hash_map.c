@@ -90,7 +90,7 @@ MclHashValue MclHashMap_Get(const MclHashMap *self, MclHashKey key) {
     const MclHashNode *node = MclHashMap_FindNode(self, key);
     if (!node) return NULL;
 
-    return node->value;
+    return MclHashNode_GetValue(node);
 }
 
 MclHashValue MclHashMap_Set(MclHashMap *self, MclHashKey key, MclHashValue value) {
@@ -100,7 +100,7 @@ MclHashValue MclHashMap_Set(MclHashMap *self, MclHashKey key, MclHashValue value
 
     MclHashNode *node = MclHashMap_FindNode(self, key);
     if (node) {
-    	MclHashValue oriValue = node->value;
+    	MclHashValue oriValue = MclHashNode_GetValue(node);
 		node->value = value;
     	return oriValue;
     }

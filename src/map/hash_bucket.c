@@ -45,7 +45,7 @@ MclHashNode* MclHashBucket_FindNode(const MclHashBucket *self, MclHashKey key) {
 
 	MclHashNode *node;
 	MCL_LINK_FOREACH(&self->nodes, MclHashNode, link, node) {
-		if (node->key == key) {
+		if (MclHashNode_GetKey(node) == key) {
 			return node;
 		}
 	}

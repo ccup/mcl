@@ -21,6 +21,7 @@ MCL_INLINE void MclHashNodeAllocator_Release(MclHashNodeAllocator *self, MclHash
 }
 
 extern MclHashNodeAllocator MCL_HASH_NODE_ALLOCATOR_DEFAULT;
+
 MclHashNodeAllocator* MclHashNodeAllocator_GetDefault();
 
 ///////////////////////////////////////////////////////////

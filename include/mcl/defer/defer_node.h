@@ -7,6 +7,8 @@
 
 MCL_STDC_BEGIN
 
+MCL_TYPE_DECL(MclDeferNodeAllocator);
+
 typedef void (*MclDeferFn)(void*);
 
 MCL_TYPE(MclDeferNode) {
@@ -20,6 +22,9 @@ MCL_INLINE void MclDeferNode_Exec(MclDeferNode *self) {
         self->func(self->ctxt);
     }
 }
+
+MclDeferNode* MclDeferNode_Create(MclDeferFn, void *ctxt, MclDeferNodeAllocator*);
+void MclDeferNode_Delete(MclDeferNode*, MclDeferNodeAllocator*);
 
 ///////////////////////////////////////////////////////////
 #define MCL_DEFER_NODE(FUNC, CTXT)      \

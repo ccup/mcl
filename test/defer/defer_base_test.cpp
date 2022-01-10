@@ -24,10 +24,10 @@ FIXTURE(DeferBaseTest) {
         ASSERT_EQ(0, v);
     };
 
-    TEST("should execute defer by calling exec explicitly") {
-        MclDefer defer = MCL_DEFER(defer);
+    TEST("should execute defer by add node and execute explicitly") {
+        MclDefer defer = MCL_DEFER(defer, NULL);
         MclDeferNode node = MCL_DEFER_NODE(decrease, &v);
-        MclDefer_Add(&defer, &node);
+        MclDefer_AddNode(&defer, &node);
 
         v++;
         ASSERT_EQ(1, v);

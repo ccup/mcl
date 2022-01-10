@@ -39,9 +39,9 @@ MCL_PRIVATE void MclLog_FormatPrintf(int level, const char* levelstr, const char
 		} else {
 #ifdef MCL_THREAD_ENABLED
 			MclThread tid = MclThread_GetId();
-			char threadName[MCL_LOG_THREAD_NAME_LEN] = {0};
-			MclThread_GetName(tid, threadName, MCL_LOG_THREAD_NAME_LEN);
-			printf("[%s:0x%lx] [%s:0x%x] %s:%u: %s\n", threadName, (uintptr_t)tid, levelstr, level, file, line, str);
+			char threadname[MCL_LOG_THREAD_NAME_LEN] = {0};
+			MclThread_GetName(tid, threadname, MCL_LOG_THREAD_NAME_LEN);
+			printf("[%s:0x%lx] [%s:0x%x] %s:%u: %s\n", threadname, (uintptr_t)tid, levelstr, level, file, line, str);
 #else
 			printf("[%s:0x%x] %s:%u: %s\n", levelstr, level, file, line, str);
 #endif

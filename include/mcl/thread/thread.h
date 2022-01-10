@@ -38,6 +38,11 @@ MCL_INLINE void MclThread_Yield() {
     sched_yield();
 }
 
+#ifndef MCL_OS_MAC
+extern int pthread_setname_np(pthread_t, const char*);
+extern int pthread_getname_np(pthread_t, char*, size_t);
+#endif
+
 MCL_INLINE MclStatus MclThread_SetName(MclThread self, const char *name) {
 #ifdef MCL_OS_MAC
 	return pthread_setname_np(name) ? MCL_FAILURE : MCL_SUCCESS;

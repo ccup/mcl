@@ -2,7 +2,7 @@
 #include "mcl/mem/malloc.h"
 #include "mcl/assert.h"
 
-static const uint16_t MCL_LINK_ARRAY_INDEX_INVALID = 0xFFFF;
+static const uint16_t MCL_LINK_ARRAY_INDEX_INVALID = MCL_UINT16_MAX;
 
 MCL_PRIVATE void MclLinkArray_InitLink(MclLinkArray *self) {
     uint16_t count = MclArray_GetCapacity(&self->array);

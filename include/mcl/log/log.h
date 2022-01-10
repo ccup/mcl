@@ -6,9 +6,7 @@
 ///////////////////////////////////////////////////////////
 #define MCL_LOG_TITLE(level, levelstr, fmt, ...) 		\
 do {													\
-	if (level & MCL_LOG_LEVELS) {						\
 		MCL_LOG_OUTPUT(level, levelstr, __FILE__, __LINE__, fmt, ##__VA_ARGS__);\
-	}													\
 } while(0)
 
 ///////////////////////////////////////////////////////////

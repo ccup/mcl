@@ -1,5 +1,4 @@
-file(GLOB_RECURSE SOURCES 
-  "*.c" "*.C")
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "*.c" "*.C")
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 

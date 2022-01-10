@@ -6,7 +6,7 @@ CPMAddPackage(
     GIT_TAG v1.0
 )
 
-file(GLOB_RECURSE SOURCES 
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
   "*.c" "*.C" "*.cc" "*.CC" "*.cpp" "*.CPP" "*.c++")
   
 if (ENABLE_THREAD)

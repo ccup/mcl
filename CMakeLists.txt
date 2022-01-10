@@ -10,17 +10,23 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
 endif()
 
 option(ENABLE_CUSTOMIZED   "Enable Cumtomize" OFF)
+option(ENABLE_THREAD       "Enable thread"    ON)
 option(ENABLE_EXAMPLE      "Build example"    ON)
 option(ENABLE_TEST         "Build tests"      ON)
-option(ENABLE_THREAD       "Build tests with thread" ON)
 option(ENABLE_ASON         "Enable AddressSanitizer" ON)
 option(ENABLE_TSAN         "Enable ThreadSanitizer" OFF)
 
+include(${PROJECT_SOURCE_DIR}/cmake/ENV.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/CPM.cmake)
 
 if(ENABLE_CUSTOMIZED)
     message(STATUS "Customized config enabled")
     add_definitions("-DMCL_CONFIG")
+endif()
+
+if(ENABLE_THREAD)
+    message(STATUS "Thread enabled")
+    add_definitions("-DMCL_THREAD_ENABLED")
 endif()
 
 if(ENABLE_ASON)

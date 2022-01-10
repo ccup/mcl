@@ -12,29 +12,17 @@ void MclLog_Output(int level, const char* levelstr, const char* file, unsigned i
 
 MCL_STDC_END
 
-#define MCL_LOG_OUTPUT(...)    MclLog_Output(__VA_ARGS__)
+#define MCL_LOG_OUTPUT(...)        MclLog_Output(__VA_ARGS__)
 
 #else
 
-#include "mcl/log/log_base_name.h"
-#include <stdio.h>
+#include "mcl/log/log_printf.h"
 
-#define MCL_LOG_PRINTF(level, levelstr, file, line, fmt, ...)	\
-do {															\
-	if (level == MCL_LOG_LEVEL_DEFAULT) {						\
-		printf(fmt, ##__VA_ARGS__);								\
-	} else {													\
-		printf("%s", MclLogLevel_GetColorFmt(level));			\
-		printf("[%s:0x%x] %s:%u: " #fmt "\n", levelstr, level, MclLogBaseName_GetFile(file), line, ##__VA_ARGS__);\
-		printf("%s", MclLogLevel_GetColorFmt(MCL_LOG_LEVEL_NONE));\
-	}															\
-} while(0)
+#define MCL_LOG_OUTPUT(...)        MclLog_Printf(__VA_ARGS__)
 
-#define MCL_LOG_OUTPUT(...)    MCL_LOG_PRINTF(__VA_ARGS__)
+/* Specify log output levels */
+#define MCL_LOG_OUTPUT_LEVELS      MCL_LOG_LEVEL_TOTAL
 
 #endif
-
-/* Specify max logout level */
-#define MCL_LOG_LEVELS MCL_LOG_LEVEL_TOTAL
 
 #endif

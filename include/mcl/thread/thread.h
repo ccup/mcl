@@ -42,6 +42,18 @@ MCL_INLINE uintptr_t MclThread_GetId() {
     return (uintptr_t)pthread_self();
 }
 
+MCL_INLINE MclStatus MclThread_SetName(MclThread thread, const char *name) {
+#ifdef MCL_OS_MAC
+	return pthread_setname_np(name) ? MCL_FAILURE : MCL_SUCCESS;
+#else
+    return pthread_setname_np(thread, name) ? MCL_FAILURE : MCL_SUCCESS;
+#endif
+}
+
+MCL_INLINE MclStatus MclThread_GetName(MclThread thread, char *name, size_t len) {
+    return pthread_getname_np(thread, name, len) ? MCL_FAILURE : MCL_SUCCESS;
+}
+
 MCL_STDC_END
 
 #endif

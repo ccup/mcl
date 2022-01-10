@@ -38,6 +38,10 @@ FIXTURE(SharedPtrReleaseTest) {
         obj = MCL_SHARED_PTR(Obj, {.x = 3, .y = 2}, Obj_Destruct, &releaseCount);
     }
 
+    ~SharedPtrReleaseTest() {
+    	MclSharedPtr_Delete(obj);
+    }
+
     AFTER {
         ASSERT_EQ(0, releaseCount);
     }

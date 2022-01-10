@@ -37,5 +37,7 @@ FIXTURE(FutureTest) {
 
         ASSERT_EQ(MCL_SUCCESS, status);
         ASSERT_EQ(MAX_COUNT - 1, *(int*)(value));
+
+        MclFuture_Delete(future);
     }
 };

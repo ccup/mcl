@@ -148,7 +148,7 @@ FIXTURE(HashMapTest) {
 		result = (Foo*)MclHashMap_Get(foos, 1);
 		ASSERT_TRUE(result == NULL);
 
-		Foo_Delete(result);
+		Foo_Delete(foo);
 	}
 
 	TEST("should remove elements from map")

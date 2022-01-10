@@ -13,7 +13,7 @@ typedef struct {
 	MclTimeSecDiff aggregatorIntervalSec;
 	MclTimeSecDiff entityIntervalSec;
 	MclTimeSecDiff isrIntervalSec;
-	MclTimeSecDiff IntervalSec;
+	MclTimeSecDiff intervalSec;
 	MclTimeSecDiff totalTimeSec;
 } ExampleConfig;
 
@@ -52,7 +52,7 @@ MCL_PRIVATE void ExampleThread_ConfigAggregator(ExampleThread *thread) {
 		MclConfigService_CreateAggregator(aggregatorId);
 		ExampleThread_Delay(thread->config->aggregatorIntervalSec);
 	}
-	ExampleThread_Delay(thread->config->IntervalSec);
+	ExampleThread_Delay(thread->config->intervalSec);
 	MCL_LOOP_FOREACH_INDEX(aggregatorId, thread->config->aggregatorCount) {
 		MclConfigService_DeleteAggregator(aggregatorId);
 		ExampleThread_Delay(thread->config->aggregatorIntervalSec);
@@ -64,7 +64,7 @@ MCL_PRIVATE void ExampleThread_ConfigEntity(ExampleThread *thread) {
 		MclConfigService_CreateEntity(entityId);
 		ExampleThread_Delay(thread->config->entityIntervalSec);
 	}
-	ExampleThread_Delay(thread->config->IntervalSec);
+	ExampleThread_Delay(thread->config->intervalSec);
 	MCL_LOOP_FOREACH_INDEX(entityId, thread->config->entityCount) {
 		MclConfigService_DeleteEntity(entityId);
 		ExampleThread_Delay(thread->config->entityIntervalSec);
@@ -77,7 +77,7 @@ MCL_PRIVATE void ExampleThread_ControlRelation(ExampleThread *thread) {
 		MclControlService_AddEntityToAggregator(entityId, aggregatorId);
 		ExampleThread_Delay(thread->config->entityIntervalSec);
 	}
-	ExampleThread_Delay(thread->config->IntervalSec);
+	ExampleThread_Delay(thread->config->intervalSec);
 	MCL_LOOP_FOREACH_INDEX(entityId, thread->config->entityCount) {
 		MclAggregatorId aggregatorId = entityId % thread->config->aggregatorCount;
 		MclControlService_RemoveEntityFromAggregator(entityId, aggregatorId);
@@ -90,7 +90,7 @@ MCL_PRIVATE void ExampleThread_ControlValue(ExampleThread *thread) {
 		MclControlService_DoubleEntity(entityId);
 		ExampleThread_Delay(thread->config->entityIntervalSec);
 	}
-	ExampleThread_Delay(thread->config->IntervalSec);
+	ExampleThread_Delay(thread->config->intervalSec);
 	MCL_LOOP_FOREACH_INDEX(aggregatorId, thread->config->aggregatorCount) {
 		MclControlService_DoubleEntitesInAggregator(aggregatorId);
 		ExampleThread_Delay(thread->config->aggregatorIntervalSec);
@@ -98,12 +98,12 @@ MCL_PRIVATE void ExampleThread_ControlValue(ExampleThread *thread) {
 }
 
 MCL_PRIVATE void ExampleThread_EventOnTimer(ExampleThread *thread) {
-	MCL_LOOP_FOREACH_STEP(i, thread->config->totalTimeSec, thread->config->IntervalSec) {
+	MCL_LOOP_FOREACH_STEP(i, thread->config->totalTimeSec, thread->config->intervalSec) {
 		MclEventService_On1sTimeout();
 		if ((i + 1) % 5 == 0) {
 			MclEventService_On5sTimeout();
 		}
-		ExampleThread_Delay(thread->config->IntervalSec);
+		ExampleThread_Delay(thread->config->intervalSec);
 	}
 }
 
@@ -119,7 +119,7 @@ MCL_PRIVATE void ExampleThread_QueryStatus(ExampleThread *thread) {
 		MclQueryService_QueryEntityCountIn(aggregatorId);
 		ExampleThread_Delay(thread->config->aggregatorIntervalSec);
 	}
-	ExampleThread_Delay(thread->config->IntervalSec);
+	ExampleThread_Delay(thread->config->intervalSec);
 	MCL_LOOP_FOREACH_INDEX(aggregatorId, thread->config->aggregatorCount) {
 		MclQueryService_QueryEntityCountIn(aggregatorId);
 		ExampleThread_Delay(thread->config->aggregatorIntervalSec);
@@ -131,22 +131,12 @@ MCL_PRIVATE void ExampleThread_QueryValue(ExampleThread *thread) {
 		MclQueryService_QueryValueOf(entityId);
 		ExampleThread_Delay(thread->config->entityIntervalSec);
 	}
-	ExampleThread_Delay(thread->config->IntervalSec);
+	ExampleThread_Delay(thread->config->intervalSec);
 	MCL_LOOP_FOREACH_INDEX(aggregatorId, thread->config->aggregatorCount) {
 		MclQueryService_QuerySumValueOf(aggregatorId);
 		ExampleThread_Delay(thread->config->aggregatorIntervalSec);
 	}
 }
-
-MCL_PRIVATE ExampleConfig normalConfig = {
-		.aggregatorCount = 4,
-		.entityCount = 16,
-		.aggregatorIntervalSec = 4,
-		.entityIntervalSec = 1,
-		.isrIntervalSec = 2,
-		.IntervalSec = 1,
-		.totalTimeSec = 32,
-};
 
 MCL_PRIVATE ExampleConfig fastConfig = {
 		.aggregatorCount = 4,
@@ -154,11 +144,21 @@ MCL_PRIVATE ExampleConfig fastConfig = {
 		.aggregatorIntervalSec = MCL_TIME_SEC_DIFF_INVALID,
 		.entityIntervalSec = MCL_TIME_SEC_DIFF_INVALID,
 		.isrIntervalSec = MCL_TIME_SEC_DIFF_INVALID,
-		.IntervalSec = MCL_TIME_SEC_DIFF_INVALID,
+		.intervalSec = MCL_TIME_SEC_DIFF_INVALID,
 		.totalTimeSec = MCL_TIME_SEC_DIFF_INVALID,
 };
 
-#define EXAMPLE_THREAD(NAME, EXECUTE) {.name = NAME, .execute = EXECUTE, .config = &fastConfig}
+MCL_PRIVATE ExampleConfig normalConfig = {
+		.aggregatorCount = 4,
+		.entityCount = 16,
+		.aggregatorIntervalSec = 4,
+		.entityIntervalSec = 1,
+		.isrIntervalSec = 2,
+		.intervalSec = 1,
+		.totalTimeSec = 32,
+};
+
+#define EXAMPLE_THREAD(NAME, EXECUTE) {.name = NAME, .execute = EXECUTE, .config = &normalConfig}
 
 MCL_PRIVATE ExampleThread exampleThreads[] = {
 		EXAMPLE_THREAD("AggCfg" , ExampleThread_ConfigAggregator),

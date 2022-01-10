@@ -31,6 +31,7 @@ void MclHashMap_Delete(MclHashMap *self, MclHashValueDestroy destroy) {
     MCL_ASSERT_VALID_PTR_VOID(self);
 
     MclHashMap_Clear(self, destroy);
+    MCL_FREE(self->buckets);
     MCL_FREE(self);
 }
 

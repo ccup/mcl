@@ -3,7 +3,7 @@
 #include "mcl/mem/allocator.h"
 
 namespace {
-	const long INVALID_DATA = 0xFFFFFFFF;
+	const long INVALID_DATA = MCL_UINT32_MAX;
 
     MclStatus DataVisitor_Sum(MclListData data, void *arg) {
         auto v = (long)data;

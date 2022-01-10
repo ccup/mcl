@@ -7,7 +7,7 @@ MCL_STDC_BEGIN
 
 typedef uint32_t MclEntityId;
 
-static const MclEntityId MCL_ENTITY_ID_INVALID = 0xFFFFFFFF;
+static const MclEntityId MCL_ENTITY_ID_INVALID = MCL_UINT32_MAX;
 
 MCL_INLINE bool MclEntityId_IsValid(MclEntityId self) {
 	return self != MCL_ENTITY_ID_INVALID;

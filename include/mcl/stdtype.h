@@ -7,4 +7,9 @@
 #include <stdbool.h>
 #include <string.h>
 
+static const uint32_t MCL_UINT8_MAX  = 0xFF;
+static const uint32_t MCL_UINT16_MAX = 0xFFFF;
+static const uint32_t MCL_UINT32_MAX = 0xFFFFFFFF;
+static const uint64_t MCL_UINT64_MAX = 0xFFFFFFFFFFFFFFFF;
+
 #endif

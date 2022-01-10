@@ -14,32 +14,32 @@ typedef pthread_rwlockattr_t MclRwLockAttr;
 
 #define MCL_RWLOCK()            PTHREAD_RWLOCK_INITIALIZER
 
-MCL_INLINE MclStatus MclRwLock_Init(MclRwLock *rwlock, const MclRwLockAttr *attr) {
-    return pthread_rwlock_init(rwlock, attr) ?  MCL_FAILURE : MCL_SUCCESS;
+MCL_INLINE MclStatus MclRwLock_Init(MclRwLock *self, const MclRwLockAttr *attr) {
+    return pthread_rwlock_init(self, attr) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus MclRwLock_Destroy(MclRwLock *rwlock) {
-    return pthread_rwlock_destroy(rwlock) ?  MCL_FAILURE : MCL_SUCCESS;
+MCL_INLINE MclStatus MclRwLock_Destroy(MclRwLock *self) {
+    return pthread_rwlock_destroy(self) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus MclRwLock_RdLock(MclRwLock *rwlock) {
-    return pthread_rwlock_rdlock(rwlock) ?  MCL_FAILURE : MCL_SUCCESS;
+MCL_INLINE MclStatus MclRwLock_RdLock(MclRwLock *self) {
+    return pthread_rwlock_rdlock(self) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus MclRwLock_TryRdLock(MclRwLock *rwlock) {
-    return pthread_rwlock_tryrdlock(rwlock) ?  MCL_FAILURE : MCL_SUCCESS;
+MCL_INLINE MclStatus MclRwLock_TryRdLock(MclRwLock *self) {
+    return pthread_rwlock_tryrdlock(self) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus MclRwLock_WrLock(MclRwLock *rwlock) {
-    return pthread_rwlock_wrlock(rwlock) ?  MCL_FAILURE : MCL_SUCCESS;
+MCL_INLINE MclStatus MclRwLock_WrLock(MclRwLock *self) {
+    return pthread_rwlock_wrlock(self) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus MclRwLock_TryWrLock(MclRwLock *rwlock) {
-    return pthread_rwlock_trywrlock(rwlock) ?  MCL_FAILURE : MCL_SUCCESS;
+MCL_INLINE MclStatus MclRwLock_TryWrLock(MclRwLock *self) {
+    return pthread_rwlock_trywrlock(self) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus MclRwLock_UnLock(MclRwLock *rwlock) {
-    return pthread_rwlock_unlock(rwlock) ?  MCL_FAILURE : MCL_SUCCESS;
+MCL_INLINE MclStatus MclRwLock_UnLock(MclRwLock *self) {
+    return pthread_rwlock_unlock(self) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////

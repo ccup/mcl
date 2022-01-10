@@ -23,28 +23,28 @@ MCL_INLINE MclStatus MclCond_SetAttrPShared(MclCondAttr *attr, int pshared) {
 	return pthread_condattr_setpshared(attr, pshared) ? MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus MclCond_Init(MclCond *cond, const MclCondAttr *attr) {
-	return pthread_cond_init(cond, attr) ? MCL_FAILURE : MCL_SUCCESS;
+MCL_INLINE MclStatus MclCond_Init(MclCond *self, const MclCondAttr *attr) {
+	return pthread_cond_init(self, attr) ? MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus MclCond_Destroy(MclCond *cond) {
-	return pthread_cond_destroy(cond) ? MCL_FAILURE : MCL_SUCCESS;
+MCL_INLINE MclStatus MclCond_Destroy(MclCond *self) {
+	return pthread_cond_destroy(self) ? MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus MclCond_Signal(MclCond *cond) {
-	return pthread_cond_signal(cond) ? MCL_FAILURE : MCL_SUCCESS;
+MCL_INLINE MclStatus MclCond_Signal(MclCond *self) {
+	return pthread_cond_signal(self) ? MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus MclCond_Broadcast(MclCond *cond) {
-	return pthread_cond_broadcast(cond) ? MCL_FAILURE : MCL_SUCCESS;
+MCL_INLINE MclStatus MclCond_Broadcast(MclCond *self) {
+	return pthread_cond_broadcast(self) ? MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus MclCond_Wait(MclCond *cond, MclMutex *mutex) {
-	return pthread_cond_wait(cond, mutex) ? MCL_FAILURE : MCL_SUCCESS;
+MCL_INLINE MclStatus MclCond_Wait(MclCond *self, MclMutex *mutex) {
+	return pthread_cond_wait(self, mutex) ? MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus MclCond_TimedWait(MclCond *cond, MclMutex *mutex, MclCondTimeSpec *abstime) {
-	return pthread_cond_timedwait(cond, mutex, abstime) ? MCL_FAILURE : MCL_SUCCESS;
+MCL_INLINE MclStatus MclCond_TimedWait(MclCond *self, MclMutex *mutex, MclCondTimeSpec *abstime) {
+	return pthread_cond_timedwait(self, mutex, abstime) ? MCL_FAILURE : MCL_SUCCESS;
 }
 
 MCL_STDC_END

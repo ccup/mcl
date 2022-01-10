@@ -10,8 +10,8 @@
 #define __MCL_EXCEPTION_PARA2  (__logpara2)
 
 #define MCL_NONE_EXCEPTION_CODE MCL_SUCCESS
-#define MCL_NONE_EXCEPTION_LINE 0xFFFFFFFF
-#define MCL_NONE_EXCEPTION_PARA 0xFFFFFFFF
+#define MCL_NONE_EXCEPTION_LINE MCL_UINT32_MAX
+#define MCL_NONE_EXCEPTION_PARA MCL_UINT32_MAX
 
 #define __MCL_EXCEPT_PROC()                  	\
     {                               			\

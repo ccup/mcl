@@ -2,170 +2,193 @@
 #include "mcl/service/mcl_control_service.h"
 #include "mcl/service/mcl_event_service.h"
 #include "mcl/service/mcl_query_service.h"
+#include "mcl/array/array_size.h"
 #include "mcl/thread/thread.h"
-#include <unistd.h>
+#include "mcl/time/time.h"
+#include "mcl/algo/loop.h"
 
-const static size_t ENTITY_COUNT = 16;
-const static size_t AGGREGATOR_COUNT = 4;
-const static size_t TIME_COUNT = ENTITY_COUNT * 2 + AGGREGATOR_COUNT;
+typedef struct {
+	size_t aggregatorCount;
+	size_t entityCount;
+	MclTimeSecDiff aggregatorIntervalSec;
+	MclTimeSecDiff entityIntervalSec;
+	MclTimeSecDiff isrIntervalSec;
+	MclTimeSecDiff IntervalSec;
+	MclTimeSecDiff totalTimeSec;
+} ExampleConfig;
 
-//#define SCHEDULE_DELAY(N) sleep(N)
-#define SCHEDULE_DELAY(N) MclThread_Yield()
+MCL_TYPE(ExampleThread) {
+	const char *name;
+	MclThread thread;
+	void (*execute)(ExampleThread*);
+	ExampleConfig *config;
+};
 
-MCL_PRIVATE void* RunAggregatorConfigService(void *data) {
-	MCL_LOG_INFO("MCL Example Aggregator Config Service Start...");
+MCL_PRIVATE void Example_Thread_WaitDone(ExampleThread *self) {
+	MCL_ASSERT_SUCC_CALL_VOID(MclThread_Join(self->thread, NULL));
+}
 
-	for (MclAggregatorId aggregatorId = 0; aggregatorId< AGGREGATOR_COUNT; aggregatorId++) {
+MCL_PRIVATE void* ExampleThread_Execute(void *data) {
+	ExampleThread *thread = (ExampleThread*)data;
+
+	MCL_LOG_INFO("Thread %s enter!", thread->name);
+	MCL_ASSERT_SUCC_CALL_NIL(MclThread_SetName(thread->thread, thread->name));
+	thread->execute(thread);
+	MCL_LOG_INFO("Thread %s exit!", thread->name);
+	return NULL;
+}
+
+MCL_PRIVATE MclStatus ExampleThread_Lanuch(ExampleThread* thread) {
+	MCL_ASSERT_SUCC_CALL(MclThread_Create(&thread->thread, NULL, ExampleThread_Execute, thread));
+	return MCL_SUCCESS;
+};
+
+MCL_PRIVATE void ExampleThread_Delay(MclTimeSecDiff sec) {
+	MclTimeSec_Delay(sec);
+}
+
+MCL_PRIVATE void ExampleThread_ConfigAggregator(ExampleThread *thread) {
+	MCL_LOOP_FOREACH_INDEX(aggregatorId, thread->config->aggregatorCount) {
 		MclConfigService_CreateAggregator(aggregatorId);
-		SCHEDULE_DELAY(4);
+		ExampleThread_Delay(thread->config->aggregatorIntervalSec);
 	}
-
-	SCHEDULE_DELAY(1);
-
-	for (MclAggregatorId aggregatorId = 0; aggregatorId< AGGREGATOR_COUNT; aggregatorId++) {
+	ExampleThread_Delay(thread->config->IntervalSec);
+	MCL_LOOP_FOREACH_INDEX(aggregatorId, thread->config->aggregatorCount) {
 		MclConfigService_DeleteAggregator(aggregatorId);
-		SCHEDULE_DELAY(4);
+		ExampleThread_Delay(thread->config->aggregatorIntervalSec);
 	}
-
-	MCL_LOG_INFO("MCL Example Aggregator Config Service Exit!");
-	return NULL;
 }
 
-MCL_PRIVATE void* RunEntityConfigService(void *data) {
-	MCL_LOG_INFO("MCL Example Entity Config Service Start...");
-
-	for (MclEntityId aggregatorId = 0; aggregatorId< ENTITY_COUNT; aggregatorId++) {
-		MclConfigService_CreateEntity(aggregatorId);
-		SCHEDULE_DELAY(1);
+MCL_PRIVATE void ExampleThread_ConfigEntity(ExampleThread *thread) {
+	MCL_LOOP_FOREACH_INDEX(entityId, thread->config->entityCount) {
+		MclConfigService_CreateEntity(entityId);
+		ExampleThread_Delay(thread->config->entityIntervalSec);
 	}
-
-	SCHEDULE_DELAY(1);
-
-	for (MclEntityId aggregatorId = 0; aggregatorId< ENTITY_COUNT; aggregatorId++) {
-		MclConfigService_DeleteEntity(aggregatorId);
-		SCHEDULE_DELAY(1);
+	ExampleThread_Delay(thread->config->IntervalSec);
+	MCL_LOOP_FOREACH_INDEX(entityId, thread->config->entityCount) {
+		MclConfigService_DeleteEntity(entityId);
+		ExampleThread_Delay(thread->config->entityIntervalSec);
 	}
-
-	MCL_LOG_INFO("MCL Example Entity Config Service Exit!");
-	return NULL;
 }
 
-MCL_PRIVATE void* RunRelationControlService(void *data) {
-	MCL_LOG_INFO("MCL Example Releation Control Service Start...");
-
-	for (MclAggregatorId aggregatorId = 0; aggregatorId< AGGREGATOR_COUNT; aggregatorId++) {
-		MclEntityId entityId = aggregatorId * 4;
+MCL_PRIVATE void ExampleThread_ControlRelation(ExampleThread *thread) {
+	MCL_LOOP_FOREACH_INDEX(entityId, thread->config->entityCount) {
+		MclAggregatorId aggregatorId = entityId % thread->config->aggregatorCount;
 		MclControlService_AddEntityToAggregator(entityId, aggregatorId);
-		SCHEDULE_DELAY(1);
+		ExampleThread_Delay(thread->config->entityIntervalSec);
 	}
-
-	SCHEDULE_DELAY(1);
-
-	for (MclAggregatorId aggregatorId = 0; aggregatorId< AGGREGATOR_COUNT; aggregatorId++) {
-		MclEntityId entityId = aggregatorId * 4;
+	ExampleThread_Delay(thread->config->IntervalSec);
+	MCL_LOOP_FOREACH_INDEX(entityId, thread->config->entityCount) {
+		MclAggregatorId aggregatorId = entityId % thread->config->aggregatorCount;
 		MclControlService_RemoveEntityFromAggregator(entityId, aggregatorId);
-		SCHEDULE_DELAY(1);
+		ExampleThread_Delay(thread->config->entityIntervalSec);
 	}
-
-	MCL_LOG_INFO("MCL Example Releation Control Service Exit!");
-	return NULL;
 }
 
-MCL_PRIVATE void* RunValueControlService(void *data) {
-	MCL_LOG_INFO("MCL Example Value Control Service Start...");
-
-	for (MclAggregatorId aggregatorId = 0; aggregatorId< AGGREGATOR_COUNT; aggregatorId++) {
-		MclEntityId entityId = aggregatorId * 4;
-		MclControlService_DoubleEntitesInAggregator(aggregatorId);
+MCL_PRIVATE void ExampleThread_ControlValue(ExampleThread *thread) {
+	MCL_LOOP_FOREACH_INDEX(entityId, thread->config->entityCount) {
 		MclControlService_DoubleEntity(entityId);
-		SCHEDULE_DELAY(1);
+		ExampleThread_Delay(thread->config->entityIntervalSec);
 	}
-
-	MCL_LOG_INFO("MCL Example Value Control Service Exit!");
-	return NULL;
+	ExampleThread_Delay(thread->config->IntervalSec);
+	MCL_LOOP_FOREACH_INDEX(aggregatorId, thread->config->aggregatorCount) {
+		MclControlService_DoubleEntitesInAggregator(aggregatorId);
+		ExampleThread_Delay(thread->config->aggregatorIntervalSec);
+	}
 }
 
-MCL_PRIVATE void* RunTimerService(void *data) {
-	MCL_LOG_INFO("MCL Example Timer Service Start...");
-
-	for (uint32_t i = 0; i < TIME_COUNT; i++) {
+MCL_PRIVATE void ExampleThread_EventOnTimer(ExampleThread *thread) {
+	MCL_LOOP_FOREACH_STEP(i, thread->config->totalTimeSec, thread->config->IntervalSec) {
 		MclEventService_On1sTimeout();
 		if ((i + 1) % 5 == 0) {
 			MclEventService_On5sTimeout();
 		}
-		SCHEDULE_DELAY(1);
+		ExampleThread_Delay(thread->config->IntervalSec);
 	}
-
-	MCL_LOG_INFO("MCL Example Timer Service Exit!");
-	return NULL;
 }
 
-MCL_PRIVATE void* RunIsrService(void *data) {
-	MCL_LOG_INFO("MCL Example ISR Service Start...");
-
-	for (uint32_t i = 0; i < TIME_COUNT; i++) {
+MCL_PRIVATE void ExampleThread_EventOnIsr(ExampleThread *thread) {
+	MCL_LOOP_FOREACH_STEP(i, thread->config->totalTimeSec, thread->config->isrIntervalSec) {
 		MclEventService_OnDoubleIsr();
-		SCHEDULE_DELAY(1);
+		ExampleThread_Delay(thread->config->isrIntervalSec);
 	}
-
-	MCL_LOG_INFO("MCL Example ISR Service Exit!");
-	return NULL;
 }
 
-MCL_PRIVATE void* RunStatusQueryService(void *data) {
-	MCL_LOG_INFO("MCL Example Status Query Service Start...");
-
-	for (MclAggregatorId aggregatorId = 0; aggregatorId< AGGREGATOR_COUNT; aggregatorId++) {
+MCL_PRIVATE void ExampleThread_QueryStatus(ExampleThread *thread) {
+	MCL_LOOP_FOREACH_INDEX(aggregatorId, thread->config->aggregatorCount) {
 		MclQueryService_QueryEntityCountIn(aggregatorId);
-		SCHEDULE_DELAY(8);
+		ExampleThread_Delay(thread->config->aggregatorIntervalSec);
 	}
-
-	MCL_LOG_INFO("MCL Example Status Query Service Exit!");
-	return NULL;
+	ExampleThread_Delay(thread->config->IntervalSec);
+	MCL_LOOP_FOREACH_INDEX(aggregatorId, thread->config->aggregatorCount) {
+		MclQueryService_QueryEntityCountIn(aggregatorId);
+		ExampleThread_Delay(thread->config->aggregatorIntervalSec);
+	}
 }
 
-MCL_PRIVATE void* RunValueQueryService(void *data) {
-	MCL_LOG_INFO("MCL Example Value Query Service Start...");
-
-	for (MclAggregatorId aggregatorId = 0; aggregatorId< AGGREGATOR_COUNT; aggregatorId++) {
-		MclEntityId entityId = aggregatorId * 4;
-		MclQueryService_QuerySumValueOf(aggregatorId);
+MCL_PRIVATE void ExampleThread_QueryValue(ExampleThread *thread) {
+	MCL_LOOP_FOREACH_INDEX(entityId, thread->config->entityCount) {
 		MclQueryService_QueryValueOf(entityId);
-		SCHEDULE_DELAY(2);
+		ExampleThread_Delay(thread->config->entityIntervalSec);
 	}
-
-	MCL_LOG_INFO("MCL Example Value Query Service Exit!");
-	return NULL;
+	ExampleThread_Delay(thread->config->IntervalSec);
+	MCL_LOOP_FOREACH_INDEX(aggregatorId, thread->config->aggregatorCount) {
+		MclQueryService_QuerySumValueOf(aggregatorId);
+		ExampleThread_Delay(thread->config->aggregatorIntervalSec);
+	}
 }
 
-MCL_PRIVATE MclThread StartThread(void*(*run)(void*)) {
-	MclThread thread;
-	MclThread_Create(&thread, NULL, run, NULL);
-	return thread;
+MCL_PRIVATE ExampleConfig normalConfig = {
+		.aggregatorCount = 4,
+		.entityCount = 16,
+		.aggregatorIntervalSec = 4,
+		.entityIntervalSec = 1,
+		.isrIntervalSec = 2,
+		.IntervalSec = 1,
+		.totalTimeSec = 32,
+};
+
+MCL_PRIVATE ExampleConfig fastConfig = {
+		.aggregatorCount = 4,
+		.entityCount = 16,
+		.aggregatorIntervalSec = MCL_TIME_SEC_DIFF_INVALID,
+		.entityIntervalSec = MCL_TIME_SEC_DIFF_INVALID,
+		.isrIntervalSec = MCL_TIME_SEC_DIFF_INVALID,
+		.IntervalSec = MCL_TIME_SEC_DIFF_INVALID,
+		.totalTimeSec = MCL_TIME_SEC_DIFF_INVALID,
+};
+
+#define EXAMPLE_THREAD(NAME, EXECUTE) {.name = NAME, .execute = EXECUTE, .config = &fastConfig}
+
+MCL_PRIVATE ExampleThread exampleThreads[] = {
+		EXAMPLE_THREAD("aggregator config", ExampleThread_ConfigAggregator),
+		EXAMPLE_THREAD("entity config"    , ExampleThread_ConfigEntity),
+		EXAMPLE_THREAD("relation control" , ExampleThread_ControlRelation),
+		EXAMPLE_THREAD("value control"    , ExampleThread_ControlValue),
+		EXAMPLE_THREAD("timer event"      , ExampleThread_EventOnTimer),
+		EXAMPLE_THREAD("isr event"        , ExampleThread_EventOnIsr),
+		EXAMPLE_THREAD("status query"     , ExampleThread_QueryStatus),
+		EXAMPLE_THREAD("value query"      , ExampleThread_QueryValue),
+};
+
+MCL_PRIVATE MclStatus ExampleThreads_Launch() {
+	MCL_LOG_INFO("Mcl Example threads launch...");
+	MCL_LOOP_FOREACH_INDEX(i, MCL_ARRAY_SIZE(exampleThreads)) {
+		MCL_ASSERT_SUCC_CALL(ExampleThread_Lanuch(&exampleThreads[i]));
+	}
+	return MCL_SUCCESS;
+}
+
+MCL_PRIVATE void ExampleThreads_WaitDone() {
+	MCL_LOOP_FOREACH_INDEX(i, MCL_ARRAY_SIZE(exampleThreads)) {
+		Example_Thread_WaitDone(&exampleThreads[i]);
+	}
+	MCL_LOG_SUCC("Mcl Example threads done!!!");
 }
 
 int main() {
-	MCL_LOG_INFO("MCL Example Start...");
-
-	MclThread aggregatorConfigThread = StartThread(RunAggregatorConfigService);
-	MclThread entityConfigThread     = StartThread(RunEntityConfigService);
-	MclThread releationControlThread = StartThread(RunRelationControlService);
-	MclThread valueControlThread     = StartThread(RunValueControlService);
-	MclThread timerThread            = StartThread(RunTimerService);
-	MclThread isrThread              = StartThread(RunIsrService);
-	MclThread statusQueryThread      = StartThread(RunStatusQueryService);
-	MclThread valueQueryThread       = StartThread(RunValueQueryService);
-
-	MclThread_Join(aggregatorConfigThread, NULL);
-	MclThread_Join(entityConfigThread,     NULL);
-	MclThread_Join(releationControlThread, NULL);
-	MclThread_Join(valueControlThread,     NULL);
-	MclThread_Join(timerThread,       NULL);
-	MclThread_Join(isrThread,         NULL);
-	MclThread_Join(statusQueryThread, NULL);
-	MclThread_Join(valueQueryThread,  NULL);
-
-	MCL_LOG_INFO("Mcl Example Exit!");
-	return MCL_SUCCESS;
+	MCL_ASSERT_SUCC_CALL(ExampleThreads_Launch());
+	ExampleThreads_WaitDone();
+	return 0;
 }
 

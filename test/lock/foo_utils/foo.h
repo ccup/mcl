@@ -6,7 +6,7 @@
 
 using FooId = uint32_t;
 
-constexpr FooId FOO_ID_INVALID = 0xFFFFFFFF;
+constexpr FooId FOO_ID_INVALID = MCL_UINT32_MAX;
 
 struct Foo {
 	static MclAtom FOO_COUNT;

@@ -30,39 +30,39 @@ MCL_INLINE MclStatus MclMutex_SetAttrType(MclMutexAttr *attr, int type) {
     return pthread_mutexattr_settype(attr, type) ? MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus MclMutex_Init(MclMutex *mutex, const MclMutexAttr *attr) {
-    return pthread_mutex_init(mutex, attr) ?  MCL_FAILURE : MCL_SUCCESS;
+MCL_INLINE MclStatus MclMutex_Init(MclMutex *self, const MclMutexAttr *attr) {
+    return pthread_mutex_init(self, attr) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus MclMutex_Destroy(MclMutex *mutex) {
-    return pthread_mutex_destroy(mutex) ?  MCL_FAILURE : MCL_SUCCESS;
+MCL_INLINE MclStatus MclMutex_Destroy(MclMutex *self) {
+    return pthread_mutex_destroy(self) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus MclMutex_InitRecursive(MclMutex *mutex) {
+MCL_INLINE MclStatus MclMutex_InitRecursive(MclMutex *self) {
     MclMutexAttr attr;
     MCL_ASSERT_SUCC_CALL(MclMutex_InitAttr(&attr));
     MCL_ASSERT_SUCC_CALL(MclMutex_SetAttrType(&attr, PTHREAD_MUTEX_RECURSIVE));
-    return pthread_mutex_init(mutex, &attr) ?  MCL_FAILURE : MCL_SUCCESS;
+    return pthread_mutex_init(self, &attr) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus MclMutex_Lock(MclMutex *mutex) {
-    int ret = pthread_mutex_lock(mutex);
+MCL_INLINE MclStatus MclMutex_Lock(MclMutex *self) {
+    int ret = pthread_mutex_lock(self);
     if (ret) {
         MCL_LOG_ERR("pthread_mutex_lock fail %d!", ret);
     }
     return ret ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus MclMutex_UnLock(MclMutex *mutex) {
-    int ret = pthread_mutex_unlock(mutex);
+MCL_INLINE MclStatus MclMutex_UnLock(MclMutex *self) {
+    int ret = pthread_mutex_unlock(self);
     if (ret) {
         MCL_LOG_ERR("pthread_mutex_unlock fail %d!", ret);
     }
     return ret ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
-MCL_INLINE MclStatus MclMutex_TryLock(MclMutex *mutex) {
-    return pthread_mutex_trylock(mutex) ?  MCL_FAILURE : MCL_SUCCESS;
+MCL_INLINE MclStatus MclMutex_TryLock(MclMutex *self) {
+    return pthread_mutex_trylock(self) ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////

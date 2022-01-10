@@ -5,6 +5,7 @@
 
 #define MCL_CONFIG_LOG
 #define MCL_CONFIG_MEM
+#define MCL_CONFIG_TIME
 
 #endif
 

@@ -7,7 +7,7 @@ MCL_STDC_BEGIN
 
 typedef uint64_t MclHashKey;
 
-static const MclHashKey MCL_HASH_KEY_INVALID = 0xFFFFFFFFFFFFFFFF;
+static const MclHashKey MCL_HASH_KEY_INVALID = MCL_UINT64_MAX;
 
 MCL_INLINE bool MclHashKey_IsValid(MclHashKey self) {
 	return self != MCL_HASH_KEY_INVALID;

@@ -2,7 +2,7 @@
 #include "mcl/task/task_scheduler.h"
 #include "task/task_utils/demo_task.h"
 
-FIXTURE(SchedulerTest)
+FIXTURE(TaskSchedulerTest)
 {
 	static constexpr uint32_t TASK_COUNT{10};
 
@@ -12,7 +12,7 @@ FIXTURE(SchedulerTest)
 
 	uint32_t slowTaskPauseTime{1};
 
-	SchedulerTest() {
+	TaskSchedulerTest() {
 		initTasks();
 	}
 

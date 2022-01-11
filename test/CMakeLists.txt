@@ -22,6 +22,7 @@ else()
             ${CMAKE_CURRENT_SOURCE_DIR}/msg/msg_queue_thread_test.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/ringbuff/ringbuff_thread_test.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/task/task_scheduler_test.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/thread/thread_launcher_test.cpp
     )
     list(REMOVE_ITEM SOURCES ${TASK_SOURCES})
     message(STATUS "Thread tests disabled, removed tests in sources : ${TASK_SOURCES}!")

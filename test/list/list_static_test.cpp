@@ -64,7 +64,7 @@ FIXTURE(ListStaticTest)
 
 		MclList_FindAllByPred(&list, DataPred_IsLargerThan, (MclListData)2, &result);
 
-		ASSERT_EQ(2, MclList_GetCount(&result));
+		ASSERT_EQ(2, MclList_GetSize(&result));
 
 		auto firstNode = MclList_GetFirst(&result);
 		ASSERT_EQ(3, (long)MclListNode_GetData(firstNode));
@@ -84,7 +84,7 @@ FIXTURE(ListStaticTest)
 
         ASSERT_EQ(2, MclList_RemoveAllByPred(&list, DataPred_IsLargerThan, (MclListData)2, NULL));
 
-        ASSERT_EQ(2, MclList_GetCount(&list));
+        ASSERT_EQ(2, MclList_GetSize(&list));
 
         auto firstNode = MclList_GetFirst(&list);
         ASSERT_EQ(1, (long)MclListNode_GetData(firstNode));

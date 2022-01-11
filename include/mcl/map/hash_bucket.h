@@ -21,7 +21,7 @@ MclHashValue MclHashBucket_FindByPred(const MclHashBucket*, MclHashNodePred, voi
 MclHashValue MclHashBucket_Remove(MclHashBucket*, MclHashKey, MclHashNodeAllocator*);
 MclHashValue MclHashBucket_RemoveByPred(MclHashBucket*, MclHashNodePred, void*, MclHashNodeAllocator*);
 
-uint32_t MclHashBucket_RemoveAllByPred(MclHashBucket*, MclHashNodePred, void*, MclHashNodeAllocator*, MclHashValueDestroy);
+size_t MclHashBucket_RemoveAllByPred(MclHashBucket*, MclHashNodePred, void*, MclHashNodeAllocator*, MclHashValueDestroy);
 
 MclStatus MclHashBucket_Accept(const MclHashBucket*, MclHashNodeVisit, void*);
 

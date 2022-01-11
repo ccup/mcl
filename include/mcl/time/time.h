@@ -12,7 +12,7 @@ MCL_INLINE MclTimeSec MclTimeSec_GetNow() {
 }
 
 MCL_INLINE void MclTimeSec_Delay(MclTimeSecDiff diff) {
-	MclTimeSecDiff_IsValid(diff) ? (void)MCL_TIME_SEC_DELAY(diff) : MclThread_Yield();
+	MCL_TIME_SEC_DELAY(diff);
 }
 
 MCL_INLINE MclTimeMs MclTimeMs_GetNow() {
@@ -20,7 +20,7 @@ MCL_INLINE MclTimeMs MclTimeMs_GetNow() {
 }
 
 MCL_INLINE void MclTimeMs_Delay(MclTimeMsDiff diff) {
-	MclTimeMsDiff_IsValid(diff) ? (void)MCL_TIME_MS_DELAY(diff) : MclThread_Yield();
+	MCL_TIME_MS_DELAY(diff);
 }
 
 MCL_INLINE MclTimeUs MclTimeUs_GetNow() {
@@ -28,7 +28,7 @@ MCL_INLINE MclTimeUs MclTimeUs_GetNow() {
 }
 
 MCL_INLINE void MclTimeUs_Delay(MclTimeUsDiff diff) {
-	MclTimeUsDiff_IsValid(diff) ? (void)MCL_TIME_US_DELAY(diff) : MclThread_Yield();
+	MCL_TIME_US_DELAY(diff);
 }
 
 MCL_INLINE MclTimeNs MclTimeNs_GetNow() {
@@ -36,7 +36,7 @@ MCL_INLINE MclTimeNs MclTimeNs_GetNow() {
 }
 
 MCL_INLINE void MclTimeNs_Delay(MclTimeNsDiff diff) {
-	MclTimeNsDiff_IsValid(diff) ? (void)MCL_TIME_NS_DELAY(diff) : MclThread_Yield();
+	MCL_TIME_NS_DELAY(diff);
 }
 
 MCL_STDC_END

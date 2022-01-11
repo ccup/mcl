@@ -59,9 +59,9 @@ bool MclEntityList_IsEmpty(const MclEntityList *self) {
 	return MclList_IsEmpty(self);
 }
 
-size_t MclEntityList_GetCount(const MclEntityList *self) {
+size_t MclEntityList_GetSize(const MclEntityList *self) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
-	return MclList_GetCount(self);
+	return MclList_GetSize(self);
 }
 
 MclStatus MclEntityList_Accept(const MclEntityList *self, MclEntityListElemVisit visit, void *arg) {

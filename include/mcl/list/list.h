@@ -7,9 +7,9 @@
 MCL_STDC_BEGIN
 
 MCL_TYPE(MclList) {
-	MCL_LINK(MclListNode) nodes;
-	uint32_t count;
     MclListNodeAllocator *allocator;
+	MCL_LINK(MclListNode) nodes;
+	size_t size;
 };
 
 MclList* MclList_CreateDefault();
@@ -44,7 +44,7 @@ MclListData MclList_RemoveFirst(MclList*);
 MclListData MclList_RemoveLast(MclList*);
 MclListData MclList_RemoveByPred(MclList*, MclListDataPred, void*);
 
-uint32_t MclList_RemoveAllByPred(MclList *, MclListDataPred, void*, MclListDataDestroy);
+size_t MclList_RemoveAllByPred(MclList *, MclListDataPred, void*, MclListDataDestroy);
 
 MclListData  MclList_FindByPred(const MclList*, MclListDataPred, void*);
 void MclList_FindAllByPred(const MclList*, MclListDataPred, void*, MclList *result);
@@ -52,12 +52,12 @@ void MclList_FindAllByPred(const MclList*, MclListDataPred, void*, MclList *resu
 MclStatus MclList_Accept(const MclList*, MclListDataVisit, void*);
 
 ///////////////////////////////////////////////////////////////
-MCL_INLINE uint32_t MclList_GetCount(const MclList *self) {
-	return self ? self->count : 0;
+MCL_INLINE size_t MclList_GetSize(const MclList *self) {
+	return self ? self->size : 0;
 }
 
 MCL_INLINE bool MclList_IsEmpty(const MclList *self) {
-	return MclList_GetCount(self) == 0;
+	return MclList_GetSize(self) == 0;
 }
 
 MCL_INLINE MclListNode* MclList_GetFirst(MclList *self) {
@@ -108,7 +108,7 @@ MCL_INLINE MclListNode* MclList_GetPrevOf(MclList *self, MclListNode *node) {
 
 /////////////////////////////////////////////////////////////////
 #define MCL_LIST(LIST, ALLOCATOR)   							\
-	{.nodes = MCL_LINK_INITIALIZER(&(LIST).nodes, MclListNode, link), .count = 0, .allocator = (ALLOCATOR)}
+	{.allocator = (ALLOCATOR), .nodes = MCL_LINK_INITIALIZER(&(LIST).nodes, MclListNode, link), .size = 0}
 
 #define MCL_LIST_DEFAULT(LIST) MCL_LIST(LIST, &MCL_LIST_NODE_ALLOCATOR_DEFAULT)
 

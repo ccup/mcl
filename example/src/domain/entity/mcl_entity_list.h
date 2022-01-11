@@ -26,7 +26,7 @@ typedef bool (*MclEntityListElemPred)(const MclEntity*, void*);
 MclEntity* MclEntityList_FindByPred(const MclEntityList*, MclEntityListElemPred, void*);
 
 bool   MclEntityList_IsEmpty(const MclEntityList*);
-size_t MclEntityList_GetCount(const MclEntityList*);
+size_t MclEntityList_GetSize(const MclEntityList*);
 
 typedef MclStatus (*MclEntityListElemVisit)(MclEntity*, void*);
 MclStatus MclEntityList_Accept(const MclEntityList*, MclEntityListElemVisit, void*);

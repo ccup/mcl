@@ -41,10 +41,10 @@ MCL_STDC_BEGIN
 #define MCL_TIME_US_NOW()  MCL_TIME_US_INVALID
 #define MCL_TIME_NS_NOW()  MCL_TIME_NS_INVALID
 
-#define MCL_TIME_SEC_DELAY(SEC_DIFF)   sleep(SEC_DIFF)
-#define MCL_TIME_MS_DELAY(MS_DIFF)     usleep((MS_DIFF) * 10)
-#define MCL_TIME_US_DELAY(US_DIFF)     usleep(US_DIFF)
-#define MCL_TIME_NS_DELAY(NS_DIFF)     0/*Unsupport ns time*/
+#define MCL_TIME_SEC_DELAY(SEC_DIFF)   (void)sleep(SEC_DIFF)
+#define MCL_TIME_MS_DELAY(MS_DIFF)     (void)usleep((MS_DIFF) * 10)
+#define MCL_TIME_US_DELAY(US_DIFF)     (void)usleep(US_DIFF)
+#define MCL_TIME_NS_DELAY(NS_DIFF)     (void)0/*Unsupport ns time*/
 
 MCL_STDC_END
 

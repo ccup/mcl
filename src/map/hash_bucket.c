@@ -92,11 +92,11 @@ MclHashValue MclHashBucket_RemoveByPred(MclHashBucket *self, MclHashNodePred pre
 	return NULL;
 }
 
-uint32_t MclHashBucket_RemoveAllByPred(MclHashBucket *self, MclHashNodePred pred, void *arg, MclHashNodeAllocator *allocator, MclHashValueDestroy destroy) {
+size_t MclHashBucket_RemoveAllByPred(MclHashBucket *self, MclHashNodePred pred, void *arg, MclHashNodeAllocator *allocator, MclHashValueDestroy destroy) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
 	MCL_ASSERT_VALID_PTR_NIL(pred);
 
-	uint32_t removedCount = 0;
+	size_t removedCount = 0;
 	MclHashNode *node, *tmpNode;
 	MCL_LINK_FOREACH_SAFE(&self->nodes, MclHashNode, link, node, tmpNode) {
 		if (MclHashNode_Pred(node, pred, arg)) {

@@ -33,7 +33,7 @@ MclAggregatorId MclAggregator_GetId(const MclAggregator *self) {
 
 size_t MclAggregator_GetEntityCount(const MclAggregator *self) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
-	return MclEntityList_GetCount(&self->entities);
+	return MclEntityList_GetSize(&self->entities);
 }
 
 MclStatus MclAggregator_AddEntity(MclAggregator *self, MclEntity *entity) {

@@ -6,7 +6,7 @@ MCL_TYPE(MclEntity) {
 	MclInteger value;
 };
 
-size_t const MCL_ENTITY_SIZE = sizeof(MclEntity);
+const size_t MCL_ENTITY_SIZE = sizeof(MclEntity);
 
 MCL_PRIVATE const uint32_t DOUBLE_TIME = 2;
 

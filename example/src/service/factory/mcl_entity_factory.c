@@ -9,7 +9,7 @@
 #include "mcl/assert.h"
 
 ///////////////////////////////////////////////////////////
-MclAtom entityCount = 0;
+MCL_PRIVATE MclAtom entityCount = 0;
 
 size_t MclEntityFactory_GetUnreleasedCount() {
 	return entityCount;

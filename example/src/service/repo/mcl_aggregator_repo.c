@@ -115,9 +115,9 @@ bool MclAggregatorRepo_IsEmpty() {
 	return MclHashMap_IsEmpty(&aggregatorRepo.aggregtors);
 }
 
-size_t MclAggregatorRepo_GetCount() {
+size_t MclAggregatorRepo_GetSize() {
 	MCL_LOCK_READ_AUTO(aggregatorRepo.rwlock);
-	return MclHashMap_GetCount(&aggregatorRepo.aggregtors);
+	return MclHashMap_Getsize(&aggregatorRepo.aggregtors);
 }
 
 typedef struct {

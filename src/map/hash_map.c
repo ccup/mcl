@@ -40,7 +40,7 @@ void MclHashMap_Init(MclHashMap *self, uint32_t bucketCount, MclHashBucket *buck
 	MCL_ASSERT_VALID_PTR_VOID(buckets);
 
     self->bucketCount = bucketCount;
-    self->elementCount = 0;
+    self->size = 0;
     self->allocator = allocator;
     self->buckets = buckets;
     for (uint32_t i = 0; i < bucketCount; i++) {
@@ -52,7 +52,7 @@ void MclHashMap_Clear(MclHashMap *self, MclHashValueDestroy destroy) {
 	for (uint32_t i = 0; i < self->bucketCount; i++) {
 		MclHashBucket_Clear(&self->buckets[i], self->allocator, destroy);
 	}
-	self->elementCount = 0;
+	self->size = 0;
 }
 
 MclStatus MclHashMap_InsertNode(MclHashMap *self, MclHashNode *node) {
@@ -61,7 +61,7 @@ MclStatus MclHashMap_InsertNode(MclHashMap *self, MclHashNode *node) {
 
     uint32_t bucketId = MclHashMap_GetBucketId(self, node->key);
     MCL_ASSERT_SUCC_CALL(MclHashBucket_PushBackNode(&self->buckets[bucketId], node));
-    self->elementCount++;
+    self->size++;
     return MCL_SUCCESS;
 }
 
@@ -71,7 +71,7 @@ MclStatus MclHashMap_RemoveNode(MclHashMap *self, MclHashNode *node, MclHashValu
 
     uint32_t bucketId = MclHashMap_GetBucketId(self, node->key);
     MCL_ASSERT_SUCC_CALL(MclHashBucket_RemoveNode(&self->buckets[bucketId], node, self->allocator, destroy));
-    self->elementCount--;
+    self->size--;
     return MCL_SUCCESS;
 }
 
@@ -136,7 +136,7 @@ MclHashValue MclHashMap_Remove(MclHashMap *self, MclHashKey key) {
 	uint32_t bucketId = MclHashMap_GetBucketId(self, key);
 
 	MclHashValue value = MclHashBucket_Remove(&self->buckets[bucketId], key, self->allocator);
-	if (MclHashValue_IsValid(value)) self->elementCount--;
+	if (MclHashValue_IsValid(value)) self->size--;
 	return value;
 }
 
@@ -147,28 +147,28 @@ MclHashValue MclHashMap_RemoveByPred(MclHashMap *self, MclHashNodePred pred, voi
     for (uint32_t i = 0; i < self->bucketCount; i++) {
     	MclHashValue value = MclHashBucket_RemoveByPred(&self->buckets[i], pred, arg, self->allocator);
     	if (MclHashValue_IsValid(value)) {
-    		self->elementCount--;
+    		self->size--;
     		return value;
     	}
     }
 	return NULL;
 }
 
-uint32_t MclHashMap_RemoveAllByPred(MclHashMap *self, MclHashNodePred pred, void *arg, MclHashValueDestroy destroy) {
+size_t MclHashMap_RemoveAllByPred(MclHashMap *self, MclHashNodePred pred, void *arg, MclHashValueDestroy destroy) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
 	MCL_ASSERT_VALID_PTR_NIL(pred);
 
-	uint32_t removedCount = 0;
+	size_t removedCount = 0;
 
-    for (uint32_t i = 0; i < self->bucketCount; i++) {
+    for (size_t i = 0; i < self->bucketCount; i++) {
     	removedCount += MclHashBucket_RemoveAllByPred(&self->buckets[i], pred, arg, self->allocator, destroy);
     }
 
-	if (removedCount > self->elementCount) {
-		MCL_LOG_FATAL("Removed overflow (%u) from hash map which only has (%u) elements!", removedCount, self->elementCount);
-		self->elementCount = 0;
+	if (removedCount > self->size) {
+		MCL_LOG_FATAL("Removed overflow (%u) from hash map which only has (%u) elements!", removedCount, self->size);
+		self->size = 0;
 	} else {
-		self->elementCount -= removedCount;
+		self->size -= removedCount;
 	}
 	return removedCount;
 }

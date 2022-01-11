@@ -9,7 +9,7 @@
 #include "mcl/assert.h"
 
 ///////////////////////////////////////////////////////////
-MclAtom aggregatorCount = 0;
+MCL_PRIVATE MclAtom aggregatorCount = 0;
 
 size_t MclAggregatorFactory_GetUnreleasedCount() {
 	return aggregatorCount;

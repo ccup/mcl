@@ -8,9 +8,9 @@ MCL_STDC_BEGIN
 
 MCL_TYPE(MclHashMap) {
 	MclHashNodeAllocator *allocator;
-    uint32_t elementCount;
-    uint32_t bucketCount;
     MclHashBucket *buckets;
+    uint32_t bucketCount;
+    size_t size;
 };
 
 MclHashMap* MclHashMap_CreateDefault();
@@ -36,26 +36,26 @@ MclHashValue MclHashMap_FindByPred(const MclHashMap*, MclHashNodePred, void*);
 MclHashValue MclHashMap_Remove(MclHashMap*, MclHashKey);
 MclHashValue MclHashMap_RemoveByPred(MclHashMap*, MclHashNodePred, void*);
 
-uint32_t MclHashMap_RemoveAllByPred(MclHashMap*, MclHashNodePred, void*, MclHashValueDestroy);
+size_t MclHashMap_RemoveAllByPred(MclHashMap*, MclHashNodePred, void*, MclHashValueDestroy);
 
 MclStatus MclHashMap_Accept(const MclHashMap*, MclHashNodeVisit, void*);
 
 void MclHashMap_Dump(const MclHashMap*);
 
 ///////////////////////////////////////////////////////////
-MCL_INLINE uint32_t MclHashMap_GetCount(const MclHashMap *self) {
-    return self ? self->elementCount : 0;
+MCL_INLINE size_t MclHashMap_Getsize(const MclHashMap *self) {
+    return self ? self->size : 0;
 }
 
 MCL_INLINE bool MclHashMap_IsEmpty(const MclHashMap *self) {
-    return MclHashMap_GetCount(self) == 0;
+    return MclHashMap_Getsize(self) == 0;
 }
 
 ///////////////////////////////////////////////////////////
 #define MCL_HASHMAP_BUCKET_COUNT_DEFAULT 127
 
 #define MCL_HASHMAP(MAP, BUCKET_COUNT, BUCKETS, ALLOCATOR)   		\
-	{.allocator = (ALLOCATOR), .elementCount = 0, .bucketCount = (BUCKET_COUNT), .buckets = (BUCKETS)}
+	{.allocator = (ALLOCATOR), .buckets = (BUCKETS), .bucketCount = (BUCKET_COUNT), .size = 0}
 
 #define MCL_HASHMAP_DEFAULT(MAP, BUCKET_COUNT, BUCKETS) 			\
 	MCL_HASHMAP(MAP, BUCKET_COUNT, BUCKETS, &MCL_HASH_NODE_ALLOCATOR_DEFAULT)

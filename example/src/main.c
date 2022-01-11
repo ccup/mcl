@@ -24,7 +24,7 @@ MCL_TYPE(ExampleThread) {
 	ExampleConfig *config;
 };
 
-MCL_PRIVATE void Example_Thread_WaitDone(ExampleThread *self) {
+MCL_PRIVATE void ExampleThread_WaitDone(ExampleThread *self) {
 	MCL_ASSERT_SUCC_CALL_VOID(MclThread_Join(self->thread, NULL));
 }
 
@@ -44,7 +44,7 @@ MCL_PRIVATE MclStatus ExampleThread_Launch(ExampleThread* thread) {
 }
 
 MCL_PRIVATE void ExampleThread_Delay(MclTimeSecDiff sec) {
-	MclTimeSec_Delay(sec);
+	sec ? MclTimeSec_Delay(sec) : MclThread_Yield();
 }
 
 MCL_PRIVATE void ExampleThread_ConfigAggregator(ExampleThread *thread) {
@@ -141,11 +141,11 @@ MCL_PRIVATE void ExampleThread_QueryValue(ExampleThread *thread) {
 MCL_PRIVATE ExampleConfig fastConfig = {
 		.aggregatorCount = 4,
 		.entityCount = 16,
-		.aggregatorIntervalSec = MCL_TIME_SEC_DIFF_INVALID,
-		.entityIntervalSec = MCL_TIME_SEC_DIFF_INVALID,
-		.isrIntervalSec = MCL_TIME_SEC_DIFF_INVALID,
-		.intervalSec = MCL_TIME_SEC_DIFF_INVALID,
-		.totalTimeSec = MCL_TIME_SEC_DIFF_INVALID,
+		.aggregatorIntervalSec = 0,
+		.entityIntervalSec = 0,
+		.isrIntervalSec = 0,
+		.intervalSec = 0,
+		.totalTimeSec = 0,
 };
 
 MCL_PRIVATE ExampleConfig normalConfig = {
@@ -181,7 +181,7 @@ MCL_PRIVATE MclStatus ExampleThreads_Launch() {
 
 MCL_PRIVATE void ExampleThreads_WaitDone() {
 	MCL_LOOP_FOREACH_INDEX(i, MCL_ARRAY_SIZE(exampleThreads)) {
-		Example_Thread_WaitDone(&exampleThreads[i]);
+		ExampleThread_WaitDone(&exampleThreads[i]);
 	}
 	MCL_LOG_SUCC("Mcl Example threads done!!!");
 }

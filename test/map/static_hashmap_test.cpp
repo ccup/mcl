@@ -36,7 +36,7 @@ FIXTURE(HashMapStaticTest) {
 		MclHashMap_InsertNode(foos, &nodes[2]);
 
 		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
-		ASSERT_EQ(4, MclHashMap_GetCount(foos));
+		ASSERT_EQ(4, MclHashMap_Getsize(foos));
 
 		long value{0};
 
@@ -58,11 +58,11 @@ FIXTURE(HashMapStaticTest) {
 
 		ASSERT_TRUE(!MCL_FAILED(MclHashMap_RemoveNode(foos, &nodes[5], NULL)));
 		ASSERT_TRUE(MclHashMap_FindNode(foos, 5) == NULL);
-		ASSERT_EQ(3, MclHashMap_GetCount(foos));
+		ASSERT_EQ(3, MclHashMap_Getsize(foos));
 
 		MclHashNode node = MCL_HASH_NODE(6, (MclHashValue)6);
 		ASSERT_TRUE(MCL_FAILED(MclHashMap_RemoveNode(foos, &node, NULL)));
 
-        ASSERT_EQ(3, MclHashMap_GetCount(foos));
+        ASSERT_EQ(3, MclHashMap_Getsize(foos));
 	}
 };

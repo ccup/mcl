@@ -5,27 +5,27 @@
 MCL_PRIVATE void MclList_RemoveNodeFromList(MclList* self, MclListNode *node, MclListDataDestroy destroy) {
 	MclListNode_RemoveFromList(node);
 	MclListNode_Delete(node, self->allocator, destroy);
-	self->count--;
+	self->size--;
 }
 
 MCL_PRIVATE void MclList_InsertBeforeNode(MclList *self, MclListNode *nextNode, MclListNode *node) {
 	MCL_LINK_INSERT_BEFORE(nextNode, node, link);
-	self->count++;
+	self->size++;
 }
 
 MCL_PRIVATE void MclList_InsertAfterNode(MclList *self, MclListNode *prevNode, MclListNode *node) {
 	MCL_LINK_INSERT_AFTER(prevNode, node, link);
-	self->count++;
+	self->size++;
 }
 
 MCL_PRIVATE void MclList_AddHead(MclList *self, MclListNode *node) {
 	MCL_LINK_INSERT_HEAD(&self->nodes, node, MclListNode, link);
-	self->count++;
+	self->size++;
 }
 
 MCL_PRIVATE void MclList_AddTail(MclList *self, MclListNode *node) {
 	MCL_LINK_INSERT_TAIL(&self->nodes, node, MclListNode, link);
-	self->count++;
+	self->size++;
 }
 
 MclList* MclList_CreateDefault() {
@@ -51,7 +51,7 @@ void MclList_Init(MclList *self, MclListNodeAllocator *allocator) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
 	MCL_LINK_INIT(&self->nodes, MclListNode, link);
-	self->count = 0;
+	self->size = 0;
 	self->allocator = allocator;
 }
 
@@ -212,11 +212,11 @@ MclListData MclList_RemoveByPred(MclList *self, MclListDataPred pred, void *arg)
     return NULL;
 }
 
-uint32_t MclList_RemoveAllByPred(MclList *self, MclListDataPred pred, void *arg, MclListDataDestroy destroy) {
+size_t MclList_RemoveAllByPred(MclList *self, MclListDataPred pred, void *arg, MclListDataDestroy destroy) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
 	MCL_ASSERT_VALID_PTR_NIL(pred);
 
-	uint32_t removedCount = 0;
+	size_t removedCount = 0;
     MclListNode *node = NULL;
     MclListNode *tmpNode = NULL;
     MCL_LIST_FOREACH_SAFE((MclList*)self, node, tmpNode) {

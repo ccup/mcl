@@ -101,7 +101,7 @@ bool MclEntityRepo_IsEmpty() {
 
 size_t MclEntityRepo_GetCount() {
 	MCL_LOCK_READ_AUTO(entityRepo.rwlock);
-	return MclEntityList_GetCount(&entityRepo.entities);
+	return MclEntityList_GetSize(&entityRepo.entities);
 }
 
 typedef struct {

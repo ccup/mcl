@@ -23,7 +23,7 @@ const MclAggregator* MclAggregatorRepo_FetchConstBy(MclAggregatorPred, void*);
 
 bool   MclAggregatorRepo_HasAggregator(MclAggregatorId);
 bool   MclAggregatorRepo_IsEmpty();
-size_t MclAggregatorRepo_GetCount();
+size_t MclAggregatorRepo_GetSize();
 
 typedef MclStatus (*MclAggregatorVisit)(MclAggregator*, void*);
 MclStatus MclAggregatorRepo_Accept(MclAggregatorVisit, void*);

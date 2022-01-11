@@ -56,7 +56,7 @@ FIXTURE(ListTest)
 	TEST("should be empty when initialized")
 	{
 		ASSERT_TRUE(MclList_IsEmpty(list));
-		ASSERT_EQ(0, MclList_GetCount(list));
+		ASSERT_EQ(0, MclList_GetSize(list));
 		ASSERT_EQ(NULL, MclList_FindNode(list, 0));
 	}
 
@@ -65,7 +65,7 @@ FIXTURE(ListTest)
 		auto foo = Foo_Create();
 		MclList_PushFront(list, foo);
 		ASSERT_FALSE(MclList_IsEmpty(list));
-		ASSERT_EQ(1, MclList_GetCount(list));
+		ASSERT_EQ(1, MclList_GetSize(list));
 
 		auto result = MclList_FindNode(list, foo);
 		ASSERT_EQ(foo, result->data);
@@ -84,7 +84,7 @@ FIXTURE(ListTest)
 		MclList_PushFront(list, foo3);
 
 		ASSERT_FALSE(MclList_IsEmpty(list));
-		ASSERT_EQ(3, MclList_GetCount(list));
+		ASSERT_EQ(3, MclList_GetSize(list));
 
 		auto result = MclList_FindNode(list, foo1);
 		ASSERT_EQ(foo1, result->data);
@@ -122,7 +122,7 @@ FIXTURE(ListTest)
         ASSERT_EQ(MCL_SUCCESS, MclList_RemoveData(list, foo, NULL));
 
 		ASSERT_TRUE(MclList_IsEmpty(list));
-		ASSERT_EQ(0, MclList_GetCount(list));
+		ASSERT_EQ(0, MclList_GetSize(list));
 		ASSERT_EQ(NULL, MclList_FindNode(list, foo));
 
 		Foo_Delete(foo);
@@ -141,17 +141,17 @@ FIXTURE(ListTest)
         MclList_RemoveData(list, foo2, (MclListDataDestroy)Foo_Delete);
 
 		ASSERT_FALSE(MclList_IsEmpty(list));
-		ASSERT_EQ(2, MclList_GetCount(list));
+		ASSERT_EQ(2, MclList_GetSize(list));
 
         MclList_RemoveData(list, foo1, (MclListDataDestroy)Foo_Delete);
 
 		ASSERT_FALSE(MclList_IsEmpty(list));
-		ASSERT_EQ(1, MclList_GetCount(list));
+		ASSERT_EQ(1, MclList_GetSize(list));
 
         MclList_RemoveData(list, foo3, (MclListDataDestroy)Foo_Delete);
 
 		ASSERT_TRUE(MclList_IsEmpty(list));
-		ASSERT_EQ(0, MclList_GetCount(list));
+		ASSERT_EQ(0, MclList_GetSize(list));
 	}
 
 	TEST("should remove satisfied element in list")
@@ -165,18 +165,18 @@ FIXTURE(ListTest)
 		MclList_PushFront(list, foo3);
 
 		auto result = (Foo*)MclList_RemoveByPred(list, FooIdEqualPred_IsEqual, (MclListData)2);
-		ASSERT_EQ(2, MclList_GetCount(list));
+		ASSERT_EQ(2, MclList_GetSize(list));
 
 		ASSERT_TRUE(result != NULL);
 		ASSERT_EQ(2, result->getId());
 		Foo_Delete(result);
 
 		result = (Foo*)MclList_RemoveByPred(list, FooIdEqualPred_IsEqual, (MclListData)2);
-		ASSERT_EQ(2, MclList_GetCount(list));
+		ASSERT_EQ(2, MclList_GetSize(list));
 		ASSERT_TRUE(result == NULL);
 
 		result = (Foo*)MclList_RemoveByPred(list, FooIdEqualPred_IsEqual, (MclListData)3);
-		ASSERT_EQ(1, MclList_GetCount(list));
+		ASSERT_EQ(1, MclList_GetSize(list));
 		ASSERT_TRUE(result != NULL);
 		Foo_Delete(result);
 
@@ -214,12 +214,12 @@ FIXTURE(ListTest)
         result = (Foo*)MclList_RemoveData(list, foo2, (MclListDataDestroy)Foo_Delete);
 
 		ASSERT_FALSE(MclList_IsEmpty(list));
-		ASSERT_EQ(1, MclList_GetCount(list));
+		ASSERT_EQ(1, MclList_GetSize(list));
 
         result = (Foo*)MclList_RemoveData(list, foo1, (MclListDataDestroy)Foo_Delete);
 
 		ASSERT_TRUE(MclList_IsEmpty(list));
-		ASSERT_EQ(0, MclList_GetCount(list));
+		ASSERT_EQ(0, MclList_GetSize(list));
 	}
 
 	TEST("should clear elements in list")
@@ -316,7 +316,7 @@ FIXTURE(ListTest)
 		auto f = (Foo*)MclListNode_GetData(newNode);
 		ASSERT_EQ(2, f->getId());
 
-		ASSERT_EQ(3, MclList_GetCount(list));
+		ASSERT_EQ(3, MclList_GetSize(list));
 
 		auto secondNode = MclListNode_GetNext(MclList_GetFirst(list));
 		ASSERT_EQ(MclListNode_GetData(secondNode), foo2);
@@ -340,7 +340,7 @@ FIXTURE(ListTest)
 		auto f = (Foo*)MclListNode_GetData(newNode);
 		ASSERT_EQ(2, f->getId());
 
-		ASSERT_EQ(3, MclList_GetCount(list));
+		ASSERT_EQ(3, MclList_GetSize(list));
 
 		auto secondNode = MclListNode_GetNext(MclList_GetFirst(list));
 		ASSERT_EQ(MclListNode_GetData(secondNode), foo2);

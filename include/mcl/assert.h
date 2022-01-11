@@ -2,9 +2,15 @@
 #define H5712E60C_DEF5_4A3B_93C1_C074CD80C63C
 
 #include "mcl/status.h"
-#include "mcl/log/log.h"
 #include "mcl/stdtype.h"
+#include "mcl/log/log.h"
+#include "mcl/macro/symbol.h"
 
+///////////////////////////////////////////////////////////
+#define MCL_STATIC_ASSERT(exp)   			\
+extern void MCL_SYMBOL_UNIQUE(__mcl_static_assert)(int arg[(exp) ? 1 : -1])
+
+///////////////////////////////////////////////////////////
 #define __MCL_FAILED_BOOL_ACTION      return false
 #define __MCL_FAILED_STATUS_ACTION    return MCL_FAILURE
 #define __MCL_STATUS_ACTION           return __status

@@ -33,6 +33,13 @@ MclEntity* MclEntityList_Remove(MclEntityList *self, MclEntityId id) {
 	return MclList_RemoveByPred(self, MclEntityIdPred_IsEqual, &id);
 }
 
+bool MclEntityList_HasEntity(const MclEntityList *self, MclEntityId id) {
+	MCL_ASSERT_VALID_PTR_BOOL(self);
+	MCL_ASSERT_TRUE_BOOL(MclEntityId_IsValid(id));
+
+	return MclList_FindByPred(self, MclEntityIdPred_IsEqual, &id) != NULL;
+}
+
 MclEntity* MclEntityList_FindById(const MclEntityList *self, MclEntityId id) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
 	MCL_ASSERT_TRUE_NIL(MclEntityId_IsValid(id));
@@ -45,13 +52,6 @@ MclEntity*  MclEntityList_FindByPred(const MclEntityList *self, MclEntityListEle
 	MCL_ASSERT_VALID_PTR_NIL(pred);
 
 	return MclList_FindByPred(self, (MclListDataPred)pred, arg);
-}
-
-bool MclEntityList_HasEntity(const MclEntityList *self, MclEntityId id) {
-	MCL_ASSERT_VALID_PTR_BOOL(self);
-	MCL_ASSERT_TRUE_BOOL(MclEntityId_IsValid(id));
-
-	return MclList_FindByPred(self, MclEntityIdPred_IsEqual, &id) != NULL;
 }
 
 bool MclEntityList_IsEmpty(const MclEntityList *self) {

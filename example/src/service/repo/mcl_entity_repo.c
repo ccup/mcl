@@ -5,8 +5,8 @@
 #include "mcl/lock/lockobj.h"
 
 MCL_TYPE(MclEntityRepo) {
-	MclEntityList entities;
 	MclRwLock rwlock;
+	MclEntityList entities;
 };
 
 MCL_PRIVATE MclEntityRepo entityRepo = {

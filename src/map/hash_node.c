@@ -14,5 +14,5 @@ void MclHashNode_Delete(MclHashNode *self, MclHashNodeAllocator *allocator, MclH
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
     if (destroy) destroy(self->value);
-    MclHashNodeAllocator_Release(allocator, self);
+    MclHashNodeAllocator_Free(allocator, self);
 }

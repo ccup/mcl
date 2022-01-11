@@ -16,7 +16,7 @@ MCL_INLINE MclHashNode* MclHashNodeAllocator_Alloc(MclHashNodeAllocator *self) {
     return (self && self->alloc) ? self->alloc(self) : NULL;
 }
 
-MCL_INLINE void MclHashNodeAllocator_Release(MclHashNodeAllocator *self, MclHashNode *node) {
+MCL_INLINE void MclHashNodeAllocator_Free(MclHashNodeAllocator *self, MclHashNode *node) {
     if (self && self->free) self->free(self, node);
 }
 

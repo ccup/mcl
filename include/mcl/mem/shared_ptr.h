@@ -7,8 +7,10 @@ MCL_STDC_BEGIN
 
 typedef void (*MclSharedPtrDestroy)(void *ptr, void *arg);
 
-void* MclSharedPtr_Create(size_t, MclSharedPtrDestroy, void*arg);
+void* MclSharedPtr_Create(size_t, MclSharedPtrDestroy, void *arg);
+
 void  MclSharedPtr_Delete(void *ptr);
+
 void* MclSharedPtr_Ref(void *ptr);
 
 ///////////////////////////////////////////////////////////

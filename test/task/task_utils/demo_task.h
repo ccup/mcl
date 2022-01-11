@@ -4,6 +4,7 @@
 #include "mcl/task/task.h"
 #include "task/task_utils/priority_level.h"
 #include "task/task_utils/task_history.h"
+#include "mcl/interface.h"
 #include <unistd.h>
 
 MCL_STDC_BEGIN
@@ -18,7 +19,7 @@ struct DemoTask {
 MclStatus DemoTask_Execute(MclTask *task) {
 	MCL_ASSERT_VALID_PTR(task);
 
-	DemoTask *self = MCL_TYPE_REDUCT(task, DemoTask, task);
+	DemoTask *self = MCL_INTERFACE_CAST(task, DemoTask, task);
 	if (self->priority == SLOW) {
 		sleep(self->pauseTime);
 	}

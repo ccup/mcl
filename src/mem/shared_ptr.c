@@ -27,21 +27,21 @@ MCL_PRIVATE MclSharedPtr* MclSharedPtr_GetSelf(void *p) {
     return MclSharedPtr_IsValid(self, p) ? self : NULL;
 }
 
-MCL_PRIVATE void MclSharedPtr_Init(MclSharedPtr *self, MclSharedPtrDestroy destroy, void* destroyArg) {
+MCL_PRIVATE void MclSharedPtr_Init(MclSharedPtr *self, MclSharedPtrDestroy destroy, void* arg) {
     self->sentinel = MCL_SHARED_PTR_SENTINEL;
     self->destroy = destroy;
-    self->destroyArg = destroyArg;
+    self->destroyArg = arg;
     MclAtom_Set(&self->refCount, 1);
     self->ptr = (uint8_t*)self + MclSharedPtr_HeaderSize();
 }
 
-void* MclSharedPtr_Create(size_t size, MclSharedPtrDestroy destroy, void* destroyArg) {
+void* MclSharedPtr_Create(size_t size, MclSharedPtrDestroy destroy, void* arg) {
     MCL_ASSERT_TRUE_NIL(size > 0);
 
     MclSharedPtr *self = MCL_MALLOC(MclSharedPtr_HeaderSize() + MclAlign_GetSizeOf(size));
     MCL_ASSERT_VALID_PTR_NIL(self);
 
-    MclSharedPtr_Init(self, destroy, destroyArg);
+    MclSharedPtr_Init(self, destroy, arg);
     return self->ptr;
 }
 

@@ -10,11 +10,4 @@ typedef struct TYPE TYPE
 MCL_TYPE_DECL(TYPE);			\
 struct TYPE
 
-#define MCL_INTERFACE(TYPE)     \
-MCL_TYPE(TYPE)
-
-#define MCL_TYPE_REDUCT(ptr, type, member) ({ \
-	const typeof( ((type *)0)->member ) *__mptr = (ptr); \
-	(type *)( (char *)__mptr - offsetof(type, member));})
-
 #endif

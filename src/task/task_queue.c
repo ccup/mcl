@@ -23,7 +23,7 @@ MCL_PRIVATE void TaskQueue_Destroy(TaskQueue *queue) {
 }
 
 MCL_PRIVATE bool MclTaskKeyPred_IsEqual(MclListData data, void *arg) {
-	return MclTaskKey_GetKey((MclTask*)data) == *(MclTaskKey*)arg;
+	return ((MclTask*)data)->key == *(MclTaskKey*)arg;
 }
 
 MCL_PRIVATE void TaskQueue_Remove(TaskQueue *queue, MclTaskKey key) {

@@ -45,8 +45,7 @@ MclEntity* MclEntityRepo_Fetch(MclEntityId id) {
 	MclEntity *result = NULL;
 	MCL_LOCK_READ_SCOPE(entityRepo.rwlock) {
 		result = MclEntityList_FindById(&entityRepo.entities, id);
-		MCL_ASSERT_VALID_PTR_NIL(result);
-		MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_WrLock(result));
+		if (result) MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_WrLock(result));
 	}
 	return result;
 }
@@ -57,8 +56,7 @@ const MclEntity* MclEntityRepo_FetchConst(MclEntityId id) {
 	const MclEntity *result = NULL;
 	MCL_LOCK_READ_SCOPE(entityRepo.rwlock) {
 		result = MclEntityList_FindById(&entityRepo.entities, id);
-		MCL_ASSERT_VALID_PTR_NIL(result);
-		MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_RdLock((void*)result));
+		if (result) MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_RdLock((void*)result));
 	}
 	return result;
 }
@@ -69,8 +67,7 @@ MclEntity* MclEntityRepo_FetchBy(MclEntityPred pred, void *arg) {
 	MclEntity *result = NULL;
 	MCL_LOCK_READ_SCOPE(entityRepo.rwlock) {
 		result = MclEntityList_FindByPred(&entityRepo.entities, pred, arg);
-		MCL_ASSERT_VALID_PTR_NIL(result);
-		MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_WrLock(result));
+		if (result) MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_WrLock(result));
 	}
 	return result;
 }
@@ -81,8 +78,7 @@ const MclEntity* MclEntityRepo_FetchConstBy(MclEntityPred pred, void *arg) {
 	const MclEntity *result = NULL;
 	MCL_LOCK_READ_SCOPE(entityRepo.rwlock) {
 		result = MclEntityList_FindByPred(&entityRepo.entities, pred, arg);
-		MCL_ASSERT_VALID_PTR_NIL(result);
-		MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_RdLock((void*)result));
+		if (result) MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_RdLock((void*)result));
 	}
 	return result;
 }

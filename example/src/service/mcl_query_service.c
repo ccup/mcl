@@ -10,7 +10,10 @@ MclInteger MclQueryService_QueryValueOf(MclEntityId entityId) {
 	MCL_ASSERT_TRUE_NIL(MclEntityId_IsValid(entityId));
 
 	MCL_LOCK_OBJ_AUTO const MclEntity *entity = MclEntityRepo_FetchConst(entityId);
-	MCL_ASSERT_VALID_PTR_NIL(entity);
+	if (!entity) {
+		MCL_LOG_WARN("Query Service: not found entity (%u)!", entityId);
+		return 0;
+	}
 
 	MclInteger result = MclEntity_GetValue(entity);
 
@@ -22,7 +25,10 @@ MclInteger MclQueryService_QuerySumValueOf(MclAggregatorId aggregatorId) {
 	MCL_ASSERT_TRUE_NIL(MclAggregatorId_IsValid(aggregatorId));
 
 	MCL_LOCK_OBJ_AUTO const MclAggregator *aggregator = MclAggregatorRepo_FetchConst(aggregatorId);
-	MCL_ASSERT_VALID_PTR_NIL(aggregator);
+	if (!aggregator) {
+		MCL_LOG_WARN("Query Service: not found aggregator (%u)!", aggregatorId);
+		return 0;
+	}
 
 	MclInteger result = MclAggregator_GetSumValue(aggregator);
 
@@ -34,7 +40,10 @@ size_t MclQueryService_QueryEntityCountIn(MclAggregatorId aggregatorId) {
 	MCL_ASSERT_TRUE_NIL(MclAggregatorId_IsValid(aggregatorId));
 
 	MCL_LOCK_OBJ_AUTO const MclAggregator *aggregator = MclAggregatorRepo_FetchConst(aggregatorId);
-	MCL_ASSERT_VALID_PTR_NIL(aggregator);
+	if (!aggregator) {
+		MCL_LOG_WARN("Query Service: not found aggregator (%u)!", aggregatorId);
+		return 0;
+	}
 
 	size_t result = MclAggregator_GetEntityCount(aggregator);
 

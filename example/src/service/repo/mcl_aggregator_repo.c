@@ -60,8 +60,7 @@ MclAggregator* MclAggregatorRepo_Fetch(MclAggregatorId id) {
 	MclAggregator *result = NULL;
 	MCL_LOCK_READ_SCOPE(aggregatorRepo.rwlock) {
 		result = MclAggregatorMap_FindById(&aggregatorRepo.aggregators, id);
-		MCL_ASSERT_VALID_PTR_NIL(result);
-		MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_WrLock(result));
+		if( result) MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_WrLock(result));
 	}
 	return result;
 }
@@ -72,8 +71,7 @@ const MclAggregator* MclAggregatorRepo_FetchConst(MclAggregatorId id) {
 	const MclAggregator *result = NULL;
 	MCL_LOCK_READ_SCOPE(aggregatorRepo.rwlock) {
 		result = MclAggregatorMap_FindById(&aggregatorRepo.aggregators, id);
-		MCL_ASSERT_VALID_PTR_NIL(result);
-		MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_RdLock((void*)result));
+		if (result) MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_RdLock((void*)result));
 	}
 	return result;
 }
@@ -84,8 +82,7 @@ MclAggregator* MclAggregatorRepo_FetchBy(MclAggregatorPred pred, void *arg) {
 	MclAggregator *result = NULL;
 	MCL_LOCK_READ_SCOPE(aggregatorRepo.rwlock) {
 		result = MclAggregatorMap_FindByPred(&aggregatorRepo.aggregators, pred, arg);
-		MCL_ASSERT_VALID_PTR_NIL(result);
-		MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_WrLock(result));
+		if (result) MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_WrLock(result));
 	}
 	return result;
 }
@@ -96,8 +93,7 @@ const MclAggregator* MclAggregatorRepo_FetchConstBy(MclAggregatorPred pred, void
 	const MclAggregator *result = NULL;
 	MCL_LOCK_READ_SCOPE(aggregatorRepo.rwlock) {
 		result = MclAggregatorMap_FindByPred(&aggregatorRepo.aggregators, pred, arg);
-		MCL_ASSERT_VALID_PTR_NIL(result);
-		MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_RdLock((void*)result));
+		if (result) MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_RdLock((void*)result));
 	}
 	return result;
 }

@@ -40,7 +40,7 @@ MCL_INLINE bool MclLockPtr_IsValid(const MclLockPtr *self) {
 ///////////////////////////////////////////////////////////
 MCL_INLINE void MclLockPtr_AutoUnLock(const MclLockPtr **ppPtr) {
     if (!ppPtr) return;
-    (void)MclLockPtr_UnLock((MclLockPtr*)(*ppPtr));
+    if (*ppPtr) (void)MclLockPtr_UnLock((MclLockPtr*)(*ppPtr));
 }
 
 #define MCL_LOCK_PTR_AUTO  MCL_RAII(MclLockPtr_AutoUnLock)

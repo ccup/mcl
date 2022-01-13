@@ -4,6 +4,7 @@
 MCL_TYPE(MclEntity) {
 	MclEntityId id;
 	MclInteger value;
+	MclAggregatorId aggregatorId;
 };
 
 const size_t MCL_ENTITY_SIZE = sizeof(MclEntity);
@@ -17,12 +18,14 @@ MCL_PRIVATE bool MclEntity_IsOverflowByTime(const MclEntity *self, uint32_t time
 MclStatus MclEntity_Init(MclEntity *self, MclEntityId id) {
 	self->id = id;
 	MclEntity_ClearValue(self);
+	self->aggregatorId = MCL_AGGREGATOR_ID_INVALID;
 	return MCL_SUCCESS;
 }
 
 void MclEntity_Destroy(MclEntity *self) {
 	MclEntity_ClearValue(self);
 	self->id = MCL_ENTITY_ID_INVALID;
+	self->aggregatorId = MCL_AGGREGATOR_ID_INVALID;
 }
 
 MclEntityId MclEntity_GetId(const MclEntity *self) {
@@ -31,6 +34,24 @@ MclEntityId MclEntity_GetId(const MclEntity *self) {
 
 MclInteger MclEntity_GetValue(const MclEntity *self) {
 	return self ? self->value : 0;
+}
+
+MclAggregatorId MclEntity_GetAggregatorId(const MclEntity *self) {
+	return self ? self->aggregatorId : MCL_AGGREGATOR_ID_INVALID;
+}
+
+void MclEntity_OnInsertToAggregator(MclEntity *self, MclAggregatorId aggregatorId) {
+	MCL_ASSERT_VALID_PTR_VOID(self);
+	MCL_ASSERT_TRUE_VOID(MclAggregatorId_IsValid(aggregatorId));
+	MCL_ASSERT_TRUE_VOID(!MclAggregatorId_IsValid(self->aggregatorId));
+
+	self->aggregatorId = aggregatorId;
+}
+
+void MclEntity_OnRemoveFromAggregator(MclEntity *self) {
+	MCL_ASSERT_VALID_PTR_VOID(self);
+	self->aggregatorId = MCL_AGGREGATOR_ID_INVALID;
+	MclInteger_Clear(&self->value);
 }
 
 MclStatus MclEntity_DoubleValue(MclEntity *self) {

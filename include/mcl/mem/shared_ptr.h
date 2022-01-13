@@ -17,7 +17,7 @@ void* MclSharedPtr_Ref(void *ptr);
 MCL_INLINE void MclSharedPtr_AutoFree(void *pp) {
     if (!pp) return;
     void** p_pointer =  (void**)pp;
-    MclSharedPtr_Delete(*p_pointer);
+    if (*p_pointer) MclSharedPtr_Delete(*p_pointer);
     (*p_pointer) = NULL;
 }
 

@@ -18,7 +18,7 @@ MclStatus MclLockObj_UnLock(void *obj);
 MCL_INLINE void MclLockObj_AutoUnLock(void *ppobj) {
     if (!ppobj) return;
     void** pObj =  (void**)ppobj;
-    (void)MclLockObj_UnLock(*pObj);
+    if (*pObj) (void)MclLockObj_UnLock(*pObj);
 }
 
 #define MCL_LOCK_OBJ_AUTO  MCL_RAII(MclLockObj_AutoUnLock)

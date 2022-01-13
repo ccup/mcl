@@ -9,10 +9,11 @@
 #include "mcl/lock/lockobj.h"
 #include "mcl/assert.h"
 
-MclStatus MclConfigService_CreateEntity(MclEntityId entityId) {
+MclStatus MclConfigService_CreateEntity(MclEntityId entityId, const MclEntityConfig *config) {
 	MCL_ASSERT_TRUE(MclEntityId_IsValid(entityId));
+	MCL_ASSERT_VALID_PTR(config);
 
-	MclEntity *entity = MclEntityFactory_CreateLockObj(entityId);
+	MclEntity *entity = MclEntityFactory_CreateLockObj(entityId, config);
 	if (!entity) {
 		MCL_LOG_WARN("Config Service: not found entity (%u)!", entityId);
 		return MCL_STATUS_ENTITY_NOT_FOUND;

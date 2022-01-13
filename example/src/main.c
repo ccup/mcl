@@ -2,6 +2,8 @@
 #include "mcl/service/mcl_control_service.h"
 #include "mcl/service/mcl_event_service.h"
 #include "mcl/service/mcl_query_service.h"
+#include "mcl/service/config/mcl_entity_config.h"
+#include "mcl/service/statistics/mcl_statistics.h"
 #include "mcl/thread/thread_launcher.h"
 #include "mcl/array/array_size.h"
 #include "mcl/time/time.h"
@@ -37,7 +39,8 @@ MCL_PRIVATE void ExampleThread_ConfigAggregator(void *ctxt) {
 MCL_PRIVATE void ExampleThread_ConfigEntity(void *ctxt) {
 	ExampleConfig *cfg = (ExampleConfig*)ctxt;
 	MCL_LOOP_FOREACH_INDEX(entityId, cfg->entityCount) {
-		MclConfigService_CreateEntity(entityId);
+		MclEntityConfig entityCfg = {cfg->entityCount - entityId};
+		MclConfigService_CreateEntity(entityId, &entityCfg);
 		ExampleThread_Delay(cfg->entityIntervalSec);
 	}
 	ExampleThread_Delay(cfg->intervalSec);
@@ -94,16 +97,12 @@ MCL_PRIVATE void ExampleThread_EventOnIsr(void *ctxt) {
 	}
 }
 
-MCL_PRIVATE void ExampleThread_QueryStatus(void *ctxt) {
+MCL_PRIVATE void ExampleThread_QueryCount(void *ctxt) {
 	ExampleConfig *cfg = (ExampleConfig*)ctxt;
-	MCL_LOOP_FOREACH_INDEX(aggregatorId, cfg->aggregatorCount) {
-		MclQueryService_QueryEntityCountIn(aggregatorId);
-		ExampleThread_Delay(cfg->aggregatorIntervalSec);
-	}
-	ExampleThread_Delay(cfg->intervalSec);
-	MCL_LOOP_FOREACH_INDEX(aggregatorId, cfg->aggregatorCount) {
-		MclQueryService_QueryEntityCountIn(aggregatorId);
-		ExampleThread_Delay(cfg->aggregatorIntervalSec);
+	MCL_LOOP_FOREACH_STEP(i, cfg->totalTimeSec, cfg->intervalSec) {
+		MclQueryService_QueryEntityCount();
+		MclQueryService_QueryAggregatorCount();
+		ExampleThread_Delay(cfg->intervalSec);
 	}
 }
 
@@ -115,6 +114,7 @@ MCL_PRIVATE void ExampleThread_QueryValue(void *ctxt) {
 	}
 	ExampleThread_Delay(cfg->intervalSec);
 	MCL_LOOP_FOREACH_INDEX(aggregatorId, cfg->aggregatorCount) {
+		MclQueryService_QueryEntityCountOfAggregator(aggregatorId);
 		MclQueryService_QuerySumValueOf(aggregatorId);
 		ExampleThread_Delay(cfg->aggregatorIntervalSec);
 	}
@@ -149,13 +149,22 @@ MCL_PRIVATE MclThreadInfo exampleThreads[] = {
 		EXAMPLE_THREAD("ValCtrl", ExampleThread_ControlValue),
 		EXAMPLE_THREAD("TimeEnv", ExampleThread_EventOnTimer),
 		EXAMPLE_THREAD("IsrEnv" , ExampleThread_EventOnIsr),
-		EXAMPLE_THREAD("StatQry", ExampleThread_QueryStatus),
+		EXAMPLE_THREAD("CntQry",  ExampleThread_QueryCount),
 		EXAMPLE_THREAD("ValQry" , ExampleThread_QueryValue),
 };
+
+MclStatus MclExample_StatisticsResult() {
+	MclStatistics statistics = MclQueryService_QueryStatistics();
+	MCL_LOG("--------------------------------------------------\n");
+	MCL_ASSERT_TRUE(statistics.unreleasedAggregatorCount == 0);
+	MCL_ASSERT_TRUE(statistics.unreleasedEntityCount == 0);
+	MCL_LOG_SUCC("Mcl Example OK!");
+	return MCL_SUCCESS;
+}
 
 int main() {
 	MCL_ASSERT_SUCC_CALL(MclThreadLauncher_Launch(exampleThreads, MCL_ARRAY_SIZE(exampleThreads)));
 	MclThreadLauncher_WaitDone(exampleThreads, MCL_ARRAY_SIZE(exampleThreads));
-	return 0;
+	return MclExample_StatisticsResult();
 }
 

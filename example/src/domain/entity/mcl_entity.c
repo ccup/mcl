@@ -15,9 +15,9 @@ MCL_PRIVATE bool MclEntity_IsOverflowByTime(const MclEntity *self, uint32_t time
 	return  ((uint64_t)self->value) * time > MCL_INTEGER_MAX;
 }
 
-MclStatus MclEntity_Init(MclEntity *self, MclEntityId id) {
+MclStatus MclEntity_Init(MclEntity *self, MclEntityId id, MclInteger value) {
 	self->id = id;
-	MclEntity_ClearValue(self);
+	self->value = value;
 	self->aggregatorId = MCL_AGGREGATOR_ID_INVALID;
 	return MCL_SUCCESS;
 }

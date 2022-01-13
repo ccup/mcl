@@ -12,7 +12,7 @@ MCL_TYPE_DECL(MclEntity);
 
 extern const size_t MCL_ENTITY_SIZE;
 
-MclStatus MclEntity_Init(MclEntity*, MclEntityId);
+MclStatus MclEntity_Init(MclEntity*, MclEntityId, MclInteger);
 void MclEntity_Destroy(MclEntity*);
 
 MclEntityId MclEntity_GetId(const MclEntity*);

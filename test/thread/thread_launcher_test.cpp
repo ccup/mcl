@@ -28,6 +28,11 @@ namespace {
 			MclThread_Yield();
 		}
 	}
+
+	void stop(void *ctxt) {
+		ThreadCtxt *threadCtxt = (ThreadCtxt*)ctxt;
+		MclAtom_Set(&threadCtxt->stop, 1);
+	}
 }
 
 FIXTURE(ThreadLauncherTest) {
@@ -43,5 +48,21 @@ FIXTURE(ThreadLauncherTest) {
 		MclThreadLauncher_WaitDone(threads, MCL_ARRAY_SIZE(threads));
 
 		ASSERT_EQ(1, ctxt.result);
+	}
+
+	TEST("should stop launched threads") {
+		const uint32_t MAX_COUNT = MCL_UINT32_MAX;
+		ThreadCtxt ctxt = {.increaseCount = MAX_COUNT, .decreaseCount = MAX_COUNT, .result = 0, .stop = 0};
+
+		MclThreadInfo threads[] = {
+			MCL_THREAD_INFO("Increase", increase, stop, &ctxt),
+			MCL_THREAD_INFO("Dncrease", decrease, stop, &ctxt),
+		};
+
+		MclThreadLauncher_Launch(threads, MCL_ARRAY_SIZE(threads));
+		MclThreadLauncher_WaitDone(threads, MCL_ARRAY_SIZE(threads));
+
+		ASSERT_TRUE(ctxt.increaseCount < MAX_COUNT);
+		ASSERT_TRUE(ctxt.decreaseCount < MAX_COUNT);
 	}
 };

@@ -3,8 +3,11 @@
 #include "mcl/assert.h"
 
 MCL_PRIVATE void MclThreadLauncher_WaitThread(MclThreadInfo *thread) {
-	if (thread->stop) thread->stop(thread->ctxt);
 	MCL_ASSERT_SUCC_CALL_VOID(MclThread_Join(thread->thread, NULL));
+}
+
+MCL_PRIVATE void MclThreadLauncher_StopThread(MclThreadInfo *thread) {
+	if (thread->stop) thread->stop(thread->ctxt);
 }
 
 MCL_PRIVATE void* EMclThreadLauncher_RunThread(void *data) {
@@ -35,6 +38,10 @@ MclStatus MclThreadLauncher_Launch(MclThreadInfo *threads, size_t threadNum) {
 
 void MclThreadLauncher_WaitDone(MclThreadInfo  *threads, size_t threadNum) {
 	MCL_ASSERT_VALID_PTR_VOID(threads);
+
+	MCL_LOOP_FOREACH_INDEX(i, threadNum) {
+		MclThreadLauncher_StopThread(&threads[i]);
+	}
 
 	MCL_LOOP_FOREACH_INDEX(i, threadNum) {
 		MclThreadLauncher_WaitThread(&threads[i]);

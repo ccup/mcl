@@ -11,7 +11,7 @@ MCL_TYPE(MclAggregator) {
 
 const size_t MCL_AGGREGATOR_SIZE = sizeof(MclAggregator);
 
-MclStatus MclAggregator_Init(MclAggregator *self, MclAggregatorId id) {
+MclStatus MclAggregator_Init(MclAggregator *self, MclAggregatorId id, void *cfg) {
 	MCL_ASSERT_VALID_PTR(self);
 	MCL_ASSERT_TRUE(MclAggregatorId_IsValid(id));
 

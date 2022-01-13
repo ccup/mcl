@@ -1,5 +1,4 @@
 #include "factory/mcl_entity_factory.h"
-#include "mcl/service/config/mcl_entity_config.h"
 #include "entity/mcl_entity.h"
 #include "mcl/mem/shared_ptr.h"
 #include "mcl/mem/allocator.h"
@@ -16,11 +15,11 @@ size_t MclEntityFactory_GetUnreleasedCount() {
 }
 
 ///////////////////////////////////////////////////////////
-MclEntity* MclEntityFactory_Create(MclEntityId id, const MclEntityConfig *config) {
+MclEntity* MclEntityFactory_Create(MclEntityId id, void *cfg) {
 	MclEntity *self = MCL_MALLOC(MCL_ENTITY_SIZE);
 	MCL_ASSERT_VALID_PTR_NIL(self);
 
-	if (MCL_FAILED(MclEntity_Init(self, id, config->value))) {
+	if (MCL_FAILED(MclEntity_Init(self, id, cfg))) {
 		MCL_LOG_ERR("Initialize entity (%u) failed!", id);
 		MCL_FREE(self);
 		return NULL;
@@ -44,11 +43,11 @@ MCL_PRIVATE void MclEntityFactory_DestroyEntity(void *obj, void *arg) {
 	MclEntity_Destroy((MclEntity*)obj);
 }
 
-MclEntity* MclEntityFactory_CreateSharedPtr(MclEntityId id, const MclEntityConfig *config) {
+MclEntity* MclEntityFactory_CreateSharedPtr(MclEntityId id, void *cfg) {
 	MclEntity *self = MclSharedPtr_Create(MCL_ENTITY_SIZE, MclEntityFactory_DestroyEntity, NULL);
 	MCL_ASSERT_VALID_PTR_NIL(self);
 
-	if (MCL_FAILED(MclEntity_Init(self, id, config->value))) {
+	if (MCL_FAILED(MclEntity_Init(self, id, cfg))) {
 		MCL_LOG_ERR("Initialize shared ptr (%u) of entity failed!", id);
 		MCL_FREE(self);
 		return NULL;
@@ -66,11 +65,11 @@ void MclEntityFactory_DeleteSharedPtr(MclEntity *self) {
 }
 
 ///////////////////////////////////////////////////////////
-MclEntity* MclEntityFactory_CreateLockObj(MclEntityId id, const MclEntityConfig *config) {
+MclEntity* MclEntityFactory_CreateLockObj(MclEntityId id, void *cfg) {
 	MclEntity *self = (MclEntity*)MclLockObj_Create(MCL_ENTITY_SIZE);
 	MCL_ASSERT_VALID_PTR_NIL(self);
 
-	if (MCL_FAILED(MclEntity_Init(self, id, config->value))) {
+	if (MCL_FAILED(MclEntity_Init(self, id, cfg))) {
 		MCL_LOG_ERR("Initialize lock entity (%u) failed!", id);
 		MclLockObj_Delete(self, NULL, NULL);
 		return NULL;
@@ -103,13 +102,13 @@ void MclEntityFactory_DeleteLockObj(MclEntity *self) {
 //	MCL_LOG_SUCC("Entity allocator init OK!");
 //}
 //
-//MclEntity* MclEntityFactory_CreateStatic(MclEntityId id, const MclEntityConfig *config) {
+//MclEntity* MclEntityFactory_CreateStatic(MclEntityId id, void *cfg) {
 //	if (MCL_ENTITY_MEM_SIZE < MCL_ENTITY_SIZE) return NULL;
 //
 //	MclEntity* self = MCL_ALLOCATOR_ALLOC(MclEntityAllocator, entityAllocator);
 //	MCL_ASSERT_VALID_PTR_NIL(self);
 //
-//	if (MCL_FAILED(MclEntity_Init(self, id, config->value))) {
+//	if (MCL_FAILED(MclEntity_Init(self, id, cfg))) {
 //		MCL_LOG_ERR("Initialize static entity (%u) failed!", id);
 //		MclEntityAllocator_Free(&entityAllocator, self);
 //		return NULL;

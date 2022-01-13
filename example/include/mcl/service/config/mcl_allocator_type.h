@@ -1,0 +1,15 @@
+#ifndef HC9B249D8_F049_49D4_8BF8_01C928C54C14
+#define HC9B249D8_F049_49D4_8BF8_01C928C54C14
+
+#include "mcl/stdc.h"
+
+MCL_STDC_BEGIN
+
+typedef enum {
+	MCL_ALLOCATOR_HEAP,
+	MCL_ALLOCATOR_POOL,
+} MclAllocatorType;
+
+MCL_STDC_END
+
+#endif

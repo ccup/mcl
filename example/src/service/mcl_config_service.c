@@ -9,11 +9,10 @@
 #include "mcl/lock/lockobj.h"
 #include "mcl/assert.h"
 
-MclStatus MclConfigService_CreateEntity(MclEntityId entityId, const MclEntityConfig *config) {
+MclStatus MclConfigService_CreateEntity(MclEntityId entityId) {
 	MCL_ASSERT_TRUE(MclEntityId_IsValid(entityId));
-	MCL_ASSERT_VALID_PTR(config);
 
-	MclEntity *entity = MclEntityFactory_CreateLockObj(entityId, config);
+	MclEntity *entity = MclEntityFactory_CreateLockObj(entityId, NULL);
 	if (!entity) {
 		MCL_LOG_WARN("Config Service: not found entity (%u)!", entityId);
 		return MCL_STATUS_ENTITY_NOT_FOUND;
@@ -53,7 +52,7 @@ MclStatus MclConfigService_DeleteEntity(MclEntityId entityId) {
 MclStatus MclConfigService_CreateAggregator(MclAggregatorId aggregatorId) {
 	MCL_ASSERT_TRUE(MclAggregatorId_IsValid(aggregatorId));
 
-	MclAggregator *aggregator = MclAggregatorFactory_CreateLockObj(aggregatorId);
+	MclAggregator *aggregator = MclAggregatorFactory_CreateLockObj(aggregatorId, NULL);
 	if (!aggregator) {
 		MCL_LOG_WARN("Config Service: not found aggregator (%u)!", aggregatorId);
 		return MCL_STATUS_AGGREGATOR_NOT_FOUND;

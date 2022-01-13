@@ -7,9 +7,7 @@
 
 MCL_STDC_BEGIN
 
-MCL_TYPE_DECL(MclEntityConfig);
-
-MclStatus MclConfigService_CreateEntity(MclEntityId, const MclEntityConfig*);
+MclStatus MclConfigService_CreateEntity(MclEntityId);
 MclStatus MclConfigService_DeleteEntity(MclEntityId);
 
 MclStatus MclConfigService_CreateAggregator(MclAggregatorId);

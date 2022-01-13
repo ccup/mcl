@@ -7,20 +7,19 @@
 MCL_STDC_BEGIN
 
 MCL_TYPE_DECL(MclEntity);
-MCL_TYPE_DECL(MclEntityConfig);
 
 size_t MclEntityFactory_GetUnreleasedCount();
 
-MclEntity* MclEntityFactory_Create(MclEntityId, const MclEntityConfig*);
+MclEntity* MclEntityFactory_Create(MclEntityId, void *cfg);
 void MclEntityFactory_Delete(MclEntity*);
 
-MclEntity* MclEntityFactory_CreateSharedPtr(MclEntityId, const MclEntityConfig*);
+MclEntity* MclEntityFactory_CreateSharedPtr(MclEntityId, void *cfg);
 void MclEntityFactory_DeleteSharedPtr(MclEntity*);
 
-MclEntity* MclEntityFactory_CreateLockObj(MclEntityId, const MclEntityConfig*);
+MclEntity* MclEntityFactory_CreateLockObj(MclEntityId, void *cfg);
 void MclEntityFactory_DeleteLockObj(MclEntity*);
 
-MclEntity* MclEntityFactory_CreateStatic(MclEntityId, const MclEntityConfig*);
+MclEntity* MclEntityFactory_CreateStatic(MclEntityId, void *cfg);
 void MclEntityFactory_DeleteStatic(MclEntity*);
 
 MCL_STDC_END

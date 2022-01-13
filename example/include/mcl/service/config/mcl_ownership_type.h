@@ -1,0 +1,15 @@
+#ifndef HC847CF58_6B49_44F8_A535_84598A2F9952
+#define HC847CF58_6B49_44F8_A535_84598A2F9952
+
+#include "mcl/stdc.h"
+
+MCL_STDC_BEGIN
+
+typedef enum {
+	MCL_OWNERSHIP_UNIQUE,
+	MCL_OWNERSHIP_SHARED,
+} MclOwnerShipType;
+
+MCL_STDC_END
+
+#endif

@@ -75,7 +75,28 @@ MclStatus MclControlService_DoubleEntitesInAggregator(MclAggregatorId aggregator
 	return MCL_SUCCESS;
 }
 
-MclStatus MclControlService_DoubleEntity(MclEntityId entityId) {
+MclStatus MclControlService_UpdateEntityValue(MclEntityId entityId, MclInteger value) {
+	MCL_ASSERT_TRUE(MclEntityId_IsValid(entityId));
+	MCL_ASSERT_TRUE(MclInteger_IsValid(value));
+
+	MCL_LOCK_OBJ_AUTO MclEntity *entity = MclEntityRepo_Fetch(entityId);
+	if (!entity) {
+		MCL_LOG_WARN("Control Service: not found entity (%u)!", entityId);
+		return MCL_STATUS_ENTITY_NOT_FOUND;
+	}
+
+	MclStatus status = MclEntity_UpdateValue(entity, value);
+	MCL_ASSERT_TRUE(!MCL_FAILED(status));
+
+	if (MclStatus_IsNothingChanged(status)) {
+		MCL_LOG_WARN("Control Service: Update entity (%u) value (%u) but nothing changed!", entityId, value);
+	} else {
+		MCL_LOG_SUCC("Control Service: update entity (%u) value to (%u) OK!", entityId, value);
+	}
+	return MCL_SUCCESS;
+}
+
+MclStatus MclControlService_DoubleEntityValue(MclEntityId entityId) {
 	MCL_ASSERT_TRUE(MclEntityId_IsValid(entityId));
 
 	MCL_LOCK_OBJ_AUTO MclEntity *entity = MclEntityRepo_Fetch(entityId);

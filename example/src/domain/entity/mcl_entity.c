@@ -15,9 +15,9 @@ MCL_PRIVATE bool MclEntity_IsOverflowByTime(const MclEntity *self, uint32_t time
 	return  ((uint64_t)self->value) * time > MCL_INTEGER_MAX;
 }
 
-MclStatus MclEntity_Init(MclEntity *self, MclEntityId id, MclInteger value) {
+MclStatus MclEntity_Init(MclEntity *self, MclEntityId id, void *cfg) {
 	self->id = id;
-	self->value = value;
+	MclInteger_Clear(&self->value);
 	self->aggregatorId = MCL_AGGREGATOR_ID_INVALID;
 	return MCL_SUCCESS;
 }
@@ -52,6 +52,15 @@ void MclEntity_OnRemoveFromAggregator(MclEntity *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 	self->aggregatorId = MCL_AGGREGATOR_ID_INVALID;
 	MclInteger_Clear(&self->value);
+}
+
+MclStatus MclEntity_UpdateValue(MclEntity *self, MclInteger value) {
+	MCL_ASSERT_VALID_PTR(self);
+
+	if (self->value == value) return MCL_STATUS_NOTHING_CHANGED;
+
+	self->value = value;
+	return MCL_SUCCESS;
 }
 
 MclStatus MclEntity_DoubleValue(MclEntity *self) {

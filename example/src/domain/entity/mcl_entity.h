@@ -12,7 +12,7 @@ MCL_TYPE_DECL(MclEntity);
 
 extern const size_t MCL_ENTITY_SIZE;
 
-MclStatus MclEntity_Init(MclEntity*, MclEntityId, MclInteger);
+MclStatus MclEntity_Init(MclEntity*, MclEntityId, void *cfg);
 void MclEntity_Destroy(MclEntity*);
 
 MclEntityId MclEntity_GetId(const MclEntity*);
@@ -22,7 +22,8 @@ MclAggregatorId MclEntity_GetAggregatorId(const MclEntity*);
 void MclEntity_OnInsertToAggregator(MclEntity*, MclAggregatorId);
 void MclEntity_OnRemoveFromAggregator(MclEntity*);
 
-MclStatus   MclEntity_DoubleValue(MclEntity*);
+MclStatus MclEntity_UpdateValue(MclEntity*, MclInteger);
+MclStatus MclEntity_DoubleValue(MclEntity*);
 void MclEntity_ClearValue(MclEntity*);
 
 MCL_STDC_END

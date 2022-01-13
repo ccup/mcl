@@ -2,12 +2,12 @@
 #include "mcl/service/mcl_control_service.h"
 #include "mcl/service/mcl_event_service.h"
 #include "mcl/service/mcl_query_service.h"
-#include "mcl/service/config/mcl_entity_config.h"
 #include "mcl/service/statistics/mcl_statistics.h"
 #include "mcl/thread/thread_launcher.h"
 #include "mcl/array/array_size.h"
 #include "mcl/time/time.h"
 #include "mcl/algo/loop.h"
+#include <stdlib.h>
 
 typedef struct {
 	size_t aggregatorCount;
@@ -39,8 +39,7 @@ MCL_PRIVATE void ExampleThread_ConfigAggregator(void *ctxt) {
 MCL_PRIVATE void ExampleThread_ConfigEntity(void *ctxt) {
 	ExampleConfig *cfg = (ExampleConfig*)ctxt;
 	MCL_LOOP_FOREACH_INDEX(entityId, cfg->entityCount) {
-		MclEntityConfig entityCfg = {cfg->entityCount - entityId};
-		MclConfigService_CreateEntity(entityId, &entityCfg);
+		MclConfigService_CreateEntity(entityId);
 		ExampleThread_Delay(cfg->entityIntervalSec);
 	}
 	ExampleThread_Delay(cfg->intervalSec);
@@ -68,7 +67,8 @@ MCL_PRIVATE void ExampleThread_ControlRelation(void *ctxt) {
 MCL_PRIVATE void ExampleThread_ControlValue(void *ctxt) {
 	ExampleConfig *cfg = (ExampleConfig*)ctxt;
 	MCL_LOOP_FOREACH_INDEX(entityId, cfg->entityCount) {
-		MclControlService_DoubleEntity(entityId);
+		MclControlService_UpdateEntityValue(entityId, (MclInteger)(rand() % 10));
+		MclControlService_DoubleEntityValue(entityId);
 		ExampleThread_Delay(cfg->entityIntervalSec);
 	}
 	ExampleThread_Delay(cfg->intervalSec);

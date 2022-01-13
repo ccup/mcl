@@ -9,6 +9,10 @@ typedef uint32_t MclInteger;
 
 static const MclInteger MCL_INTEGER_MAX = MCL_UINT32_MAX;
 
+MCL_INLINE bool MclInteger_IsValid(MclInteger self) {
+	return self < MCL_INTEGER_MAX / 2;
+}
+
 MCL_INLINE void MclInteger_Clear(MclInteger *self) {
 	if (self) (*self) = 0;
 }

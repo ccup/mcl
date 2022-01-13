@@ -15,11 +15,11 @@ size_t MclAggregatorFactory_GetUnreleasedCount() {
 }
 
 ///////////////////////////////////////////////////////////
-MclAggregator* MclAggregatorFactory_Create(MclAggregatorId id) {
+MclAggregator* MclAggregatorFactory_Create(MclAggregatorId id, void *cfg) {
 	MclAggregator *self = MCL_MALLOC(MCL_AGGREGATOR_SIZE);
 	MCL_ASSERT_VALID_PTR_NIL(self);
 
-	if (MCL_FAILED(MclAggregator_Init(self, id))) {
+	if (MCL_FAILED(MclAggregator_Init(self, id, cfg))) {
 		MCL_LOG_ERR("Initialize aggregator (%u) failed!", id);
 		MCL_FREE(self);
 		return NULL;
@@ -42,11 +42,11 @@ MCL_PRIVATE void MclAggregatorFactory_DestroyAggregator(void *obj, void *arg) {
 	MclAggregator_Destroy((MclAggregator*)obj);
 }
 
-MclAggregator* MclAggregatorFactory_CreateSharedPtr(MclAggregatorId id) {
+MclAggregator* MclAggregatorFactory_CreateSharedPtr(MclAggregatorId id, void *cfg) {
 	MclAggregator *self = MclSharedPtr_Create(MCL_AGGREGATOR_SIZE, MclAggregatorFactory_DestroyAggregator, NULL);
 	MCL_ASSERT_VALID_PTR_NIL(self);
 
-	if (MCL_FAILED(MclAggregator_Init(self, id))) {
+	if (MCL_FAILED(MclAggregator_Init(self, id, cfg))) {
 		MCL_LOG_ERR("Initialize shared ptr (%u) of aggregator failed!", id);
 		MCL_FREE(self);
 		return NULL;
@@ -64,11 +64,11 @@ void MclAggregatorFactory_DeleteSharedPtr(MclAggregator *self) {
 }
 
 ///////////////////////////////////////////////////////////
-MclAggregator* MclAggregatorFactory_CreateLockObj(MclAggregatorId id) {
+MclAggregator* MclAggregatorFactory_CreateLockObj(MclAggregatorId id, void *cfg) {
 	MclAggregator *self = (MclAggregator*)MclLockObj_Create(MCL_AGGREGATOR_SIZE);
 	MCL_ASSERT_VALID_PTR_NIL(self);
 
-	if (MCL_FAILED(MclAggregator_Init(self, id))) {
+	if (MCL_FAILED(MclAggregator_Init(self, id, cfg))) {
 		MCL_LOG_ERR("Initialize lock aggregator (%u) failed!", id);
 		MclLockObj_Delete(self, NULL, NULL);
 		return NULL;
@@ -101,13 +101,13 @@ void MclAggregatorFactory_DeleteLockObj(MclAggregator *self) {
 //	MCL_LOG_SUCC("Aggregator allocator init OK!");
 //}
 //
-//MclAggregator* MclAggregatorFactory_CreateStatic(MclAggregatorId id) {
+//MclAggregator* MclAggregatorFactory_CreateStatic(MclAggregatorId id, void *cfg) {
 //	if (MCL_AGGREGATOR_MEM_SIZE < MCL_AGGREGATOR_SIZE) return NULL;
 //
 //	MclAggregator* self = MCL_ALLOCATOR_ALLOC(MclAggregatorAllocator, aggregatorAllocator);
 //	MCL_ASSERT_VALID_PTR_NIL(self);
 //
-//	if (MCL_FAILED(MclAggregator_Init(self, id))) {
+//	if (MCL_FAILED(MclAggregator_Init(self, id, cfg))) {
 //		MCL_LOG_ERR("Initialize static aggregator (%u) failed!", id);
 //		MclAggregatorAllocator_Free(&aggregatorAllocator, self);
 //		return NULL;

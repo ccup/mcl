@@ -163,7 +163,7 @@ namespace {
             MCL_LOG_INFO("service end insert foo of id %d", id);
             sleep(1);
         }
-        MCL_LOG_SUCC("Create service  exit!");
+        MCL_LOG_SUCC("Create service exit!");
         return NULL;
     }
 
@@ -185,7 +185,7 @@ namespace {
             MCL_LOG_INFO("service end remove foo of id %d", id);
             sleep(2);
         }
-        MCL_LOG_SUCC("Delete service  exit!");
+        MCL_LOG_SUCC("Delete service exit!");
         return NULL;
     }
 

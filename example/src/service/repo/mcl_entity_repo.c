@@ -109,44 +109,37 @@ typedef struct {
 	void *arg;
 } MclEntityRepoVisitor;
 
-MCL_PRIVATE MclStatus MclEntityRepoVisitor_Visit(MclEntity *entity, void *arg) {
+MCL_PRIVATE MclStatus MclEntityRepoVisitor_LockVisit(MclEntity *entity, void *arg, MclStatus(*lock)(void*)) {
 	MclEntityRepoVisitor *visitor = (MclEntityRepoVisitor*)arg;
 
 	MclStatus result = MCL_FAILURE;
 
-	MCL_ASSERT_SUCC_CALL(MclLockObj_WrLock(entity));
+	MCL_ASSERT_SUCC_CALL(lock(entity));
 	result = visitor->visit(entity, visitor->arg);
 	MCL_ASSERT_SUCC_CALL(MclLockObj_UnLock(entity));
 	return result;
+}
+
+MCL_PRIVATE MclStatus MclEntityRepoVisitor_Visit(MclEntity *entity, void *arg) {
+	return MclEntityRepoVisitor_LockVisit(entity, arg, MclLockObj_WrLock);
+}
+
+MCL_PRIVATE MclStatus MclEntityRepoVisitor_VisitConst(const MclEntity *entity, void *arg) {
+	return MclEntityRepoVisitor_LockVisit((MclEntity*)entity, arg, MclLockObj_RdLock);
 }
 
 MclStatus MclEntityRepo_Accept(MclEntityVisit visit, void *arg) {
 	MCL_ASSERT_VALID_PTR(visit);
 
 	MclEntityRepoVisitor visitor = {.visit = visit, .arg = arg};
-
 	MCL_LOCK_READ_AUTO(entityRepo.rwlock);
-
 	return MclEntityList_Accept(&entityRepo.entities, MclEntityRepoVisitor_Visit, &visitor);
-}
-
-MCL_PRIVATE MclStatus MclEntityRepoVisitor_VisitConst(const MclEntity *entity, void *arg) {
-	MclEntityRepoVisitor *visitor = (MclEntityRepoVisitor*)arg;
-
-	MclStatus result = MCL_FAILURE;
-
-	MCL_ASSERT_SUCC_CALL(MclLockObj_RdLock((void*)entity));
-	result = visitor->visit((MclEntity*)entity, visitor->arg);
-	MCL_ASSERT_SUCC_CALL(MclLockObj_UnLock((void*)entity));
-	return result;
 }
 
 MclStatus MclEntityRepo_AcceptConst(MclEntityVisitConst visit, void *arg) {
 	MCL_ASSERT_VALID_PTR(visit);
 
 	MclEntityRepoVisitor visitor = {.visit = (MclEntityVisit)visit, .arg = arg};
-
 	MCL_LOCK_READ_AUTO(entityRepo.rwlock);
-
 	return MclEntityList_AcceptConst(&entityRepo.entities, MclEntityRepoVisitor_VisitConst, &visitor);
 }

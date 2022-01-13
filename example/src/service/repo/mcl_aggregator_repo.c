@@ -124,44 +124,37 @@ typedef struct {
 	void *arg;
 } MclAggregatorRepoVisitor;
 
-MCL_PRIVATE MclStatus MclAggregatorRepoVisitor_Visit(MclAggregator *aggregator, void *arg) {
+MCL_PRIVATE MclStatus MclAggregatorRepoVisitor_LockVisit(MclAggregator *aggregator, void *arg, MclStatus(*lock)(void*)) {
 	MclAggregatorRepoVisitor *visitor = (MclAggregatorRepoVisitor*)arg;
 
 	MclStatus result = MCL_FAILURE;
 
-	MCL_ASSERT_SUCC_CALL(MclLockObj_WrLock(aggregator));
+	MCL_ASSERT_SUCC_CALL(lock(aggregator));
 	result = visitor->visit(aggregator, visitor->arg);
 	MCL_ASSERT_SUCC_CALL(MclLockObj_UnLock(aggregator));
 	return result;
+}
+
+MCL_PRIVATE MclStatus MclAggregatorRepoVisitor_Visit(MclAggregator *aggregator, void *arg) {
+	return MclAggregatorRepoVisitor_LockVisit(aggregator, arg, MclLockObj_WrLock);
+}
+
+MCL_PRIVATE MclStatus MclAggregatorRepoVisitor_VisitConst(const MclAggregator *aggregator, void *arg) {
+	return MclAggregatorRepoVisitor_LockVisit((MclAggregator*)aggregator, arg, MclLockObj_RdLock);
 }
 
 MclStatus MclAggregatorRepo_Accept(MclAggregatorVisit visit, void *arg) {
 	MCL_ASSERT_VALID_PTR(visit);
 
 	MclAggregatorRepoVisitor visitor = {.visit = visit, .arg = arg};
-
 	MCL_LOCK_READ_AUTO(aggregatorRepo.rwlock);
-
 	return MclAggregatorMap_Accept(&aggregatorRepo.aggregators, MclAggregatorRepoVisitor_Visit, &visitor);
-}
-
-MCL_PRIVATE MclStatus MclAggregatorRepoVisitor_VisitConst(const MclAggregator *aggregator, void *arg) {
-	MclAggregatorRepoVisitor *visitor = (MclAggregatorRepoVisitor*)arg;
-
-	MclStatus result = MCL_FAILURE;
-
-	MCL_ASSERT_SUCC_CALL(MclLockObj_RdLock((void*)aggregator));
-	result = visitor->visit((MclAggregator*)aggregator, visitor->arg);
-	MCL_ASSERT_SUCC_CALL(MclLockObj_UnLock((void*)aggregator));
-	return result;
 }
 
 MclStatus MclAggregatorRepo_AcceptConst(MclAggregatorVisitConst visit, void *arg) {
 	MCL_ASSERT_VALID_PTR(visit);
 
 	MclAggregatorRepoVisitor visitor = {.visit = (MclAggregatorVisit)visit, .arg = arg};
-
 	MCL_LOCK_READ_AUTO(aggregatorRepo.rwlock);
-
 	return MclAggregatorMap_AcceptConst(&aggregatorRepo.aggregators, MclAggregatorRepoVisitor_VisitConst, &visitor);
 }

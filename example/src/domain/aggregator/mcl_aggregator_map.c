@@ -61,15 +61,26 @@ size_t MclAggregatorMap_GetSize(const MclAggregatorMap *self) {
 	return MclHashMap_GetSize(self);
 }
 
+typedef struct {
+	MclAggregatorMapElemVisit visit;
+	void *arg;
+} MclAggregatorMapVisitor;
+
+MCL_PRIVATE MclStatus MclAggregatorMapVisitor_Visit(MclHashNode *hashNode, void *arg) {
+	MclAggregatorMapVisitor *visitor = (MclAggregatorMapVisitor*)arg;
+	MclAggregator *aggregator = (MclAggregator*)MclHashNode_GetValue(hashNode);
+	return visitor->visit(aggregator, visitor->arg);
+}
+
 MclStatus MclAggregatorMap_Accept(const MclAggregatorMap *self, MclAggregatorMapElemVisit visit, void *arg) {
 	MCL_ASSERT_VALID_PTR(self);
 	MCL_ASSERT_VALID_PTR(visit);
 
-	return MclHashMap_Accept(self, (MclHashNodeVisit)visit, arg);
+	MclAggregatorMapVisitor visitor = {.visit = visit, .arg = arg};
+	return MclHashMap_Accept(self, (MclHashNodeVisit)MclAggregatorMapVisitor_Visit, &visitor);
 }
 
 MclStatus MclAggregatorMap_AcceptConst(const MclAggregatorMap *self, MclAggregatorMapElemVisitConst visit, void *arg) {
 	MCL_ASSERT_SUCC_CALL(MclAggregatorMap_Accept(self, (MclAggregatorMapElemVisit)visit, arg));
 	return MCL_SUCCESS;
 }
-

@@ -29,7 +29,7 @@ MCL_PRIVATE void MclList_AddTail(MclList *self, MclListNode *node) {
 }
 
 MclList* MclList_CreateDefault() {
-    return MclList_Create(MclListNodeAllocator_GetDefault());
+    return MclList_Create(&MclListNodeAllocator_Default);
 }
 
 MclList* MclList_Create(MclListNodeAllocator *allocator) {

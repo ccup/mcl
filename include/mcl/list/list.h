@@ -110,7 +110,7 @@ MCL_INLINE MclListNode* MclList_GetPrevOf(MclList *self, MclListNode *node) {
 #define MCL_LIST(LIST, ALLOCATOR)   							\
 	{.allocator = (ALLOCATOR), .nodes = MCL_LINK_INITIALIZER(&(LIST).nodes, MclListNode, link), .size = 0}
 
-#define MCL_LIST_DEFAULT(LIST) MCL_LIST(LIST, &MCL_LIST_NODE_ALLOCATOR_DEFAULT)
+#define MCL_LIST_DEFAULT(LIST) MCL_LIST(LIST, &MclListNodeAllocator_Default)
 
 MCL_STDC_END
 

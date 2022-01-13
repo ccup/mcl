@@ -4,7 +4,7 @@
 
 void MclEntityList_Init(MclEntityList *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
-	MclList_Init(self, MclListNodeAllocator_GetDefault());
+	MclList_Init(self, &MclListNodeAllocator_Default);
 }
 
 void MclEntityList_Destroy(MclEntityList *self, MclEntityListElemDestroy destroy) {

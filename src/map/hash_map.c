@@ -7,7 +7,7 @@ MCL_PRIVATE uint32_t MclHashMap_GetBucketId(const MclHashMap *self, MclHashKey k
 }
 
 MclHashMap* MclHashMap_CreateDefault() {
-    return MclHashMap_Create(MCL_HASHMAP_BUCKET_COUNT_DEFAULT, MclHashNodeAllocator_GetDefault());
+    return MclHashMap_Create(MCL_HASHMAP_BUCKET_COUNT_DEFAULT, &MclHashNodeAllocator_Default);
 }
 
 MclHashMap* MclHashMap_Create(uint32_t bucketCount, MclHashNodeAllocator *allocator) {

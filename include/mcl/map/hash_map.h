@@ -59,7 +59,7 @@ MCL_INLINE bool MclHashMap_IsEmpty(const MclHashMap *self) {
 	{.allocator = (ALLOCATOR), .buckets = (BUCKETS), .bucketCount = (BUCKET_COUNT), .size = 0}
 
 #define MCL_HASHMAP_DEFAULT(MAP, BUCKETS, BUCKET_COUNT) 			\
-	MCL_HASHMAP(MAP, BUCKETS, BUCKET_COUNT, &MCL_HASH_NODE_ALLOCATOR_DEFAULT)
+	MCL_HASHMAP(MAP, BUCKETS, BUCKET_COUNT, &MclHashNodeAllocator_Default)
 
 MCL_STDC_END
 

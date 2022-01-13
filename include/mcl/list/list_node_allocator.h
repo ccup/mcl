@@ -7,7 +7,7 @@ MCL_STDC_BEGIN
 
 MCL_TYPE_DECL(MclListNode);
 
-MCL_TYPE(MclListNodeAllocator) {
+MCL_INTERFACE(MclListNodeAllocator) {
     MclListNode* (*alloc)(MclListNodeAllocator*);
     void (*free)(MclListNodeAllocator*, MclListNode*);
 };
@@ -20,9 +20,7 @@ MCL_INLINE void MclListNodeAllocator_Free(MclListNodeAllocator *self, MclListNod
     if (self && self->free) self->free(self, node);
 }
 
-extern MclListNodeAllocator MCL_LIST_NODE_ALLOCATOR_DEFAULT;
-
-MclListNodeAllocator* MclListNodeAllocator_GetDefault();
+extern MclListNodeAllocator MclListNodeAllocator_Default;
 
 /////////////////////////////////////////////////////////
 #define MCL_LIST_NODE_ALLOCATOR(ALLOC, FREE) {.alloc = ALLOC, .free = FREE}

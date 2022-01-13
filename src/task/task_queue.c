@@ -13,7 +13,7 @@ typedef struct {
 } TaskQueue;
 
 MCL_PRIVATE void TaskQueue_Init(TaskQueue *queue, uint32_t threshold) {
-	MclList_Init(&queue->tasks, MclListNodeAllocator_GetDefault());
+	MclList_Init(&queue->tasks, &MclListNodeAllocator_Default);
 	queue->threshold = threshold;
 	queue->poppedCount = 0;
 }

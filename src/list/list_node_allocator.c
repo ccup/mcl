@@ -10,11 +10,7 @@ MCL_PRIVATE void MclListNodeAllocator_FreeDefault(MclListNodeAllocator *self, Mc
     if (node) MCL_FREE(node);
 }
 
-MclListNodeAllocator MCL_LIST_NODE_ALLOCATOR_DEFAULT = {
+MclListNodeAllocator MclListNodeAllocator_Default = {
         .alloc = MclListNodeAllocator_AllocDefault,
         .free = MclListNodeAllocator_FreeDefault
 };
-
-MclListNodeAllocator* MclListNodeAllocator_GetDefault() {
-    return &MCL_LIST_NODE_ALLOCATOR_DEFAULT;
-}

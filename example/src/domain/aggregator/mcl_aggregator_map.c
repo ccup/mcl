@@ -4,7 +4,7 @@
 
 void MclAggregatorMap_Init(MclAggregatorMap *self, MclHashBucket *bucket, uint32_t bucketCount) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
-	MclHashMap_Init(self, bucket, bucketCount, MclHashNodeAllocator_GetDefault());
+	MclHashMap_Init(self, bucket, bucketCount, &MclHashNodeAllocator_Default);
 }
 
 void MclAggregatorMap_Destroy(MclAggregatorMap *self, MclAggregatorMapElemDestroy destroy) {

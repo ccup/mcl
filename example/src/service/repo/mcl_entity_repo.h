@@ -23,7 +23,7 @@ const MclEntity* MclEntityRepo_FetchConstBy(MclEntityPred, void*);
 
 bool   MclEntityRepo_HasEntity(MclEntityId);
 bool   MclEntityRepo_IsEmpty();
-size_t MclEntityRepo_GetCount();
+size_t MclEntityRepo_GetSize();
 
 typedef MclStatus (*MclEntityVisit)(MclEntity*, void*);
 MclStatus MclEntityRepo_Accept(MclEntityVisit, void*);

@@ -13,13 +13,13 @@ void MclAggregatorMap_Destroy(MclAggregatorMap *self, MclAggregatorMapElemDestro
 	MclHashMap_Clear(self, (MclHashValueDestroy)destroy);
 }
 
-MclStatus MclAggregatorMap_Insert(MclAggregatorMap *self, MclAggregator *aggregator) {
-	MCL_ASSERT_VALID_PTR(self);
-	MCL_ASSERT_VALID_PTR(aggregator);
+MclAggregator* MclAggregatorMap_Insert(MclAggregatorMap *self, MclAggregator *aggregator) {
+	MCL_ASSERT_VALID_PTR_NIL(self);
+	MCL_ASSERT_VALID_PTR_NIL(aggregator);
 
 	MclHashValue *value = MclHashMap_Set(self, MclAggregator_GetId(aggregator), aggregator);
-	MCL_ASSERT_VALID_PTR(value);
-	return MCL_SUCCESS;
+	MCL_ASSERT_VALID_PTR_NIL(value);
+	return (MclAggregator*)value;
 }
 
 MclAggregator* MclAggregatorMap_Remove(MclAggregatorMap *self, MclAggregatorId id) {

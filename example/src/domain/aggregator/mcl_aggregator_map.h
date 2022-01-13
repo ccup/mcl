@@ -15,7 +15,7 @@ void MclAggregatorMap_Init(MclAggregatorMap*, MclHashBucket*, uint32_t bucketCou
 typedef void (*MclAggregatorMapElemDestroy)(MclAggregator*);
 void MclAggregatorMap_Destroy(MclAggregatorMap*, MclAggregatorMapElemDestroy);
 
-MclStatus  MclAggregatorMap_Insert(MclAggregatorMap*, MclAggregator*);
+MclAggregator* MclAggregatorMap_Insert(MclAggregatorMap*, MclAggregator*);
 MclAggregator* MclAggregatorMap_Remove(MclAggregatorMap*, MclAggregatorId);
 
 bool   MclAggregatorMap_HasAggregator(const MclAggregatorMap*, MclAggregatorId);

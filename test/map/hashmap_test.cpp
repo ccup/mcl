@@ -65,7 +65,7 @@ FIXTURE(HashMapTest) {
 	TEST("should be empty when initialized")
 	{
 		ASSERT_TRUE(MclHashMap_IsEmpty(foos));
-		ASSERT_EQ(0, MclHashMap_Getsize(foos));
+		ASSERT_EQ(0, MclHashMap_GetSize(foos));
 		ASSERT_FALSE(MclHashValue_IsValid(MclHashMap_Get(foos, 0)));
 	}
 
@@ -75,7 +75,7 @@ FIXTURE(HashMapTest) {
 
 		MclHashMap_Set(foos, 1, foo);
 		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
-		ASSERT_EQ(1, MclHashMap_Getsize(foos));
+		ASSERT_EQ(1, MclHashMap_GetSize(foos));
 
 		auto f = (Foo*)MclHashMap_Get(foos, 1);
 		ASSERT_TRUE(f != nullptr);
@@ -93,7 +93,7 @@ FIXTURE(HashMapTest) {
 		MclHashMap_Set(foos, 3, foo3);
 
 		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
-		ASSERT_EQ(3, MclHashMap_Getsize(foos));
+		ASSERT_EQ(3, MclHashMap_GetSize(foos));
 
 		Foo *f {nullptr};
 
@@ -115,16 +115,16 @@ FIXTURE(HashMapTest) {
 
 		auto result = (Foo*)MclHashMap_Set(foos, 1, foo1);
 		ASSERT_EQ(result , foo1);
-		ASSERT_EQ(1, MclHashMap_Getsize(foos));
+		ASSERT_EQ(1, MclHashMap_GetSize(foos));
 
 		auto foo2 = Foo_Create(2);
 		result = (Foo*)MclHashMap_Set(foos, 1, foo2);
 		ASSERT_EQ(result , foo1);
-		ASSERT_EQ(1, MclHashMap_Getsize(foos));
+		ASSERT_EQ(1, MclHashMap_GetSize(foos));
 
 		result = (Foo*)MclHashMap_Set(foos, 1, Foo_Create(3));
 		ASSERT_EQ(result , foo2);
-		ASSERT_EQ(1, MclHashMap_Getsize(foos));
+		ASSERT_EQ(1, MclHashMap_GetSize(foos));
 
 		Foo_Delete(foo1);
 		Foo_Delete(foo2);
@@ -143,7 +143,7 @@ FIXTURE(HashMapTest) {
         ASSERT_EQ(1, result->getId());
 
 		ASSERT_TRUE(MclHashMap_IsEmpty(foos));
-		ASSERT_EQ(0, MclHashMap_Getsize(foos));
+		ASSERT_EQ(0, MclHashMap_GetSize(foos));
 
 		result = (Foo*)MclHashMap_Get(foos, 1);
 		ASSERT_TRUE(result == NULL);
@@ -165,17 +165,17 @@ FIXTURE(HashMapTest) {
 		Foo_Delete(foo2);
 
 		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
-		ASSERT_EQ(2, MclHashMap_Getsize(foos));
+		ASSERT_EQ(2, MclHashMap_GetSize(foos));
 
 		MclHashMap_Remove(foos, 1);
 
 		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
-		ASSERT_EQ(1, MclHashMap_Getsize(foos));
+		ASSERT_EQ(1, MclHashMap_GetSize(foos));
 
 		MclHashMap_Remove(foos, 3);
 
 		ASSERT_TRUE(MclHashMap_IsEmpty(foos));
-		ASSERT_EQ(0, MclHashMap_Getsize(foos));
+		ASSERT_EQ(0, MclHashMap_GetSize(foos));
 
 		Foo_Delete(foo1);
 		Foo_Delete(foo3);
@@ -209,13 +209,13 @@ FIXTURE(HashMapTest) {
 		Foo_Delete(result);
 
 		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
-		ASSERT_EQ(1, MclHashMap_Getsize(foos));
+		ASSERT_EQ(1, MclHashMap_GetSize(foos));
 
 		result = (Foo*)MclHashMap_Remove(foos, 1);
 		Foo_Delete(result);
 
 		ASSERT_TRUE(MclHashMap_IsEmpty(foos));
-		ASSERT_EQ(0, MclHashMap_Getsize(foos));
+		ASSERT_EQ(0, MclHashMap_GetSize(foos));
 	}
 
 	TEST("should clear elements in map")
@@ -245,7 +245,7 @@ FIXTURE(HashMapTest) {
 		Foo_Delete(result);
 
 		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
-		ASSERT_EQ(2, MclHashMap_Getsize(foos));
+		ASSERT_EQ(2, MclHashMap_GetSize(foos));
 
 		Foo *f {nullptr};
 
@@ -270,15 +270,15 @@ FIXTURE(HashMapTest) {
 
 		auto count = MclHashMap_RemoveAllByPred(foos, HashNodePred_IsLargeThan, (void*)1, (MclHashValueDestroy)Foo_Delete);
 		ASSERT_EQ(2, count);
-		ASSERT_EQ(1, MclHashMap_Getsize(foos));
+		ASSERT_EQ(1, MclHashMap_GetSize(foos));
 
 		count = MclHashMap_RemoveAllByPred(foos, HashNodePred_IsLargeThan, (void*)1, NULL);
 		ASSERT_EQ(0, count);
-		ASSERT_EQ(1, MclHashMap_Getsize(foos));
+		ASSERT_EQ(1, MclHashMap_GetSize(foos));
 
 		count = MclHashMap_RemoveAllByPred(foos, HashNodePred_IsLargeThan, (void*)0, NULL);
 		ASSERT_EQ(1, count);
-		ASSERT_EQ(0, MclHashMap_Getsize(foos));
+		ASSERT_EQ(0, MclHashMap_GetSize(foos));
 
 		Foo_Delete(foo1);
 	}
@@ -306,7 +306,7 @@ FIXTURE(HashMapTest) {
 			MclHashMap_Set(foos, i, Foo_Create(i));
 		}
 
-		ASSERT_EQ(MAX_ELEMS, MclHashMap_Getsize(foos));
+		ASSERT_EQ(MAX_ELEMS, MclHashMap_GetSize(foos));
 
 		for (uint32_t i = 0; i < MAX_ELEMS; i++) {
 			auto f = (Foo*)MclHashMap_Get(foos, i);
@@ -319,7 +319,7 @@ FIXTURE(HashMapTest) {
 			Foo_Delete(result);
 		}
 
-		ASSERT_EQ(2, MclHashMap_Getsize(foos));
+		ASSERT_EQ(2, MclHashMap_GetSize(foos));
 
 		uint32_t sum = 0;
 		MclHashMap_Accept(foos, HashNodeVisit_Sum, &sum);

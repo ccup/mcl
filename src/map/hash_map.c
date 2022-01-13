@@ -23,7 +23,7 @@ MclHashMap* MclHashMap_Create(uint32_t bucketCount, MclHashNodeAllocator *alloca
         return NULL;
     }
 
-    MclHashMap_Init(self, bucketCount, buckets, allocator);
+    MclHashMap_Init(self, buckets, bucketCount, allocator);
     return self;
 }
 
@@ -35,7 +35,7 @@ void MclHashMap_Delete(MclHashMap *self, MclHashValueDestroy destroy) {
     MCL_FREE(self);
 }
 
-void MclHashMap_Init(MclHashMap *self, uint32_t bucketCount, MclHashBucket *buckets, MclHashNodeAllocator *allocator) {
+void MclHashMap_Init(MclHashMap *self, MclHashBucket *buckets, uint32_t bucketCount, MclHashNodeAllocator *allocator) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 	MCL_ASSERT_VALID_PTR_VOID(buckets);
 

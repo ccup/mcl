@@ -8,7 +8,7 @@ namespace {
     MclHashBucket buckets[MCL_HASHMAP_BUCKET_COUNT_DEFAULT] = {
     		MCL_MACRO_REPEAT_SIMPLE(MCL_HASHMAP_BUCKET_COUNT_DEFAULT, __MCL_HASH_BUCKETS_ITEM_INIT)
     };
-    MclHashMap foomap = MCL_HASHMAP(foomap, MCL_HASHMAP_BUCKET_COUNT_DEFAULT, buckets, NULL);
+    MclHashMap foomap = MCL_HASHMAP(foomap, buckets, MCL_HASHMAP_BUCKET_COUNT_DEFAULT, NULL);
 }
 
 FIXTURE(HashMapStaticTest) {
@@ -36,7 +36,7 @@ FIXTURE(HashMapStaticTest) {
 		MclHashMap_InsertNode(foos, &nodes[2]);
 
 		ASSERT_FALSE(MclHashMap_IsEmpty(foos));
-		ASSERT_EQ(4, MclHashMap_Getsize(foos));
+		ASSERT_EQ(4, MclHashMap_GetSize(foos));
 
 		long value{0};
 
@@ -58,11 +58,11 @@ FIXTURE(HashMapStaticTest) {
 
 		ASSERT_TRUE(!MCL_FAILED(MclHashMap_RemoveNode(foos, &nodes[5], NULL)));
 		ASSERT_TRUE(MclHashMap_FindNode(foos, 5) == NULL);
-		ASSERT_EQ(3, MclHashMap_Getsize(foos));
+		ASSERT_EQ(3, MclHashMap_GetSize(foos));
 
 		MclHashNode node = MCL_HASH_NODE(6, (MclHashValue)6);
 		ASSERT_TRUE(MCL_FAILED(MclHashMap_RemoveNode(foos, &node, NULL)));
 
-        ASSERT_EQ(3, MclHashMap_Getsize(foos));
+        ASSERT_EQ(3, MclHashMap_GetSize(foos));
 	}
 };

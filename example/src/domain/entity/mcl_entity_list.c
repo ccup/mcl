@@ -42,7 +42,8 @@ bool MclEntityList_HasEntity(const MclEntityList *self, MclEntityId id) {
 
 MclEntity* MclEntityList_FindById(const MclEntityList *self, MclEntityId id) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
-	MCL_ASSERT_TRUE_NIL(MclEntityId_IsValid(id));
+
+	if (!MclEntityId_IsValid(id)) return NULL;
 
 	return MclList_FindByPred(self, MclEntityIdPred_IsEqual, &id);
 }

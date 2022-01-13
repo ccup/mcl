@@ -16,13 +16,13 @@ MCL_TYPE(MclAggregatorRepo) {
 
 MCL_PRIVATE MclAggregatorRepo aggregatorRepo = {
 	.buckets = { MCL_MACRO_REPEAT_SIMPLE(MCL_HASHMAP_BUCKET_COUNT_DEFAULT, __MCL_HASH_BUCKETS_ITEM_INIT)},
-	.aggregtors = MCL_HASHMAP_DEFAULT(aggregatorRepo.aggregtors, MCL_HASHMAP_BUCKET_COUNT_DEFAULT, aggregatorRepo.buckets),
+	.aggregtors = MCL_HASHMAP_DEFAULT(aggregatorRepo.aggregtors, aggregatorRepo.buckets, MCL_HASHMAP_BUCKET_COUNT_DEFAULT),
 	.rwlock = MCL_RWLOCK(),
 };
 
 void MclAggregatorRepo_Init() {
 	MCL_ASSERT_SUCC_CALL_VOID(MclRwLock_Init(&aggregatorRepo.rwlock, NULL));
-	MclHashMap_Init(&aggregatorRepo.aggregtors, MCL_HASHMAP_BUCKET_COUNT_DEFAULT, aggregatorRepo.buckets, MclHashNodeAllocator_GetDefault());
+	MclHashMap_Init(&aggregatorRepo.aggregtors, aggregatorRepo.buckets, MCL_HASHMAP_BUCKET_COUNT_DEFAULT, MclHashNodeAllocator_GetDefault());
 }
 
 void MclAggregatorRepo_Destroy() {
@@ -117,7 +117,7 @@ bool MclAggregatorRepo_IsEmpty() {
 
 size_t MclAggregatorRepo_GetSize() {
 	MCL_LOCK_READ_AUTO(aggregatorRepo.rwlock);
-	return MclHashMap_Getsize(&aggregatorRepo.aggregtors);
+	return MclHashMap_GetSize(&aggregatorRepo.aggregtors);
 }
 
 typedef struct {

@@ -7,7 +7,6 @@
 MCL_STDC_BEGIN
 
 MCL_TYPE_DECL(MclAggregator);
-MCL_TYPE_DECL(MclLockPtr);
 
 size_t MclAggregatorFactory_GetUnreleasedCount();
 
@@ -19,9 +18,6 @@ void MclAggregatorFactory_DeleteSharedPtr(MclAggregator*);
 
 MclAggregator* MclAggregatorFactory_CreateLockObj(MclAggregatorId);
 void MclAggregatorFactory_DeleteLockObj(MclAggregator*);
-
-MclLockPtr* MclAggregatorFactory_CreateLockPtr(MclAggregatorId);
-void MclAggregatorFactory_DeleteLockPtr(MclLockPtr*);
 
 MclAggregator* MclAggregatorFactory_CreateStatic(MclAggregatorId);
 void MclAggregatorFactory_DeleteStatic(MclAggregator*);

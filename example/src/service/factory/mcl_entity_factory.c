@@ -5,7 +5,6 @@
 #include "mcl/mem/allocator.h"
 #include "mcl/mem/malloc.h"
 #include "mcl/lock/lockobj.h"
-#include "mcl/lock/lockptr.h"
 #include "mcl/lock/atom.h"
 #include "mcl/assert.h"
 
@@ -84,32 +83,6 @@ void MclEntityFactory_DeleteLockObj(MclEntity *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
 	MclLockObj_Delete(self, MclEntityFactory_DestroyEntity, NULL);
-	MclAtom_Sub(&entityCount, 1);
-}
-
-///////////////////////////////////////////////////////////
-MCL_PRIVATE void MclEntityFactory_DestroyEntityPtr(void *ptr, void *arg) {
-	MclEntityFactory_Delete((MclEntity*)ptr);
-}
-
-MclLockPtr* MclEntityFactory_CreateLockPtr(MclEntityId id, const MclEntityConfig *config) {
-	MclEntity *self = MclEntityFactory_Create(id, config);
-	MCL_ASSERT_VALID_PTR_NIL(self);
-
-	MclLockPtr *ptr = MclLockPtr_Create(self);
-	if (!ptr) {
-		MCL_LOG_ERR("Initialize lock ptr (%u) of entity failed!", id);
-		MclLockPtr_Delete(ptr, MclEntityFactory_DestroyEntityPtr, NULL);
-		return NULL;
-	}
-	MclAtom_Add(&entityCount, 1);
-	return ptr;
-}
-
-void MclEntityFactory_DeleteLockPtr(MclLockPtr *ptr) {
-	MCL_ASSERT_VALID_PTR_VOID(ptr);
-
-	MclLockPtr_Delete(ptr, MclEntityFactory_DestroyEntityPtr, NULL);
 	MclAtom_Sub(&entityCount, 1);
 }
 

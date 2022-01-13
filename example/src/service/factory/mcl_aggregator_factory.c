@@ -4,7 +4,6 @@
 #include "mcl/mem/allocator.h"
 #include "mcl/mem/malloc.h"
 #include "mcl/lock/lockobj.h"
-#include "mcl/lock/lockptr.h"
 #include "mcl/lock/atom.h"
 #include "mcl/assert.h"
 
@@ -82,32 +81,6 @@ void MclAggregatorFactory_DeleteLockObj(MclAggregator *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
 	MclLockObj_Delete(self, MclAggregatorFactory_DestroyAggregator, NULL);
-	MclAtom_Sub(&aggregatorCount, 1);
-}
-
-///////////////////////////////////////////////////////////
-MCL_PRIVATE void MclAggregatorFactory_DestroyAggregatorPtr(void *ptr, void *arg) {
-	MclAggregatorFactory_Delete((MclAggregator*)ptr);
-}
-
-MclLockPtr* MclAggregatorFactory_CreateLockPtr(MclAggregatorId id) {
-	MclAggregator *self = MclAggregatorFactory_Create(id);
-	MCL_ASSERT_VALID_PTR_NIL(self);
-
-	MclLockPtr *ptr = MclLockPtr_Create(self);
-	if (!ptr) {
-		MCL_LOG_ERR("Initialize lock ptr (%u) of aggregator failed!", id);
-		MclLockPtr_Delete(ptr, MclAggregatorFactory_DestroyAggregatorPtr, NULL);
-		return NULL;
-	}
-	MclAtom_Add(&aggregatorCount, 1);
-	return ptr;
-}
-
-void MclAggregatorFactory_DeleteLockPtr(MclLockPtr *ptr) {
-	MCL_ASSERT_VALID_PTR_VOID(ptr);
-
-	MclLockPtr_Delete(ptr, MclAggregatorFactory_DestroyAggregatorPtr, NULL);
 	MclAtom_Sub(&aggregatorCount, 1);
 }
 

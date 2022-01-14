@@ -20,6 +20,10 @@ FIXTURE(LinkTest)
 
 	AFTER
 	{
+		clearLink();
+	}
+
+	void clearLink() {
 		Foo *f1, *f2;
 		MCL_LINK_FOREACH_SAFE(&foos, Foo, link, f1, f2) {
 			MCL_LINK_REMOVE(f1, link);
@@ -40,6 +44,8 @@ FIXTURE(LinkTest)
 		ASSERT_FALSE(MCL_LINK_EMPTY(&foos, Foo, link));
 		ASSERT_EQ(5, MCL_LINK_FIRST(&foos)->x);
 		ASSERT_EQ(5, MCL_LINK_LAST(&foos)->x);
+
+		clearLink();
 	}
 
 	TEST("should insert before specified element")
@@ -52,6 +58,8 @@ FIXTURE(LinkTest)
 
 		ASSERT_EQ(6, MCL_LINK_FIRST(&foos)->x);
 		ASSERT_EQ(5, MCL_LINK_LAST(&foos)->x);
+
+		clearLink();
 	}
 
 	TEST("should remove single element")
@@ -62,7 +70,9 @@ FIXTURE(LinkTest)
 		MCL_LINK_REMOVE(&f1, link);
 
 		ASSERT_TRUE(MCL_LINK_EMPTY(&foos, Foo, link));
-	}	
+
+		clearLink();
+	}
 
 	TEST("should remove specified element")
 	{
@@ -77,6 +87,8 @@ FIXTURE(LinkTest)
 		ASSERT_FALSE(MCL_LINK_EMPTY(&foos, Foo, link));
 		ASSERT_EQ(6, MCL_LINK_FIRST(&foos)->x);
 		ASSERT_EQ(6, MCL_LINK_LAST(&foos)->x);
+
+		clearLink();
 	}
 
 	TEST("should foreach all elements")
@@ -94,5 +106,7 @@ FIXTURE(LinkTest)
 		}
 
 		ASSERT_EQ(11, sum);
-	}	
+
+		clearLink();
+	}
 };

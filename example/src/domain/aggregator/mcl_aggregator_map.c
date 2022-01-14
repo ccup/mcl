@@ -2,7 +2,7 @@
 #include "aggregator/mcl_aggregator.h"
 #include "mcl/assert.h"
 
-void MclAggregatorMap_Init(MclAggregatorMap *self, MclHashBucket *bucket, uint32_t bucketCount) {
+void MclAggregatorMap_Init(MclAggregatorMap *self, MclHashBucket *bucket, MclSize bucketCount) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 	MclHashMap_Init(self, bucket, bucketCount, &MclHashNodeAllocator_Default);
 }
@@ -56,7 +56,7 @@ bool MclAggregatorMap_IsEmpty(const MclAggregatorMap *self) {
 	return MclHashMap_IsEmpty(self);
 }
 
-size_t MclAggregatorMap_GetSize(const MclAggregatorMap *self) {
+MclSize MclAggregatorMap_GetSize(const MclAggregatorMap *self) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
 	return MclHashMap_GetSize(self);
 }

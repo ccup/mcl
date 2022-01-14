@@ -12,10 +12,10 @@ MCL_TYPE(MclMsgQueue) {
     MclMutex mutex;
 };
 
-MclMsgQueue* MclMsgQueue_Create(uint16_t capacity);
+MclMsgQueue* MclMsgQueue_Create(MclSize capacity);
 void MclMsgQueue_Delete(MclMsgQueue*);
 
-MclStatus MclMsgQueue_Init(MclMsgQueue*, uint16_t capacity, MclMsg* msgBuff);
+MclStatus MclMsgQueue_Init(MclMsgQueue*, MclSize capacity, MclMsg* msgBuff);
 void MclMsgQueue_Destroy(MclMsgQueue*);
 
 void MclMsgQueue_Clear(MclMsgQueue*);
@@ -23,7 +23,7 @@ void MclMsgQueue_Clear(MclMsgQueue*);
 bool MclMsgQueue_IsFull(const MclMsgQueue*);
 bool MclMsgQueue_IsEmpty(const MclMsgQueue*);
 
-uint16_t MclMsgQueue_GetCount(const MclMsgQueue*);
+MclSize MclMsgQueue_GetCount(const MclMsgQueue*);
 
 MclStatus MclMsgQueue_Send(MclMsgQueue*, MclMsg*);
 MclStatus MclMsgQueue_Recv(MclMsgQueue*, MclMsg*);

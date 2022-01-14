@@ -3,19 +3,19 @@
 #include "mcl/mem/align.h"
 #include "mcl/assert.h"
 
-MCL_PRIVATE uint16_t MclRingBuff_GetNextPos(const MclRingBuff *self, uint16_t pos) {
+MCL_PRIVATE MclArrayIndex MclRingBuff_GetNextPos(const MclRingBuff *self, MclArrayIndex pos) {
     return (pos + 1) % MclArray_GetCapacity(&self->buff);
 }
 
-MCL_PRIVATE uint16_t MclRingBuff_GetNextHead(const MclRingBuff *self) {
-    return MclRingBuff_GetNextPos(self, (uint16_t)self->head);
+MCL_PRIVATE MclArrayIndex MclRingBuff_GetNextHead(const MclRingBuff *self) {
+    return MclRingBuff_GetNextPos(self, self->head);
 }
 
-MCL_PRIVATE uint16_t MclRingBuff_GetNextTail(const MclRingBuff *self) {
-    return MclRingBuff_GetNextPos(self, (uint16_t)self->tail);
+MCL_PRIVATE MclArrayIndex MclRingBuff_GetNextTail(const MclRingBuff *self) {
+    return MclRingBuff_GetNextPos(self, self->tail);
 }
 
-MclRingBuff* MclRingBuff_Create(uint16_t capacity, uint16_t elemBytes) {
+MclRingBuff* MclRingBuff_Create(MclSize capacity, MclSize elemBytes) {
     MCL_ASSERT_TRUE_NIL(capacity > 0);
     MCL_ASSERT_TRUE_NIL(elemBytes > 0);
 
@@ -50,7 +50,7 @@ void MclRingBuff_Delete(MclRingBuff *self) {
     MCL_FREE(self);
 }
 
-MclStatus MclRingBuff_Init(MclRingBuff *self, uint16_t capacity, uint16_t elemBytes, uint8_t* buff) {
+MclStatus MclRingBuff_Init(MclRingBuff *self, MclSize capacity, MclSize elemBytes, uint8_t* buff) {
     MCL_ASSERT_VALID_PTR(self);
     MCL_ASSERT_VALID_PTR(buff);
     MCL_ASSERT_TRUE(capacity > 0);
@@ -64,7 +64,6 @@ MclStatus MclRingBuff_Init(MclRingBuff *self, uint16_t capacity, uint16_t elemBy
 
 void MclRingBuff_Reset(MclRingBuff *self) {
     MCL_ASSERT_VALID_PTR_VOID(self);
-
     MclArray_Clear(&self->buff);
     self->head = 0;
     self->tail = 0;
@@ -80,10 +79,10 @@ bool MclRingBuff_IsEmpty(const MclRingBuff *self) {
     return self->head == self->tail;
 }
 
-uint16_t MclRingBuff_GetCount(const MclRingBuff *self) {
+MclSize MclRingBuff_GetCount(const MclRingBuff *self) {
     MCL_ASSERT_VALID_PTR_NIL(self);
 
-    uint16_t capacity = MclArray_GetCapacity(&self->buff);
+    MclSize capacity = MclArray_GetCapacity(&self->buff);
     return (self->tail + capacity - self->head) % capacity;
 }
 

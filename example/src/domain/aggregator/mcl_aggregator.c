@@ -9,7 +9,7 @@ MCL_TYPE(MclAggregator) {
 	MclEntityList entities;
 };
 
-const size_t MCL_AGGREGATOR_SIZE = sizeof(MclAggregator);
+const MclSize MCL_AGGREGATOR_SIZE = sizeof(MclAggregator);
 
 MclStatus MclAggregator_Init(MclAggregator *self, MclAggregatorId id, void *cfg) {
 	MCL_ASSERT_VALID_PTR(self);
@@ -31,7 +31,7 @@ MclAggregatorId MclAggregator_GetId(const MclAggregator *self) {
 	return self ? self->id : MCL_AGGREGATOR_ID_INVALID;
 }
 
-size_t MclAggregator_GetEntityCount(const MclAggregator *self) {
+MclSize MclAggregator_GetEntityCount(const MclAggregator *self) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
 	return MclEntityList_GetSize(&self->entities);
 }

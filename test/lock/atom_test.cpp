@@ -9,7 +9,7 @@ namespace {
 
     void* add(void *) {
         for (int i = 0; i < PATCH_COUNT; i++) {
-            MclAtom_Add(&sum, 1);
+            MclAtom_AddFetch(&sum, 1);
             MclThread_Yield();
         }
         return NULL;
@@ -17,7 +17,7 @@ namespace {
 
     void* sub(void*) {
         for (int i = 0; i < PATCH_COUNT; i++) {
-            MclAtom_Sub(&sum, 1);
+            MclAtom_SubFetch(&sum, 1);
             MclThread_Yield();
         }
         return NULL;

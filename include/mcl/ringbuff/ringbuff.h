@@ -7,20 +7,20 @@ MCL_STDC_BEGIN
 
 MCL_TYPE(MclRingBuff) {
     MclArray buff;
-    uint16_t head;
-    uint16_t tail;
+    MclArrayIndex head;
+    MclArrayIndex tail;
 };
 
-MclRingBuff* MclRingBuff_Create(uint16_t capacity, uint16_t elemBytes);
+MclRingBuff* MclRingBuff_Create(MclSize capacity, MclSize elemBytes);
 void MclRingBuff_Delete(MclRingBuff*);
 
-MclStatus MclRingBuff_Init(MclRingBuff*, uint16_t capacity, uint16_t elemBytes, uint8_t* buff);
+MclStatus MclRingBuff_Init(MclRingBuff*, MclSize capacity, MclSize elemBytes, uint8_t* buff);
 void MclRingBuff_Reset(MclRingBuff*);
 
 bool MclRingBuff_IsFull(const MclRingBuff*);
 bool MclRingBuff_IsEmpty(const MclRingBuff*);
 
-uint16_t MclRingBuff_GetCount(const MclRingBuff*);
+MclSize MclRingBuff_GetCount(const MclRingBuff*);
 
 MclStatus MclRingBuff_Pop(MclRingBuff*, void*);
 MclStatus MclRingBuff_Put(MclRingBuff*, void*);

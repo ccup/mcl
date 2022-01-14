@@ -10,7 +10,7 @@
 ///////////////////////////////////////////////////////////
 MCL_PRIVATE MclAtom aggregatorCount = 0;
 
-size_t MclAggregatorFactory_GetUnreleasedCount() {
+MclSize MclAggregatorFactory_GetUnreleasedCount() {
 	return aggregatorCount;
 }
 
@@ -25,7 +25,7 @@ MclAggregator* MclAggregatorFactory_Create(MclAggregatorId id, void *cfg) {
 		return NULL;
 	}
 
-	MclAtom_Add(&aggregatorCount, 1);
+	MclAtom_AddFetch(&aggregatorCount, 1);
 	return self;
 }
 
@@ -34,7 +34,7 @@ void MclAggregatorFactory_Delete(MclAggregator *self) {
 	MclAggregator_Destroy(self);
 	MCL_FREE(self);
 
-	MclAtom_Sub(&aggregatorCount, 1);
+	MclAtom_SubFetch(&aggregatorCount, 1);
 }
 
 ///////////////////////////////////////////////////////////
@@ -52,7 +52,7 @@ MclAggregator* MclAggregatorFactory_CreateSharedPtr(MclAggregatorId id, void *cf
 		return NULL;
 	}
 
-	MclAtom_Add(&aggregatorCount, 1);
+	MclAtom_AddFetch(&aggregatorCount, 1);
 	return self;
 }
 
@@ -60,7 +60,7 @@ void MclAggregatorFactory_DeleteSharedPtr(MclAggregator *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
 	MclSharedPtr_Delete(self);
-	MclAtom_Sub(&aggregatorCount, 1);
+	MclAtom_SubFetch(&aggregatorCount, 1);
 }
 
 ///////////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ MclAggregator* MclAggregatorFactory_CreateLockObj(MclAggregatorId id, void *cfg)
 		MclLockObj_Delete(self, NULL, NULL);
 		return NULL;
 	}
-	MclAtom_Add(&aggregatorCount, 1);
+	MclAtom_AddFetch(&aggregatorCount, 1);
 	return self;
 }
 
@@ -81,12 +81,12 @@ void MclAggregatorFactory_DeleteLockObj(MclAggregator *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
 	MclLockObj_Delete(self, MclAggregatorFactory_DestroyAggregator, NULL);
-	MclAtom_Sub(&aggregatorCount, 1);
+	MclAtom_SubFetch(&aggregatorCount, 1);
 }
 
 /////////////////////////////////////////////////////////
 //#define MCL_AGGREGATOR_MEM_SIZE  8
-//MCL_PRIVATE const uint16_t MCL_AGGREGATOR_CAPACITY = 16;
+//MCL_PRIVATE const MclSize MCL_AGGREGATOR_CAPACITY = 16;
 //
 //MCL_ALLOCATOR_TYPE_DEF(MclAggregatorAllocator, MclAggregator, MCL_AGGREGATOR_CAPACITY);
 //

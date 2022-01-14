@@ -14,7 +14,7 @@ typedef struct {
 
 MCL_PRIVATE const uint64_t MCL_SHARED_PTR_SENTINEL = 0xdeadc0de;
 
-MCL_PRIVATE size_t MclSharedPtr_HeaderSize() {
+MCL_PRIVATE MclSize MclSharedPtr_HeaderSize() {
     return MclAlign_GetSizeOf(sizeof(MclSharedPtr));
 }
 
@@ -35,7 +35,7 @@ MCL_PRIVATE void MclSharedPtr_Init(MclSharedPtr *self, MclSharedPtrDestroy destr
     self->ptr = (uint8_t*)self + MclSharedPtr_HeaderSize();
 }
 
-void* MclSharedPtr_Create(size_t size, MclSharedPtrDestroy destroy, void* arg) {
+void* MclSharedPtr_Create(MclSize size, MclSharedPtrDestroy destroy, void* arg) {
     MCL_ASSERT_TRUE_NIL(size > 0);
 
     MclSharedPtr *self = MCL_MALLOC(MclSharedPtr_HeaderSize() + MclAlign_GetSizeOf(size));
@@ -51,7 +51,7 @@ void  MclSharedPtr_Delete(void *ptr) {
     MclSharedPtr *self = MclSharedPtr_GetSelf(ptr);
     MCL_ASSERT_VALID_PTR_VOID(self);
 
-    if (MclAtom_Sub(&self->refCount, 1)) return;
+    if (MclAtom_SubFetch(&self->refCount, 1)) return;
 
     if(self->destroy) self->destroy(ptr, self->destroyArg);
     MCL_FREE(self);
@@ -63,6 +63,6 @@ void* MclSharedPtr_Ref(void *ptr) {
     MclSharedPtr *self = MclSharedPtr_GetSelf(ptr);
     MCL_ASSERT_VALID_PTR_NIL(self);
 
-    (void)MclAtom_Add(&self->refCount, 1);
+    (void)MclAtom_AddFetch(&self->refCount, 1);
     return ptr;
 }

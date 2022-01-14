@@ -13,12 +13,12 @@ struct Foo {
 
     Foo(FooId id = FOO_ID_INVALID, uint32_t value = 0)
 	: id{id}, value{0} {
-		MclAtom_Add(&FOO_COUNT, 1);
+		MclAtom_AddFetch(&FOO_COUNT, 1);
     }
 
     ~Foo() {
         id = FOO_ID_INVALID;
-        MclAtom_Sub(&FOO_COUNT, 1);
+        MclAtom_SubFetch(&FOO_COUNT, 1);
     }
 
     FooId getId() const {

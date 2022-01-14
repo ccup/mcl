@@ -5,19 +5,19 @@
 
 namespace {
 	struct ThreadCtxt {
-		size_t increaseMax;
-		size_t decreaseMax;
-		size_t increaseCount;
-		size_t decreaseCount;
+		MclSize increaseMax;
+		MclSize decreaseMax;
+		MclSize increaseCount;
+		MclSize decreaseCount;
 		MclAtom result;
 		MclAtom stop;
 	};
 
 	void increase(void *ctxt) {
 		ThreadCtxt *threadCtxt = (ThreadCtxt*)ctxt;
-		for (size_t i = 0; (i < threadCtxt->increaseMax); i++) {
+		for (MclSize i = 0; (i < threadCtxt->increaseMax); i++) {
 			if (MclAtom_IsTrue(&threadCtxt->stop)) return;
-			MclAtom_Add(&threadCtxt->result, 1);
+			MclAtom_AddFetch(&threadCtxt->result, 1);
 			threadCtxt->increaseCount++;
 			MclThread_Yield();
 		}
@@ -25,9 +25,9 @@ namespace {
 
 	void decrease(void *ctxt) {
 		ThreadCtxt *threadCtxt = (ThreadCtxt*)ctxt;
-		for (size_t i = 0; (i < threadCtxt->decreaseMax); i++) {
+		for (MclSize i = 0; (i < threadCtxt->decreaseMax); i++) {
 			if (MclAtom_IsTrue(&threadCtxt->stop)) return;
-			MclAtom_Sub(&threadCtxt->result, 1);
+			MclAtom_SubFetch(&threadCtxt->result, 1);
 			threadCtxt->decreaseCount++;
 			MclThread_Yield();
 		}
@@ -45,7 +45,7 @@ FIXTURE(ThreadLauncherTest) {
 
 		MclThreadInfo threads[] = {
 			MCL_THREAD_INFO("Increase", increase, NULL, &ctxt),
-			MCL_THREAD_INFO("Dncrease", decrease, NULL, &ctxt),
+			MCL_THREAD_INFO("Decrease", decrease, NULL, &ctxt),
 		};
 
 		MclThreadLauncher_Launch(threads, MCL_ARRAY_SIZE(threads));
@@ -57,12 +57,12 @@ FIXTURE(ThreadLauncherTest) {
 	}
 
 	TEST("should stop launched threads") {
-		const uint32_t MAX_COUNT = MCL_UINT32_MAX;
+		const MclSize MAX_COUNT = MCL_SIZE_MAX;
 		ThreadCtxt ctxt = {.increaseMax = MAX_COUNT, .decreaseMax = MAX_COUNT, .result = 0, .stop = 0};
 
 		MclThreadInfo threads[] = {
 			MCL_THREAD_INFO("Increase", increase, stop, &ctxt),
-			MCL_THREAD_INFO("Dncrease", decrease, stop, &ctxt),
+			MCL_THREAD_INFO("Decrease", decrease, stop, &ctxt),
 		};
 
 		MclThreadLauncher_Launch(threads, MCL_ARRAY_SIZE(threads));

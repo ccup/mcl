@@ -9,7 +9,7 @@ MCL_STDC_BEGIN
 MCL_TYPE(MclList) {
     MclListNodeAllocator *allocator;
 	MCL_LINK(MclListNode) nodes;
-	size_t size;
+	MclSize size;
 };
 
 MclList* MclList_CreateDefault();
@@ -44,7 +44,7 @@ MclListData MclList_RemoveFirst(MclList*);
 MclListData MclList_RemoveLast(MclList*);
 MclListData MclList_RemoveByPred(MclList*, MclListDataPred, void*);
 
-size_t MclList_RemoveAllByPred(MclList *, MclListDataPred, void*, MclListDataDestroy);
+MclSize MclList_RemoveAllByPred(MclList *, MclListDataPred, void*, MclListDataDestroy);
 
 MclListData  MclList_FindByPred(const MclList*, MclListDataPred, void*);
 void MclList_FindAllByPred(const MclList*, MclListDataPred, void*, MclList *result);
@@ -52,7 +52,7 @@ void MclList_FindAllByPred(const MclList*, MclListDataPred, void*, MclList *resu
 MclStatus MclList_Accept(const MclList*, MclListDataVisit, void*);
 
 ///////////////////////////////////////////////////////////////
-MCL_INLINE size_t MclList_GetSize(const MclList *self) {
+MCL_INLINE MclSize MclList_GetSize(const MclList *self) {
 	return self ? self->size : 0;
 }
 

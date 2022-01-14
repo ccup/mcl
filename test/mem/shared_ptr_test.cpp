@@ -109,11 +109,11 @@ namespace {
 
 		Foo(int id = 0)
 		: id {id} {
-			MclAtom_Add(&FOO_COUNT, 1);
+			MclAtom_AddFetch(&FOO_COUNT, 1);
 		}
 
 		~Foo() {
-			MclAtom_Sub(&FOO_COUNT, 1);
+			MclAtom_SubFetch(&FOO_COUNT, 1);
 		}
 
 		int getId() const {

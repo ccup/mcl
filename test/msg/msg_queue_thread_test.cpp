@@ -4,7 +4,7 @@
 #include "mcl/thread/thread.h"
 
 namespace {
-    constexpr uint16_t MSG_QUEUE_CAPACITY = 10;
+    constexpr MclSize MSG_QUEUE_CAPACITY = 10;
 
     MclMsg msgBuff[MSG_QUEUE_CAPACITY];
     MclMsgQueue mq = MCL_MSG_QUEUE(msgBuff, MSG_QUEUE_CAPACITY);
@@ -20,7 +20,7 @@ namespace {
         for (uint16_t i = 0; i < TRY_COUNT; i++) {
             MclMsg msg = MCL_MSG(0, i, sizeof(value), &value);
             if (!MCL_FAILED(MclMsgQueue_Send(&mq, &msg))) {
-                MclAtom_Add(&SENT_COUNT, 1);
+                MclAtom_AddFetch(&SENT_COUNT, 1);
             }
             MclThread_Yield();
         }
@@ -31,7 +31,7 @@ namespace {
         for (uint16_t i = 0; i < TRY_COUNT; i++) {
             MclMsg msg = MCL_MSG(0, 0, sizeof(outValue), &outValue);
             if (!MCL_FAILED(MclMsgQueue_Recv(&mq, &msg))) {
-                MclAtom_Add(&RECV_COUNT, 1);
+                MclAtom_AddFetch(&RECV_COUNT, 1);
             }
             MclThread_Yield();
         }

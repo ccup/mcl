@@ -7,7 +7,7 @@ namespace {
 		const char* name;
 	};
 
-    constexpr uint16_t ALLOCATOR_CAPACITY = 2;
+    constexpr MclSize ALLOCATOR_CAPACITY = 2;
 
     MCL_ALLOCATOR_TYPE_DEF(ObjectAllocator, Object, ALLOCATOR_CAPACITY);
 

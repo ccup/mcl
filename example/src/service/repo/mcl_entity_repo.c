@@ -95,7 +95,7 @@ bool MclEntityRepo_IsEmpty() {
 	return MclEntityList_IsEmpty(&entityRepo.entities);
 }
 
-size_t MclEntityRepo_GetSize() {
+MclSize MclEntityRepo_GetSize() {
 	MCL_LOCK_READ_AUTO(entityRepo.rwlock);
 	return MclEntityList_GetSize(&entityRepo.entities);
 }

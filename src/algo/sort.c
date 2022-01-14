@@ -1,12 +1,12 @@
 #include "mcl/algo/sort.h"
 #include "mcl/assert.h"
 
-MCL_PRIVATE uint32_t MclSort_SeekPosition(MclSortObj *sortObjs, size_t begin, uint32_t end) {
+MCL_PRIVATE MclArrayIndex MclSort_SeekPosition(MclSortObj *sortObjs, MclArrayIndex begin, MclArrayIndex end) {
 	MclSortObj keyObj = sortObjs[begin];
 	MclSortKey key = keyObj.key;
 
-	uint32_t i = begin;
-	uint32_t j = end;
+	MclArrayIndex i = begin;
+	MclArrayIndex j = end;
 	while (i < j) {
 		while (i < j && (key <= sortObjs[j].key)) {
 			j--;
@@ -26,16 +26,16 @@ MCL_PRIVATE uint32_t MclSort_SeekPosition(MclSortObj *sortObjs, size_t begin, ui
 	return i;
 }
 
-void MclSort_QuickSortRange(MclSortObj *sortObjs, uint32_t begin, uint32_t end) {
+void MclSort_QuickSortRange(MclSortObj *sortObjs, MclArrayIndex begin, MclArrayIndex end) {
 	MCL_ASSERT_VALID_PTR_VOID(sortObjs);
 	if (begin >= end) return;
 
-	uint32_t position = MclSort_SeekPosition(sortObjs, begin, end);
+	MclArrayIndex position = MclSort_SeekPosition(sortObjs, begin, end);
 	if (position > begin) MclSort_QuickSortRange(sortObjs, begin, position - 1);
 	if (position < end) MclSort_QuickSortRange(sortObjs, position + 1, end);
 }
 
-void MclSort_QuickSort(MclSortObj *sortObjs, size_t size) {
+void MclSort_QuickSort(MclSortObj *sortObjs, MclSize size) {
 	MCL_ASSERT_VALID_PTR_VOID(sortObjs);
 	MCL_ASSERT_TRUE_VOID(size > 0);
 	return MclSort_QuickSortRange(sortObjs, 0, size - 1);

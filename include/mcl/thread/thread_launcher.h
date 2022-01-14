@@ -13,8 +13,8 @@ MCL_TYPE(MclThreadInfo) {
 	void *ctxt;
 };
 
-MclStatus MclThreadLauncher_Launch(MclThreadInfo*, size_t threadNum);
-void MclThreadLauncher_WaitDone(MclThreadInfo*, size_t threadNum);
+MclStatus MclThreadLauncher_Launch(MclThreadInfo*, MclSize threadNum);
+void MclThreadLauncher_WaitDone(MclThreadInfo*, MclSize threadNum);
 
 ///////////////////////////////////////////////////////////
 #define MCL_THREAD_INFO(NAME, RUN, STOP, CTXT)				\

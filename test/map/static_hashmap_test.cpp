@@ -12,7 +12,7 @@ namespace {
 }
 
 FIXTURE(HashMapStaticTest) {
-	constexpr static uint32_t NODE_NUM = 6;
+	constexpr static MclSize NODE_NUM = 6;
 
 	MclHashNode nodes[NODE_NUM];
 	MclHashMap *foos{nullptr};

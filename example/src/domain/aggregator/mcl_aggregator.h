@@ -11,13 +11,13 @@ MCL_STDC_BEGIN
 MCL_TYPE_DECL(MclAggregator);
 MCL_TYPE_DECL(MclEntity);
 
-extern const size_t MCL_AGGREGATOR_SIZE;
+extern const MclSize MCL_AGGREGATOR_SIZE;
 
 MclStatus MclAggregator_Init(MclAggregator*, MclAggregatorId, void *cfg);
 void MclAggregator_Destroy(MclAggregator*);
 
 MclAggregatorId MclAggregator_GetId(const MclAggregator*);
-size_t MclAggregator_GetEntityCount(const MclAggregator*);
+MclSize MclAggregator_GetEntityCount(const MclAggregator*);
 
 MclStatus MclAggregator_AddEntity(MclAggregator*, MclEntity*);
 MclStatus MclAggregator_RemoveEntity(MclAggregator*, MclEntityId);

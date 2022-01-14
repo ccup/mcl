@@ -6,8 +6,8 @@
 MCL_STDC_BEGIN
 
 MCL_TYPE(MclStatistics) {
-	size_t unreleasedAggregatorCount;
-	size_t unreleasedEntityCount;
+	MclSize unreleasedAggregatorCount;
+	MclSize unreleasedEntityCount;
 };
 
 MCL_STDC_END

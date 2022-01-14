@@ -10,11 +10,11 @@ MCL_STDC_BEGIN
 #define MCL_LOOP_FOREACH(type, i, begin, end, step)   	\
 	for(type i = begin; i < end; i += step)
 
-#define MCL_LOOP_FOREACH_INDEX(i, max) 					\
-	MCL_LOOP_FOREACH(size_t, i, 0, max, 1)
+#define MCL_LOOP_FOREACH_SIZE(i, max) 					\
+	MCL_LOOP_FOREACH(MclSize, i, 0, max, 1)
 
 #define MCL_LOOP_FOREACH_STEP(i, max, step)				\
-	MCL_LOOP_FOREACH(size_t, i, 0, max, step)
+	MCL_LOOP_FOREACH(MclSize, i, 0, max, step)
 
 MCL_STDC_END
 

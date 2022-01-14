@@ -6,7 +6,7 @@ namespace {
 	constexpr FooId FOO_ID_INVALID = MCL_UINT32_MAX;
 
 	struct Foo {
-		static size_t FOO_COUNT;
+		static MclSize FOO_COUNT;
 
 		Foo (FooId id) : id {id} {
 		}
@@ -18,7 +18,7 @@ namespace {
 		FooId id {FOO_ID_INVALID};
 	};
 
-	size_t Foo::FOO_COUNT {0};
+	MclSize Foo::FOO_COUNT {0};
 
 	Foo* Foo_Create(FooId id = FOO_ID_INVALID) {
 		Foo::FOO_COUNT++;

@@ -2,11 +2,11 @@
 #include "mcl/mem/malloc.h"
 #include "mcl/assert.h"
 
-MCL_PRIVATE uint8_t* MclArray_GetAddr(MclArray *self, uint16_t index) {
+MCL_PRIVATE uint8_t* MclArray_GetAddr(MclArray *self, MclArrayIndex index) {
     return self->buff + self->elemBytes * index;
 }
 
-MclArray* MclArray_Create(uint16_t capacity, uint16_t elemBytes) {
+MclArray* MclArray_Create(MclSize capacity, MclSize elemBytes) {
     MCL_ASSERT_TRUE_NIL(capacity > 0);
     MCL_ASSERT_TRUE_NIL(elemBytes > 0);
 
@@ -38,7 +38,7 @@ void MclArray_Delete(MclArray *self) {
     MCL_FREE(self);
 }
 
-MclStatus MclArray_Init(MclArray *self, uint16_t capacity, uint16_t elemBytes, uint8_t* buff) {
+MclStatus MclArray_Init(MclArray *self, MclSize capacity, MclSize elemBytes, uint8_t* buff) {
     MCL_ASSERT_VALID_PTR(self);
     MCL_ASSERT_VALID_PTR(buff);
     MCL_ASSERT_TRUE(capacity > 0);
@@ -55,14 +55,14 @@ void MclArray_Clear(MclArray *self) {
     memset(self->buff, 0, MclArray_GetBuffSize(self->capacity, self->elemBytes));
 }
 
-void* MclArray_Get(MclArray *self, uint16_t index) {
+void* MclArray_Get(MclArray *self, MclArrayIndex index) {
     MCL_ASSERT_VALID_PTR_NIL(self);
     MCL_ASSERT_TRUE_NIL(index < self->capacity);
 
     return MclArray_GetAddr(self, index);
 }
 
-MclStatus MclArray_Set(MclArray *self, uint16_t index, void *value) {
+MclStatus MclArray_Set(MclArray *self, MclArrayIndex index, void *value) {
     MCL_ASSERT_VALID_PTR(self);
     MCL_ASSERT_VALID_PTR(value);
     MCL_ASSERT_TRUE(index < self->capacity);
@@ -71,7 +71,7 @@ MclStatus MclArray_Set(MclArray *self, uint16_t index, void *value) {
     return MCL_SUCCESS;
 }
 
-void MclArray_Reset(MclArray *self, uint16_t index) {
+void MclArray_Reset(MclArray *self, MclArrayIndex index) {
     MCL_ASSERT_VALID_PTR_VOID(self);
     MCL_ASSERT_TRUE_VOID(index < self->capacity);
 

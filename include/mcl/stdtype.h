@@ -12,4 +12,7 @@
 #define MCL_UINT32_MAX  (uint32_t)0xFFFFFFFF
 #define MCL_UINT64_MAX  (uint64_t)0xFFFFFFFFFFFFFFFF
 
+typedef uint32_t MclSize;
+#define MCL_SIZE_MAX    (MclSize)MCL_UINT32_MAX
+
 #endif

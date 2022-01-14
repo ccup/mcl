@@ -9,17 +9,17 @@ MCL_STDC_BEGIN
 MCL_TYPE(MclHashMap) {
 	MclHashNodeAllocator *allocator;
     MclHashBucket *buckets;
-    uint32_t bucketCount;
-    size_t size;
+    MclSize bucketCount;
+    MclSize size;
 };
 
 MclHashMap* MclHashMap_CreateDefault();
-MclHashMap* MclHashMap_Create(uint32_t bucketCount, MclHashNodeAllocator*);
+MclHashMap* MclHashMap_Create(MclSize bucketCount, MclHashNodeAllocator*);
 
 void MclHashMap_Delete(MclHashMap*, MclHashValueDestroy);
 
 /* if allocator is null, should only use node apis: insertNode removeNode and findNode */
-void MclHashMap_Init(MclHashMap*, MclHashBucket*, uint32_t bucketCount, MclHashNodeAllocator*);
+void MclHashMap_Init(MclHashMap*, MclHashBucket*, MclSize bucketCount, MclHashNodeAllocator*);
 void MclHashMap_Clear(MclHashMap*, MclHashValueDestroy);
 
 ///////////////////////////////////////////////////////////
@@ -37,14 +37,14 @@ MclHashValue MclHashMap_FindByPred(const MclHashMap*, MclHashNodePred, void*);
 MclHashValue MclHashMap_Remove(MclHashMap*, MclHashKey);
 MclHashValue MclHashMap_RemoveByPred(MclHashMap*, MclHashNodePred, void*);
 
-size_t MclHashMap_RemoveAllByPred(MclHashMap*, MclHashNodePred, void*, MclHashValueDestroy);
+MclSize MclHashMap_RemoveAllByPred(MclHashMap*, MclHashNodePred, void*, MclHashValueDestroy);
 
 MclStatus MclHashMap_Accept(const MclHashMap*, MclHashNodeVisit, void*);
 
 void MclHashMap_Dump(const MclHashMap*);
 
 ///////////////////////////////////////////////////////////
-MCL_INLINE size_t MclHashMap_GetSize(const MclHashMap *self) {
+MCL_INLINE MclSize MclHashMap_GetSize(const MclHashMap *self) {
     return self ? self->size : 0;
 }
 

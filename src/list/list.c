@@ -212,11 +212,11 @@ MclListData MclList_RemoveByPred(MclList *self, MclListDataPred pred, void *arg)
     return NULL;
 }
 
-size_t MclList_RemoveAllByPred(MclList *self, MclListDataPred pred, void *arg, MclListDataDestroy destroy) {
+MclSize MclList_RemoveAllByPred(MclList *self, MclListDataPred pred, void *arg, MclListDataDestroy destroy) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
 	MCL_ASSERT_VALID_PTR_NIL(pred);
 
-	size_t removedCount = 0;
+	MclSize removedCount = 0;
     MclListNode *node = NULL;
     MclListNode *tmpNode = NULL;
     MCL_LIST_FOREACH_SAFE((MclList*)self, node, tmpNode) {

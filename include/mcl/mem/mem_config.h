@@ -8,7 +8,7 @@
 
 MCL_STDC_BEGIN
 
-void* MclMem_Malloc(uint32_t size);
+void* MclMem_Malloc(MclSize size);
 void  MclMem_Free(void*);
 
 MCL_STDC_END

@@ -8,7 +8,7 @@ MCL_STDC_BEGIN
 
 MCL_TYPE_DECL(MclAggregator);
 
-size_t MclAggregatorFactory_GetUnreleasedCount();
+MclSize MclAggregatorFactory_GetUnreleasedCount();
 
 MclAggregator* MclAggregatorFactory_Create(MclAggregatorId, void *cfg);
 void MclAggregatorFactory_Delete(MclAggregator*);

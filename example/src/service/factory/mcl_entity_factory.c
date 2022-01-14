@@ -10,7 +10,7 @@
 ///////////////////////////////////////////////////////////
 MCL_PRIVATE MclAtom entityCount = 0;
 
-size_t MclEntityFactory_GetUnreleasedCount() {
+MclSize MclEntityFactory_GetUnreleasedCount() {
 	return entityCount;
 }
 
@@ -25,7 +25,7 @@ MclEntity* MclEntityFactory_Create(MclEntityId id, void *cfg) {
 		return NULL;
 	}
 
-	MclAtom_Add(&entityCount, 1);
+	MclAtom_AddFetch(&entityCount, 1);
 	return self;
 }
 
@@ -35,7 +35,7 @@ void MclEntityFactory_Delete(MclEntity *self) {
 	MclEntity_Destroy(self);
 	MCL_FREE(self);
 
-	MclAtom_Sub(&entityCount, 1);
+	MclAtom_SubFetch(&entityCount, 1);
 }
 
 ///////////////////////////////////////////////////////////
@@ -53,7 +53,7 @@ MclEntity* MclEntityFactory_CreateSharedPtr(MclEntityId id, void *cfg) {
 		return NULL;
 	}
 
-	MclAtom_Add(&entityCount, 1);
+	MclAtom_AddFetch(&entityCount, 1);
 	return self;
 }
 
@@ -61,7 +61,7 @@ void MclEntityFactory_DeleteSharedPtr(MclEntity *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
 	MclSharedPtr_Delete(self);
-	MclAtom_Sub(&entityCount, 1);
+	MclAtom_SubFetch(&entityCount, 1);
 }
 
 ///////////////////////////////////////////////////////////
@@ -74,7 +74,7 @@ MclEntity* MclEntityFactory_CreateLockObj(MclEntityId id, void *cfg) {
 		MclLockObj_Delete(self, NULL, NULL);
 		return NULL;
 	}
-	MclAtom_Add(&entityCount, 1);
+	MclAtom_AddFetch(&entityCount, 1);
 	return self;
 }
 
@@ -82,12 +82,12 @@ void MclEntityFactory_DeleteLockObj(MclEntity *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
 	MclLockObj_Delete(self, MclEntityFactory_DestroyEntity, NULL);
-	MclAtom_Sub(&entityCount, 1);
+	MclAtom_SubFetch(&entityCount, 1);
 }
 
 /////////////////////////////////////////////////////////
 //#define MCL_ENTITY_MEM_SIZE  8
-//MCL_PRIVATE const uint16_t MCL_ENTITY_CAPACITY = 16;
+//MCL_PRIVATE const MclSize MCL_ENTITY_CAPACITY = 16;
 //
 //MCL_ALLOCATOR_TYPE_DEF(MclEntityAllocator, MclEntity, MCL_ENTITY_CAPACITY);
 //

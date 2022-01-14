@@ -9,9 +9,9 @@ MCL_STDC_BEGIN
 
 MCL_TYPE_DECL(MclStatistics);
 
-size_t MclQueryService_QueryEntityCount();
-size_t MclQueryService_QueryAggregatorCount();
-size_t MclQueryService_QueryEntityCountOfAggregator(MclAggregatorId);
+MclSize MclQueryService_QueryEntityCount();
+MclSize MclQueryService_QueryAggregatorCount();
+MclSize MclQueryService_QueryEntityCountOfAggregator(MclAggregatorId);
 
 MclInteger MclQueryService_QueryValueOf(MclEntityId);
 MclInteger MclQueryService_QuerySumValueOf(MclAggregatorId);

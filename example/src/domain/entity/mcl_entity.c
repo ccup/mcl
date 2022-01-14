@@ -7,11 +7,11 @@ MCL_TYPE(MclEntity) {
 	MclAggregatorId aggregatorId;
 };
 
-const size_t MCL_ENTITY_SIZE = sizeof(MclEntity);
+const MclSize MCL_ENTITY_SIZE = sizeof(MclEntity);
 
-MCL_PRIVATE const uint32_t DOUBLE_TIME = 2;
+MCL_PRIVATE const MclSize DOUBLE_TIME = 2;
 
-MCL_PRIVATE bool MclEntity_IsOverflowByTime(const MclEntity *self, uint32_t time) {
+MCL_PRIVATE bool MclEntity_IsOverflowByTime(const MclEntity *self, MclSize time) {
 	return  ((uint64_t)self->value) * time > MCL_INTEGER_MAX;
 }
 

@@ -7,15 +7,15 @@ MCL_STDC_BEGIN
 
 MCL_TYPE(MclLinkArray) {
     MclArray array;
-    uint16_t freeHead;
-    uint16_t freeTail;
-    uint16_t freeCount;
+    MclSize freeCount;
+    MclArrayIndex freeHead;
+    MclArrayIndex freeTail;
 };
 
-MclLinkArray* MclLinkArray_Create(uint16_t count, uint16_t elemBytes);
+MclLinkArray* MclLinkArray_Create(MclSize count, MclSize elemBytes);
 void MclLinkArray_Delete(MclLinkArray*);
 
-MclStatus MclLinkArray_Init(MclLinkArray*, uint16_t count, uint16_t elemBytes, uint8_t* buff);
+MclStatus MclLinkArray_Init(MclLinkArray*, MclSize count, MclSize elemBytes, uint8_t* buff);
 void MclLinkArray_Clear(MclLinkArray*);
 
 void* MclLinkArray_Take(MclLinkArray*);

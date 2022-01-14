@@ -12,7 +12,7 @@ typedef struct {
 
 MCL_PRIVATE const uint64_t MCL_LOCK_OBJ_SENTINEL = 0xdeadc0de;
 
-MCL_PRIVATE size_t MclLockObj_HeaderSize() {
+MCL_PRIVATE MclSize MclLockObj_HeaderSize() {
     return MclAlign_GetSizeOf(sizeof(MclLockObj));
 }
 
@@ -45,7 +45,7 @@ MCL_PRIVATE void MclLockObj_Destroy(MclLockObj *self, MclLockObjDestroy destroy,
     MCL_ASSERT_SUCC_CALL_VOID(MclRwLock_Destroy(&self->rwlock));
 }
 
-void* MclLockObj_Create(size_t size) {
+void* MclLockObj_Create(MclSize size) {
 	MCL_ASSERT_TRUE_NIL(size > 0);
 
 	MclLockObj *self = MCL_MALLOC(MclLockObj_HeaderSize() + MclAlign_GetSizeOf(size));

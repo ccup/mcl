@@ -9,21 +9,21 @@
 #include "mcl/lock/lockobj.h"
 #include "mcl/assert.h"
 
-size_t MclQueryService_QueryEntityCount() {
-	size_t result = MclEntityRepo_GetSize();
+MclSize MclQueryService_QueryEntityCount() {
+	MclSize result = MclEntityRepo_GetSize();
 
 	MCL_LOG_SUCC("Query Service: Query entity count (%zu) OK!", result);
 	return result;
 }
 
-size_t MclQueryService_QueryAggregatorCount() {
-	size_t result = MclAggregatorRepo_GetSize();
+MclSize MclQueryService_QueryAggregatorCount() {
+	MclSize result = MclAggregatorRepo_GetSize();
 
 	MCL_LOG_SUCC("Query Service: Query aggregator count (%zu) OK!", result);
 	return result;
 }
 
-size_t MclQueryService_QueryEntityCountOfAggregator(MclAggregatorId aggregatorId) {
+MclSize MclQueryService_QueryEntityCountOfAggregator(MclAggregatorId aggregatorId) {
 	MCL_ASSERT_TRUE_NIL(MclAggregatorId_IsValid(aggregatorId));
 
 	MCL_LOCK_OBJ_AUTO const MclAggregator *aggregator = MclAggregatorRepo_FetchConst(aggregatorId);
@@ -32,7 +32,7 @@ size_t MclQueryService_QueryEntityCountOfAggregator(MclAggregatorId aggregatorId
 		return 0;
 	}
 
-	size_t result = MclAggregator_GetEntityCount(aggregator);
+	MclSize result = MclAggregator_GetEntityCount(aggregator);
 
 	MCL_LOG_SUCC("Query Service: Query entity count (%zu) of aggregator (%u) OK!", result, aggregatorId);
 	return result;

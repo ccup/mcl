@@ -10,8 +10,8 @@
 #include <stdlib.h>
 
 typedef struct {
-	size_t aggregatorCount;
-	size_t entityCount;
+	MclSize aggregatorCount;
+	MclSize entityCount;
 	MclTimeSecDiff aggregatorIntervalSec;
 	MclTimeSecDiff entityIntervalSec;
 	MclTimeSecDiff isrIntervalSec;
@@ -25,12 +25,12 @@ MCL_PRIVATE void ExampleThread_Delay(MclTimeSecDiff sec) {
 
 MCL_PRIVATE void ExampleThread_ConfigAggregator(void *ctxt) {
 	ExampleConfig *cfg = (ExampleConfig*)ctxt;
-	MCL_LOOP_FOREACH_INDEX(aggregatorId, cfg->aggregatorCount) {
+	MCL_LOOP_FOREACH_SIZE(aggregatorId, cfg->aggregatorCount) {
 		MclConfigService_CreateAggregator(aggregatorId);
 		ExampleThread_Delay(cfg->aggregatorIntervalSec);
 	}
 	ExampleThread_Delay(cfg->intervalSec);
-	MCL_LOOP_FOREACH_INDEX(aggregatorId, cfg->aggregatorCount) {
+	MCL_LOOP_FOREACH_SIZE(aggregatorId, cfg->aggregatorCount) {
 		MclConfigService_DeleteAggregator(aggregatorId);
 		ExampleThread_Delay(cfg->aggregatorIntervalSec);
 	}
@@ -38,12 +38,12 @@ MCL_PRIVATE void ExampleThread_ConfigAggregator(void *ctxt) {
 
 MCL_PRIVATE void ExampleThread_ConfigEntity(void *ctxt) {
 	ExampleConfig *cfg = (ExampleConfig*)ctxt;
-	MCL_LOOP_FOREACH_INDEX(entityId, cfg->entityCount) {
+	MCL_LOOP_FOREACH_SIZE(entityId, cfg->entityCount) {
 		MclConfigService_CreateEntity(entityId);
 		ExampleThread_Delay(cfg->entityIntervalSec);
 	}
 	ExampleThread_Delay(cfg->intervalSec);
-	MCL_LOOP_FOREACH_INDEX(entityId, cfg->entityCount) {
+	MCL_LOOP_FOREACH_SIZE(entityId, cfg->entityCount) {
 		MclConfigService_DeleteEntity(entityId);
 		ExampleThread_Delay(cfg->entityIntervalSec);
 	}
@@ -51,13 +51,13 @@ MCL_PRIVATE void ExampleThread_ConfigEntity(void *ctxt) {
 
 MCL_PRIVATE void ExampleThread_ControlRelation(void *ctxt) {
 	ExampleConfig *cfg = (ExampleConfig*)ctxt;
-	MCL_LOOP_FOREACH_INDEX(entityId, cfg->entityCount) {
+	MCL_LOOP_FOREACH_SIZE(entityId, cfg->entityCount) {
 		MclAggregatorId aggregatorId = entityId % cfg->aggregatorCount;
 		MclControlService_AddEntityToAggregator(entityId, aggregatorId);
 		ExampleThread_Delay(cfg->entityIntervalSec);
 	}
 	ExampleThread_Delay(cfg->intervalSec);
-	MCL_LOOP_FOREACH_INDEX(entityId, cfg->entityCount) {
+	MCL_LOOP_FOREACH_SIZE(entityId, cfg->entityCount) {
 		MclAggregatorId aggregatorId = entityId % cfg->aggregatorCount;
 		MclControlService_RemoveEntityFromAggregator(entityId, aggregatorId);
 		ExampleThread_Delay(cfg->entityIntervalSec);
@@ -66,13 +66,13 @@ MCL_PRIVATE void ExampleThread_ControlRelation(void *ctxt) {
 
 MCL_PRIVATE void ExampleThread_ControlValue(void *ctxt) {
 	ExampleConfig *cfg = (ExampleConfig*)ctxt;
-	MCL_LOOP_FOREACH_INDEX(entityId, cfg->entityCount) {
+	MCL_LOOP_FOREACH_SIZE(entityId, cfg->entityCount) {
 		MclControlService_UpdateEntityValue(entityId, (MclInteger)(rand() % 10));
 		MclControlService_DoubleEntityValue(entityId);
 		ExampleThread_Delay(cfg->entityIntervalSec);
 	}
 	ExampleThread_Delay(cfg->intervalSec);
-	MCL_LOOP_FOREACH_INDEX(aggregatorId, cfg->aggregatorCount) {
+	MCL_LOOP_FOREACH_SIZE(aggregatorId, cfg->aggregatorCount) {
 		MclControlService_DoubleEntitesInAggregator(aggregatorId);
 		ExampleThread_Delay(cfg->aggregatorIntervalSec);
 	}
@@ -108,12 +108,12 @@ MCL_PRIVATE void ExampleThread_QueryCount(void *ctxt) {
 
 MCL_PRIVATE void ExampleThread_QueryValue(void *ctxt) {
 	ExampleConfig *cfg = (ExampleConfig*)ctxt;
-	MCL_LOOP_FOREACH_INDEX(entityId, cfg->entityCount) {
+	MCL_LOOP_FOREACH_SIZE(entityId, cfg->entityCount) {
 		MclQueryService_QueryValueOf(entityId);
 		ExampleThread_Delay(cfg->entityIntervalSec);
 	}
 	ExampleThread_Delay(cfg->intervalSec);
-	MCL_LOOP_FOREACH_INDEX(aggregatorId, cfg->aggregatorCount) {
+	MCL_LOOP_FOREACH_SIZE(aggregatorId, cfg->aggregatorCount) {
 		MclQueryService_QueryEntityCountOfAggregator(aggregatorId);
 		MclQueryService_QuerySumValueOf(aggregatorId);
 		ExampleThread_Delay(cfg->aggregatorIntervalSec);

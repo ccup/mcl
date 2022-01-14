@@ -21,9 +21,9 @@ typedef bool (*MclAggregatorPred)(const MclAggregator*, void*);
 MclAggregator* MclAggregatorRepo_FetchBy(MclAggregatorPred, void*);
 const MclAggregator* MclAggregatorRepo_FetchConstBy(MclAggregatorPred, void*);
 
-bool   MclAggregatorRepo_HasAggregator(MclAggregatorId);
-bool   MclAggregatorRepo_IsEmpty();
-size_t MclAggregatorRepo_GetSize();
+bool    MclAggregatorRepo_HasAggregator(MclAggregatorId);
+bool    MclAggregatorRepo_IsEmpty();
+MclSize MclAggregatorRepo_GetSize();
 
 typedef MclStatus (*MclAggregatorVisit)(MclAggregator*, void*);
 MclStatus MclAggregatorRepo_Accept(MclAggregatorVisit, void*);

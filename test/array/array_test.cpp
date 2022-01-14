@@ -9,7 +9,7 @@ namespace {
 }
 
 FIXTURE(ArrayTest) {
-    constexpr static uint16_t ARRAY_SIZE = 10;
+    constexpr static MclSize ARRAY_SIZE = 10;
     MclArray *array;
 
     BEFORE {

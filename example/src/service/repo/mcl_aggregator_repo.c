@@ -110,7 +110,7 @@ bool MclAggregatorRepo_IsEmpty() {
 	return MclAggregatorMap_IsEmpty(&aggregatorRepo.aggregators);
 }
 
-size_t MclAggregatorRepo_GetSize() {
+MclSize MclAggregatorRepo_GetSize() {
 	MCL_LOCK_READ_AUTO(aggregatorRepo.rwlock);
 	return MclAggregatorMap_GetSize(&aggregatorRepo.aggregators);
 }

@@ -4,7 +4,7 @@
 
 FIXTURE(TaskSchedulerTest)
 {
-	static constexpr uint32_t TASK_COUNT{10};
+	static constexpr MclSize TASK_COUNT{10};
 
 	DemoTask demoTasks[MAX_PRIORITY][TASK_COUNT];
 
@@ -18,7 +18,7 @@ FIXTURE(TaskSchedulerTest)
 
 	void initTasks() {
 		for (int priority = 0; priority < MAX_PRIORITY; priority++) {
-			for (uint32_t key = 0; key < TASK_COUNT; key++) {
+			for (MclTaskKey key = 0; key < TASK_COUNT; key++) {
 				DemoTask_Init(&demoTasks[priority][key], key, (PriorityLevel)priority, slowTaskPauseTime, &history);
 			}
 		}
@@ -63,6 +63,8 @@ FIXTURE(TaskSchedulerTest)
 
 		waitScheduleDone(scheduler);
 
+		MclTaskScheduler_Stop(scheduler);
+
 		ASSERT_EQ(1, history.getSize());
 
 		MclTaskScheduler_Delete(scheduler);
@@ -79,6 +81,8 @@ FIXTURE(TaskSchedulerTest)
 		MclTaskScheduler_Start(scheduler);
 
 		waitScheduleDone(scheduler);
+
+		MclTaskScheduler_Stop(scheduler);
 
 		ASSERT_EQ(3, history.getSize());
 		ASSERT_TRUE(history.isInOrderOf({__ET(URGENT), __ET(NORMAL), __ET(SLOW)}));

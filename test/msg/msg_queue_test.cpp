@@ -2,7 +2,7 @@
 #include "mcl/msg/msg_queue.h"
 
 FIXTURE(MsgQueueTest) {
-    constexpr static uint16_t MSG_QUEUE_CAPACITY = 10;
+    constexpr static MclSize MSG_QUEUE_CAPACITY = 10;
     constexpr static MclMsgType defaultType = 3;
     constexpr static MclMsgId defaultId = 2;
 
@@ -59,7 +59,7 @@ FIXTURE(MsgQueueTest) {
         uint64_t value = 0xdeadc0de;
         MclMsg msg = MCL_MSG(defaultType, defaultId, sizeof(value), &value);
 
-        for (size_t i = 0; i < MSG_QUEUE_CAPACITY; i++) {
+        for (MclSize i = 0; i < MSG_QUEUE_CAPACITY; i++) {
             ASSERT_EQ(MCL_SUCCESS, MclMsgQueue_Send(mq, &msg));
             ASSERT_EQ(i + 1, MclMsgQueue_GetCount(mq));
         }
@@ -83,7 +83,7 @@ FIXTURE(MsgQueueTest) {
     TEST("should recv from full mq to empty") {
         uint16_t value = 0xabcd;
         MCL_AUTO_MSG MclMsg *msg = MclMsg_Create(defaultType, defaultId, sizeof(value));
-        for (uint16_t i = 0; i < MSG_QUEUE_CAPACITY; i++) {
+        for (MclSize i = 0; i < MSG_QUEUE_CAPACITY; i++) {
             msg->id = i;
             MclMsg_Fill(msg, 0, sizeof(value), &value);
             ASSERT_EQ(MCL_SUCCESS, MclMsgQueue_Send(mq, msg));
@@ -93,7 +93,7 @@ FIXTURE(MsgQueueTest) {
 
         uint16_t outValue = 0;
         MclMsg result = MCL_MSG(0, 0, sizeof(outValue), &outValue);
-        for (uint16_t i = 0; i < MSG_QUEUE_CAPACITY; i++) {
+        for (MclSize i = 0; i < MSG_QUEUE_CAPACITY; i++) {
             ASSERT_EQ(MSG_QUEUE_CAPACITY - i, MclMsgQueue_GetCount(mq));
             ASSERT_EQ(MCL_SUCCESS, MclMsgQueue_Recv(mq, &result));
             ASSERT_EQ(defaultType, result.type);

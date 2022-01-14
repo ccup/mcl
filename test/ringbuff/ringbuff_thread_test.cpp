@@ -4,19 +4,19 @@
 
 namespace {
     struct Msg {
-        int value;
+        uint32_t value;
         bool valid;
     };
 
-    constexpr uint16_t MAX_SEND_VALUE = 10000;
+    constexpr MclSize MAX_SEND_VALUE = 10000;
 
-    constexpr uint16_t MSG_QUEUE_SIZE = 10;
+    constexpr MclSize MSG_QUEUE_SIZE = 10;
     Msg msgBuff[MSG_QUEUE_SIZE] = {0};
 
     MclRingBuff msgQueue = MCL_RINGBUFF(MSG_QUEUE_SIZE, sizeof(Msg), (uint8_t*)msgBuff);
 
     void* sendMsg(void *) {
-        uint16_t i = 0;
+    	MclSize i = 0;
         while(true) {
             Msg msg {i, true};
             if (!MCL_FAILED(MclRingBuff_Put(&msgQueue, &msg))) {
@@ -30,7 +30,7 @@ namespace {
         return NULL;
     }
 
-    uint16_t LAST_RECEIVED_VALUD = 0;
+    MclSize LAST_RECEIVED_VALUD = 0;
 
     void* recvMsg(void *) {
         while(true) {

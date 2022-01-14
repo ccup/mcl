@@ -1,7 +1,7 @@
 #ifndef H425D83DB_AA41_4C87_BD61_B1496B874AA1
 #define H425D83DB_AA41_4C87_BD61_B1496B874AA1
 
-#include "mcl/typedef.h"
+#include "mcl/array/array_index.h"
 
 MCL_STDC_BEGIN
 
@@ -12,8 +12,8 @@ MCL_TYPE(MclSortObj) {
 	void *obj;
 };
 
-void MclSort_QuickSortRange(MclSortObj*, uint32_t begin, uint32_t end);
-void MclSort_QuickSort(MclSortObj*, size_t size);
+void MclSort_QuickSortRange(MclSortObj*, MclArrayIndex begin, MclArrayIndex end);
+void MclSort_QuickSort(MclSortObj*, MclSize size);
 
 ///////////////////////////////////////////////////////////
 #define MCL_SORT_OBJ(KEY, OBJ) {.key = (KEY), .obj = (OBJ)}

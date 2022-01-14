@@ -3,36 +3,37 @@
 
 #include "mcl/typedef.h"
 #include "mcl/status.h"
+#include "mcl/array/array_index.h"
 
 MCL_STDC_BEGIN
 
 MCL_TYPE(MclArray) {
-    uint16_t capacity;
-    uint16_t elemBytes;
+	MclSize capacity;
+	MclSize elemBytes;
     uint8_t *buff;
 };
 
-MclArray* MclArray_Create(uint16_t capacity, uint16_t elemBytes);
+MclArray* MclArray_Create(MclSize capacity, MclSize elemBytes);
 void MclArray_Delete(MclArray*);
 
-MclStatus MclArray_Init(MclArray*, uint16_t capacity, uint16_t elemBytes, uint8_t* buff);
+MclStatus MclArray_Init(MclArray*, MclSize capacity, MclSize elemBytes, uint8_t* buff);
 void MclArray_Clear(MclArray*);
 
-void* MclArray_Get(MclArray*, uint16_t index);
-MclStatus MclArray_Set(MclArray*, uint16_t index, void*);
+void* MclArray_Get(MclArray*, MclArrayIndex index);
+MclStatus MclArray_Set(MclArray*, MclArrayIndex index, void*);
 
-void MclArray_Reset(MclArray*, uint16_t index);
+void MclArray_Reset(MclArray*, MclArrayIndex index);
 
 ///////////////////////////////////////////////////////////
-MCL_INLINE uint16_t MclArray_GetCapacity(const MclArray *self) {
+MCL_INLINE MclSize MclArray_GetCapacity(const MclArray *self) {
     return self ? self->capacity : 0;
 }
 
-MCL_INLINE uint16_t MclArray_GetElemSize(const MclArray *self) {
+MCL_INLINE MclSize MclArray_GetElemSize(const MclArray *self) {
     return self ? self->elemBytes : 0;
 }
 
-MCL_INLINE uint32_t MclArray_GetBuffSize(uint16_t capacity, uint16_t elemBytes) {
+MCL_INLINE uint64_t MclArray_GetBuffSize(MclSize capacity, MclSize elemBytes) {
     return sizeof(uint8_t) * capacity * elemBytes;
 }
 
@@ -48,7 +49,7 @@ MCL_INLINE uint8_t* MclArray_End(MclArray *self) {
 for (PTR  = (TYPE*)MclArray_Begin(ARRAY); PTR < (TYPE*)MclArray_End(ARRAY); PTR++)
 
 #define MCL_ARRAY_FOREACH_INDEX(ARRAY, INDEX)   \
-for (INDEX = 0; INDEX < (ARRAY)->capacity; INDEX++)
+for (MclArrayIndex INDEX = 0; INDEX < (ARRAY)->capacity; INDEX++)
 
 #define MCL_ARRAY(CAPACITY, ELEM_BYTES, BUFF) \
 {.capacity = (CAPACITY), .elemBytes = (ELEM_BYTES), .buff = (uint8_t*)(BUFF)}

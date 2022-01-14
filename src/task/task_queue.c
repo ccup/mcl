@@ -8,11 +8,11 @@
 
 typedef struct {
 	MclList  tasks;
-	uint32_t threshold;
-	uint32_t poppedCount;
+	MclSize threshold;
+	MclSize poppedCount;
 } TaskQueue;
 
-MCL_PRIVATE void TaskQueue_Init(TaskQueue *queue, uint32_t threshold) {
+MCL_PRIVATE void TaskQueue_Init(TaskQueue *queue, MclSize threshold) {
 	MclList_Init(&queue->tasks, &MclListNodeAllocator_Default);
 	queue->threshold = threshold;
 	queue->poppedCount = 0;
@@ -61,13 +61,13 @@ MCL_PRIVATE MclTask* TaskQueue_Pop(TaskQueue *queue) {
 MCL_TYPE(MclTaskQueue) {
 	MclMutex mutex;
 	MclCond   cond;
-	bool   stopped;
-	uint32_t queueCount;
+	bool    stopped;
+	MclSize queueCount;
 	TaskQueue queues[];
 };
 
 MCL_PRIVATE bool MclTaskQueue_IsEmptyImpl(const MclTaskQueue *self) {
-    for (uint32_t i = 0; i < self->queueCount; i++) {
+    for (MclSize i = 0; i < self->queueCount; i++) {
         if (!TaskQueue_IsEmpty(&self->queues[i])) return false;
     }
     return true;
@@ -80,7 +80,7 @@ MCL_PRIVATE void MclTaskQueue_WaitReady(MclTaskQueue *self) {
 }
 
 MCL_PRIVATE MclTask* MclTaskQueue_PopTaskImpl(MclTaskQueue *self) {
-    for (uint32_t i = 0; i < self->queueCount; i++) {
+    for (MclSize i = 0; i < self->queueCount; i++) {
         if (TaskQueue_IsEmpty(&self->queues[i])) continue;
         if (TaskQueue_IsReachThreshold(&self->queues[i])) {
             TaskQueue_ResetPoppedCount(&self->queues[i]);
@@ -92,7 +92,7 @@ MCL_PRIVATE MclTask* MclTaskQueue_PopTaskImpl(MclTaskQueue *self) {
 }
 
 MCL_PRIVATE void MclTaskQueue_DestroyQueues(MclTaskQueue *self) {
-    for (uint32_t i = 0; i < self->queueCount; i++) {
+    for (MclSize i = 0; i < self->queueCount; i++) {
         TaskQueue_Destroy(&self->queues[i]);
     }
     self->queueCount = 0;
@@ -105,15 +105,15 @@ MCL_PRIVATE void  MclTaskQueue_Destroy(MclTaskQueue *self) {
     MCL_PEEK_SUCC_CALL(MclCond_Destroy(&self->cond));
 }
 
-MCL_PRIVATE void MclTaskQueue_InitQueues(MclTaskQueue *self, uint32_t priorities, uint32_t *thresholds) {
+MCL_PRIVATE void MclTaskQueue_InitQueues(MclTaskQueue *self, MclSize priorities, MclSize *thresholds) {
 	self->queueCount = priorities;
-	for (uint32_t i = 0; i < priorities; i++) {
-		uint32_t threshold = ((thresholds == NULL) || (i + 1 >= priorities)) ? 0 : thresholds[i];
+	for (MclSize i = 0; i < priorities; i++) {
+		MclSize threshold = ((thresholds == NULL) || (i + 1 >= priorities)) ? 0 : thresholds[i];
 		TaskQueue_Init(&self->queues[i], threshold);
 	}
 }
 
-MCL_PRIVATE MclStatus MclTaskQueue_Init(MclTaskQueue *self, uint32_t priorities, uint32_t *thresholds) {
+MCL_PRIVATE MclStatus MclTaskQueue_Init(MclTaskQueue *self, MclSize priorities, MclSize *thresholds) {
 	if (MCL_FAILED(MclMutex_Init(&self->mutex, NULL))) {
 		MCL_LOG_ERR("Init mutex failed!");
 		return MCL_FAILURE;
@@ -128,7 +128,7 @@ MCL_PRIVATE MclStatus MclTaskQueue_Init(MclTaskQueue *self, uint32_t priorities,
     return MCL_SUCCESS;
 }
 
-MclTaskQueue* MclTaskQueue_Create(uint32_t priorities, uint32_t *thresholds) {
+MclTaskQueue* MclTaskQueue_Create(MclSize priorities, MclSize *thresholds) {
 	MCL_ASSERT_TRUE_NIL(priorities > 0);
 
 	MclTaskQueue *self = MCL_MALLOC(sizeof(MclTaskQueue) + sizeof(TaskQueue) * priorities);
@@ -170,7 +170,7 @@ bool MclTaskQueue_IsEmpty(const MclTaskQueue *self) {
     return MclTaskQueue_IsEmptyImpl(self);
 }
 
-MclStatus MclTaskQueue_AddTask(MclTaskQueue *self, MclTask *task, uint32_t priority) {
+MclStatus MclTaskQueue_AddTask(MclTaskQueue *self, MclTask *task, MclTaskPriority priority) {
 	MCL_ASSERT_VALID_PTR(self);
 	MCL_ASSERT_VALID_PTR(task);
 	MCL_ASSERT_TRUE(priority < self->queueCount);
@@ -182,7 +182,7 @@ MclStatus MclTaskQueue_AddTask(MclTaskQueue *self, MclTask *task, uint32_t prior
 	return MCL_SUCCESS;
 }
 
-MclStatus MclTaskQueue_DelTask(MclTaskQueue *self, MclTaskKey key, uint32_t priority) {
+MclStatus MclTaskQueue_DelTask(MclTaskQueue *self, MclTaskKey key, MclTaskPriority priority) {
 	MCL_ASSERT_VALID_PTR(self);
 	MCL_ASSERT_TRUE(MclTaskKey_IsValid(key));
 	MCL_ASSERT_TRUE(priority < self->queueCount);

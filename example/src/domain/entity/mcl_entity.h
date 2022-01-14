@@ -10,7 +10,7 @@ MCL_STDC_BEGIN
 
 MCL_TYPE_DECL(MclEntity);
 
-extern const size_t MCL_ENTITY_SIZE;
+extern const MclSize MCL_ENTITY_SIZE;
 
 MclStatus MclEntity_Init(MclEntity*, MclEntityId, void *cfg);
 void MclEntity_Destroy(MclEntity*);

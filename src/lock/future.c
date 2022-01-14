@@ -62,7 +62,7 @@ void MclFuture_Stop(MclFuture *self) {
 }
 
 bool MclFuture_IsReady(const MclFuture *self) {
-    return MclAtom_IsTrue(&self->isReady);
+    return MclAtom_IsTrue(&((MclFuture*)self)->isReady);
 }
 
 void MclFuture_Set(MclFuture *self, MclStatus status, void *value) {

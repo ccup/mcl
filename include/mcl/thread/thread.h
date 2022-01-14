@@ -51,7 +51,7 @@ MCL_INLINE MclStatus MclThread_SetName(MclThread self, const char *name) {
 #endif
 }
 
-MCL_INLINE MclStatus MclThread_GetName(MclThread self, char *name, size_t len) {
+MCL_INLINE MclStatus MclThread_GetName(MclThread self, char *name, MclSize len) {
     return pthread_getname_np(self, name, len) ? MCL_FAILURE : MCL_SUCCESS;
 }
 

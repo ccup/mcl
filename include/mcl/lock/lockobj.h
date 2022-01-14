@@ -7,7 +7,7 @@ MCL_STDC_BEGIN
 
 typedef void (*MclLockObjDestroy)(void *obj, void *arg);
 
-void* MclLockObj_Create(size_t size);
+void* MclLockObj_Create(MclSize size);
 void  MclLockObj_Delete(void *obj, MclLockObjDestroy, void *arg);
 
 MclStatus MclLockObj_RdLock(void *obj);

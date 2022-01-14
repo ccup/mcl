@@ -7,7 +7,7 @@
 #include "mcl/assert.h"
 
 typedef struct {
-	uint32_t count;
+	MclSize count;
 } EntityCounter;
 
 MCL_PRIVATE MclStatus MclEventService_CountEntity(const MclEntity *entity, void *arg) {

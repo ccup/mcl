@@ -8,7 +8,7 @@ MCL_STDC_BEGIN
 
 MCL_TYPE_DECL(MclEntity);
 
-size_t MclEntityFactory_GetUnreleasedCount();
+MclSize MclEntityFactory_GetUnreleasedCount();
 
 MclEntity* MclEntityFactory_Create(MclEntityId, void *cfg);
 void MclEntityFactory_Delete(MclEntity*);

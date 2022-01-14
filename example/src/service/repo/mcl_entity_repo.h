@@ -21,9 +21,9 @@ typedef bool (*MclEntityPred)(const MclEntity*, void*);
 MclEntity* MclEntityRepo_FetchBy(MclEntityPred, void*);
 const MclEntity* MclEntityRepo_FetchConstBy(MclEntityPred, void*);
 
-bool   MclEntityRepo_HasEntity(MclEntityId);
-bool   MclEntityRepo_IsEmpty();
-size_t MclEntityRepo_GetSize();
+bool    MclEntityRepo_HasEntity(MclEntityId);
+bool    MclEntityRepo_IsEmpty();
+MclSize MclEntityRepo_GetSize();
 
 typedef MclStatus (*MclEntityVisit)(MclEntity*, void*);
 MclStatus MclEntityRepo_Accept(MclEntityVisit, void*);

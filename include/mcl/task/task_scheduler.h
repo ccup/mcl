@@ -4,13 +4,14 @@
 #include "mcl/typedef.h"
 #include "mcl/status.h"
 #include "mcl/task/task_key.h"
+#include "mcl/task/task_priority.h"
 
 MCL_STDC_BEGIN
 
 MCL_TYPE_DECL(MclTask);
 MCL_TYPE_DECL(MclTaskScheduler);
 
-MclTaskScheduler* MclTaskScheduler_Create(uint32_t threadCount, uint32_t priorities, uint32_t *thresholds);
+MclTaskScheduler* MclTaskScheduler_Create(MclSize threadCount, MclSize priorities, MclSize *thresholds);
 void MclTaskScheduler_Delete(MclTaskScheduler*);
 
 MclStatus MclTaskScheduler_Start(MclTaskScheduler*);
@@ -18,8 +19,8 @@ MclStatus MclTaskScheduler_Stop(MclTaskScheduler*);
 
 bool MclTaskScheduler_IsRunning(const MclTaskScheduler*);
 
-MclStatus MclTaskScheduler_SubmitTask(MclTaskScheduler*, MclTask*, uint32_t priority);
-MclStatus MclTaskScheduler_RemoveTask(MclTaskScheduler*, MclTaskKey, uint32_t priority);
+MclStatus MclTaskScheduler_SubmitTask(MclTaskScheduler*, MclTask*, MclTaskPriority);
+MclStatus MclTaskScheduler_RemoveTask(MclTaskScheduler*, MclTaskKey, MclTaskPriority);
 
 void MclTaskScheduler_LocalExecute(MclTaskScheduler*);
 void MclTaskScheduler_WaitDone(MclTaskScheduler*);

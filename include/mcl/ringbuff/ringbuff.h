@@ -2,13 +2,14 @@
 #define MCL_BF3E52E326AC45BD894114F46228E796
 
 #include "mcl/array/array.h"
+#include "mcl/lock/atom.h"
 
 MCL_STDC_BEGIN
 
 MCL_TYPE(MclRingBuff) {
     MclArray buff;
-    MclArrayIndex head;
-    MclArrayIndex tail;
+    MclAtom head;
+    MclAtom tail;
 };
 
 MclRingBuff* MclRingBuff_Create(MclSize capacity, MclSize elemBytes);

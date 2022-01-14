@@ -8,11 +8,11 @@ MCL_PRIVATE MclArrayIndex MclRingBuff_GetNextPos(const MclRingBuff *self, MclArr
 }
 
 MCL_PRIVATE MclArrayIndex MclRingBuff_GetNextHead(const MclRingBuff *self) {
-    return MclRingBuff_GetNextPos(self, self->head);
+    return MclRingBuff_GetNextPos(self, MclAtom_Get(&((MclRingBuff*)self)->head));
 }
 
 MCL_PRIVATE MclArrayIndex MclRingBuff_GetNextTail(const MclRingBuff *self) {
-    return MclRingBuff_GetNextPos(self, self->tail);
+    return MclRingBuff_GetNextPos(self, MclAtom_Get(&((MclRingBuff*)self)->tail));
 }
 
 MclRingBuff* MclRingBuff_Create(MclSize capacity, MclSize elemBytes) {
@@ -57,33 +57,33 @@ MclStatus MclRingBuff_Init(MclRingBuff *self, MclSize capacity, MclSize elemByte
     MCL_ASSERT_TRUE(elemBytes > 0);
 
     MclArray_Init(&self->buff, capacity, elemBytes, buff);
-    self->head = 0;
-    self->tail = 0;
+    MclAtom_Set(&self->head, 0);
+    MclAtom_Set(&self->tail, 0);
     return MCL_SUCCESS;
 }
 
 void MclRingBuff_Reset(MclRingBuff *self) {
     MCL_ASSERT_VALID_PTR_VOID(self);
     MclArray_Clear(&self->buff);
-    self->head = 0;
-    self->tail = 0;
+    MclAtom_Clear(&self->head);
+    MclAtom_Clear(&self->tail);
 }
 
 bool MclRingBuff_IsFull(const MclRingBuff *self) {
     MCL_ASSERT_VALID_PTR_R(self, true);
-    return MclRingBuff_GetNextTail(self) == self->head;
+    return MclRingBuff_GetNextTail(self) == MclAtom_Get(&((MclRingBuff*)self)->head);
 }
 
 bool MclRingBuff_IsEmpty(const MclRingBuff *self) {
     MCL_ASSERT_VALID_PTR_R(self, true);
-    return self->head == self->tail;
+    return MclAtom_Get(&((MclRingBuff*)self)->head) == MclAtom_Get(&((MclRingBuff*)self)->tail);
 }
 
 MclSize MclRingBuff_GetCount(const MclRingBuff *self) {
     MCL_ASSERT_VALID_PTR_NIL(self);
 
     MclSize capacity = MclArray_GetCapacity(&self->buff);
-    return (self->tail + capacity - self->head) % capacity;
+    return (MclAtom_Get(&((MclRingBuff*)self)->tail) + capacity - MclAtom_Get(&((MclRingBuff*)self)->head)) % capacity;
 }
 
 MclStatus MclRingBuff_Pop(MclRingBuff *self, void *value) {
@@ -92,11 +92,11 @@ MclStatus MclRingBuff_Pop(MclRingBuff *self, void *value) {
 
     if (MclRingBuff_IsEmpty(self)) return MCL_FAILURE;
 
-    void *result = MclArray_Get(&self->buff, self->head);
+    void *result = MclArray_Get(&self->buff, MclAtom_Get(&self->head));
     MCL_ASSERT_VALID_PTR(result);
 
     memcpy(value, result, MclArray_GetElemSize(&self->buff));
-    self->head = MclRingBuff_GetNextHead(self);
+    MclAtom_Set(&self->head, MclRingBuff_GetNextHead(self));
     return MCL_SUCCESS;
 }
 
@@ -106,7 +106,7 @@ MclStatus MclRingBuff_Put(MclRingBuff *self, void *value) {
 
     if (MclRingBuff_IsFull(self)) return MCL_FAILURE;
 
-    MCL_ASSERT_SUCC_CALL(MclArray_Set(&self->buff, self->tail, value));
-    self->tail = MclRingBuff_GetNextTail(self);
+    MCL_ASSERT_SUCC_CALL(MclArray_Set(&self->buff, MclAtom_Get(&self->tail), value));
+    MclAtom_Set(&self->tail, MclRingBuff_GetNextTail(self));
     return MCL_SUCCESS;
 }

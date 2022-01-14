@@ -44,11 +44,23 @@ MclAggregator* MclAggregatorMap_FindById(const MclAggregatorMap *self, MclAggreg
 	return MclHashMap_Get(self, id);
 }
 
+typedef struct {
+	MclAggregatorMapElemPred pred;
+	void *arg;
+} MclAggregatorMapPred;
+
+MCL_PRIVATE bool MclAggregatorMapPred_Pred(const MclHashNode *hashNode, void *arg) {
+	MclAggregatorMapPred *pred = (MclAggregatorMapPred*)arg;
+	MclAggregator *aggregator = (MclAggregator*)MclHashNode_GetValue(hashNode);
+	return pred->pred(aggregator, pred->arg);
+}
+
 MclAggregator*  MclAggregatorMap_FindByPred(const MclAggregatorMap *self, MclAggregatorMapElemPred pred, void *arg) {
 	MCL_ASSERT_VALID_PTR_NIL(self);
 	MCL_ASSERT_VALID_PTR_NIL(pred);
 
-	return MclHashMap_FindByPred(self, (MclHashNodePred)pred, arg);
+	MclAggregatorMapPred predinfo = {.pred = pred, .arg = arg};
+	return MclHashMap_FindByPred(self, MclAggregatorMapPred_Pred, &predinfo);
 }
 
 bool MclAggregatorMap_IsEmpty(const MclAggregatorMap *self) {
@@ -77,7 +89,7 @@ MclStatus MclAggregatorMap_Accept(const MclAggregatorMap *self, MclAggregatorMap
 	MCL_ASSERT_VALID_PTR(visit);
 
 	MclAggregatorMapVisitor visitor = {.visit = visit, .arg = arg};
-	return MclHashMap_Accept(self, (MclHashNodeVisit)MclAggregatorMapVisitor_Visit, &visitor);
+	return MclHashMap_Accept(self, MclAggregatorMapVisitor_Visit, &visitor);
 }
 
 MclStatus MclAggregatorMap_AcceptConst(const MclAggregatorMap *self, MclAggregatorMapElemVisitConst visit, void *arg) {

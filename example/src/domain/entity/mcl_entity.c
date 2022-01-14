@@ -40,7 +40,7 @@ MclAggregatorId MclEntity_GetAggregatorId(const MclEntity *self) {
 	return self ? self->aggregatorId : MCL_AGGREGATOR_ID_INVALID;
 }
 
-void MclEntity_OnInsertToAggregator(MclEntity *self, MclAggregatorId aggregatorId) {
+void MclEntity_OnAddToAggregator(MclEntity *self, MclAggregatorId aggregatorId) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 	MCL_ASSERT_TRUE_VOID(MclAggregatorId_IsValid(aggregatorId));
 	MCL_ASSERT_TRUE_VOID(!MclAggregatorId_IsValid(self->aggregatorId));
@@ -50,6 +50,7 @@ void MclEntity_OnInsertToAggregator(MclEntity *self, MclAggregatorId aggregatorI
 
 void MclEntity_OnRemoveFromAggregator(MclEntity *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
+
 	self->aggregatorId = MCL_AGGREGATOR_ID_INVALID;
 	MclInteger_Clear(&self->value);
 }

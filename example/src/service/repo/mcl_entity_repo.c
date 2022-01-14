@@ -42,44 +42,40 @@ MclEntity* MclEntityRepo_Remove(MclEntityId id) {
 MclEntity* MclEntityRepo_Fetch(MclEntityId id) {
 	MCL_ASSERT_TRUE_NIL(MclEntityId_IsValid(id));
 
-	MclEntity *result = NULL;
-	MCL_LOCK_READ_SCOPE(entityRepo.rwlock) {
-		result = MclEntityList_FindById(&entityRepo.entities, id);
-		if (result) MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_WrLock(result));
-	}
+	MCL_LOCK_READ_AUTO(entityRepo.rwlock);
+
+	MclEntity *result = MclEntityList_FindById(&entityRepo.entities, id);
+	if (result) MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_WrLock(result));
 	return result;
 }
 
 const MclEntity* MclEntityRepo_FetchConst(MclEntityId id) {
 	MCL_ASSERT_TRUE_NIL(MclEntityId_IsValid(id));
 
-	const MclEntity *result = NULL;
-	MCL_LOCK_READ_SCOPE(entityRepo.rwlock) {
-		result = MclEntityList_FindById(&entityRepo.entities, id);
-		if (result) MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_RdLock((void*)result));
-	}
+	MCL_LOCK_READ_AUTO(entityRepo.rwlock);
+
+	MclEntity *result = MclEntityList_FindById(&entityRepo.entities, id);
+	if (result) MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_RdLock(result));
 	return result;
 }
 
 MclEntity* MclEntityRepo_FetchBy(MclEntityPred pred, void *arg) {
 	MCL_ASSERT_VALID_PTR_NIL(pred);
 
-	MclEntity *result = NULL;
-	MCL_LOCK_READ_SCOPE(entityRepo.rwlock) {
-		result = MclEntityList_FindByPred(&entityRepo.entities, pred, arg);
-		if (result) MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_WrLock(result));
-	}
+	MCL_LOCK_READ_AUTO(entityRepo.rwlock);
+
+	MclEntity *result = MclEntityList_FindByPred(&entityRepo.entities, pred, arg);
+	if (result) MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_WrLock(result));
 	return result;
 }
 
 const MclEntity* MclEntityRepo_FetchConstBy(MclEntityPred pred, void *arg) {
 	MCL_ASSERT_VALID_PTR_NIL(pred);
 
-	const MclEntity *result = NULL;
-	MCL_LOCK_READ_SCOPE(entityRepo.rwlock) {
-		result = MclEntityList_FindByPred(&entityRepo.entities, pred, arg);
-		if (result) MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_RdLock((void*)result));
-	}
+	MCL_LOCK_READ_AUTO(entityRepo.rwlock);
+
+	MclEntity *result = MclEntityList_FindByPred(&entityRepo.entities, pred, arg);
+	if (result) MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_RdLock(result));
 	return result;
 }
 

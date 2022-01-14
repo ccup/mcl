@@ -19,7 +19,7 @@ MclEntityId MclEntity_GetId(const MclEntity*);
 MclInteger  MclEntity_GetValue(const MclEntity*);
 MclAggregatorId MclEntity_GetAggregatorId(const MclEntity*);
 
-void MclEntity_OnInsertToAggregator(MclEntity*, MclAggregatorId);
+void MclEntity_OnAddToAggregator(MclEntity*, MclAggregatorId);
 void MclEntity_OnRemoveFromAggregator(MclEntity*);
 
 MclStatus MclEntity_UpdateValue(MclEntity*, MclInteger);

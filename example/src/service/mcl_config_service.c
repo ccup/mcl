@@ -27,21 +27,26 @@ MclStatus MclConfigService_CreateEntity(MclEntityId entityId) {
 	return MCL_SUCCESS;
 }
 
+MCL_PRIVATE bool MclConfigService_IsAggregatorHasEntity(const MclAggregator *aggregator, void *arg) {
+	return MclAggregator_HasEntity(aggregator, *(MclEntityId*)arg);
+}
+
+MCL_PRIVATE void MclConfigService_RemoveEntityFromAggregator(MclEntityId entityId) {
+	MCL_LOCK_OBJ_AUTO MclAggregator *aggregator = MclAggregatorRepo_FetchBy(MclConfigService_IsAggregatorHasEntity, &entityId);
+	if (aggregator) {
+		MCL_ASSERT_SUCC_CALL_VOID(MclAggregator_RemoveEntity(aggregator, entityId));
+	}
+}
+
 MclStatus MclConfigService_DeleteEntity(MclEntityId entityId) {
 	MCL_ASSERT_TRUE(MclEntityId_IsValid(entityId));
+
+	MclConfigService_RemoveEntityFromAggregator(entityId);
 
 	MclEntity *entity = MclEntityRepo_Remove(entityId);
 	if (!entity) {
 		MCL_LOG_WARN("Config Service: not found entity (%u)!", entityId);
 		return MCL_STATUS_ENTITY_NOT_FOUND;
-	}
-
-	MclAggregatorId aggregatorId = MclEntity_GetAggregatorId(entity);
-	if (MclAggregatorId_IsValid(aggregatorId)) {
-		MCL_LOCK_OBJ_AUTO MclAggregator *aggregator = MclAggregatorRepo_Fetch(aggregatorId);
-		if (aggregator) {
-			(void)MclAggregator_RemoveEntity(aggregator, entityId);
-		}
 	}
 
 	MclEntityFactory_DeleteLockObj(entity);

@@ -20,11 +20,17 @@ MclStatus MclAggregator_Init(MclAggregator *self, MclAggregatorId id, void *cfg)
 	return MCL_SUCCESS;
 }
 
+MCL_PRIVATE void MclAggregator_ReleaseEntity(MclEntity *entity) {
+	MCL_ASSERT_SUCC_CALL_VOID(MclLockObj_WrLock(entity));
+	MclEntity_OnRemoveFromAggregator(entity);
+	MCL_ASSERT_SUCC_CALL_VOID(MclLockObj_UnLock(entity));
+}
+
 void MclAggregator_Destroy(MclAggregator *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
 	self->id = MCL_AGGREGATOR_ID_INVALID;
-	MclEntityList_Destroy(&self->entities, MclEntity_OnRemoveFromAggregator);
+	MclEntityList_Destroy(&self->entities, MclAggregator_ReleaseEntity);
 }
 
 MclAggregatorId MclAggregator_GetId(const MclAggregator *self) {
@@ -45,7 +51,8 @@ MclStatus MclAggregator_AddEntity(MclAggregator *self, MclEntity *entity) {
 	}
 
 	MCL_ASSERT_SUCC_CALL(MclEntityList_Insert(&self->entities, entity));
-	MclEntity_OnInsertToAggregator(entity, self->id);
+
+	MclEntity_OnAddToAggregator(entity, self->id);
 	return MCL_SUCCESS;
 }
 
@@ -62,7 +69,9 @@ MclStatus MclAggregator_RemoveEntity(MclAggregator *self, MclEntityId entityId) 
 		return MCL_STATUS_NOTHING_CHANGED;
 	}
 
+	MCL_ASSERT_SUCC_CALL(MclLockObj_WrLock(result));
 	MclEntity_OnRemoveFromAggregator(result);
+	MCL_ASSERT_SUCC_CALL(MclLockObj_UnLock(result));
 	return MCL_SUCCESS;
 }
 

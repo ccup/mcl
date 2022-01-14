@@ -47,10 +47,6 @@ MCL_INLINE MclAtom MclAtom_FetchXor(MclAtom *self, MclSize value) {
     return __sync_fetch_and_xor(self, value);
 }
 
-MCL_INLINE MclAtom MclAtom_FetchNand(MclAtom *self, MclSize value) {
-    return __sync_fetch_and_nand(self, value);
-}
-
 MCL_INLINE MclAtom MclAtom_AddFetch(MclAtom *self, MclSize value) {
     return __sync_add_and_fetch(self, value);
 }
@@ -69,10 +65,6 @@ MCL_INLINE MclAtom MclAtom_AndFetch(MclAtom *self, MclSize value) {
 
 MCL_INLINE MclAtom MclAtom_XorFetch(MclAtom *self, MclSize value) {
     return __sync_xor_and_fetch(self, value);
-}
-
-MCL_INLINE MclAtom MclAtom_NandFetch(MclAtom *self, MclSize value) {
-    return __sync_nand_and_fetch(self, value);
 }
 
 MCL_INLINE bool MclAtom_CompareSwap(MclAtom *self, MclSize oldValue, MclSize newValue) {

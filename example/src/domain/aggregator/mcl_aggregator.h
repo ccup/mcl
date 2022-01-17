@@ -26,7 +26,6 @@ bool MclAggregator_HasEntity(const MclAggregator*, MclEntityId);
 MclStatus MclAggregator_DoubleEntities(MclAggregator*);
 MclInteger MclAggregator_GetSumValue(const  MclAggregator*);
 
-
 MCL_STDC_END
 
 #endif

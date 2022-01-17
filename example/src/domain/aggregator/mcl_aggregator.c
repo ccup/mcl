@@ -69,9 +69,7 @@ MclStatus MclAggregator_RemoveEntity(MclAggregator *self, MclEntityId entityId) 
 		return MCL_STATUS_NOTHING_CHANGED;
 	}
 
-	MCL_ASSERT_SUCC_CALL(MclLockObj_WrLock(result));
-	MclEntity_OnRemoveFromAggregator(result);
-	MCL_ASSERT_SUCC_CALL(MclLockObj_UnLock(result));
+	MclAggregator_ReleaseEntity(result);
 	return MCL_SUCCESS;
 }
 

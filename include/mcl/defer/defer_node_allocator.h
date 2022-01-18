@@ -7,7 +7,7 @@ MCL_STDC_BEGIN
 
 MCL_TYPE_DECL(MclDeferNode);
 
-MCL_TYPE(MclDeferNodeAllocator) {
+MCL_INTERFACE(MclDeferNodeAllocator) {
     MclDeferNode* (*alloc)(MclDeferNodeAllocator*);
     void (*free)(MclDeferNodeAllocator*, MclDeferNode*);
 };

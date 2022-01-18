@@ -38,5 +38,5 @@ void MclSort_QuickSortRange(MclSortObj *sortObjs, MclArrayIndex begin, MclArrayI
 void MclSort_QuickSort(MclSortObj *sortObjs, MclSize size) {
 	MCL_ASSERT_VALID_PTR_VOID(sortObjs);
 	MCL_ASSERT_TRUE_VOID(size > 0);
-	return MclSort_QuickSortRange(sortObjs, 0, size - 1);
+	MclSort_QuickSortRange(sortObjs, 0, size - 1);
 }

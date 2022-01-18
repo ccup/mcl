@@ -10,7 +10,7 @@ MCL_PRIVATE void MclThreadLauncher_StopThread(MclThreadInfo *thread) {
 	if (thread->stop) thread->stop(thread->ctxt);
 }
 
-MCL_PRIVATE void* EMclThreadLauncher_RunThread(void *data) {
+MCL_PRIVATE void* MclThreadLauncher_RunThread(void *data) {
 	MclThreadInfo *thread = (MclThreadInfo*)data;
 
 	MCL_LOG_DBG("Launch thread %s enter!", thread->name);
@@ -22,8 +22,8 @@ MCL_PRIVATE void* EMclThreadLauncher_RunThread(void *data) {
 	return NULL;
 }
 
-MCL_PRIVATE MclStatus EMclThreadLauncher_LaunchThread(MclThreadInfo *thread) {
-	MCL_ASSERT_SUCC_CALL(MclThread_Create(&thread->thread, NULL, EMclThreadLauncher_RunThread, thread));
+MCL_PRIVATE MclStatus MclThreadLauncher_LaunchThread(MclThreadInfo *thread) {
+	MCL_ASSERT_SUCC_CALL(MclThread_Create(&thread->thread, NULL, MclThreadLauncher_RunThread, thread));
 	return MCL_SUCCESS;
 }
 
@@ -31,7 +31,7 @@ MclStatus MclThreadLauncher_Launch(MclThreadInfo *threads, MclSize threadNum) {
 	MCL_ASSERT_VALID_PTR(threads);
 
 	MCL_LOOP_FOREACH_SIZE(i, threadNum) {
-		MCL_ASSERT_SUCC_CALL(EMclThreadLauncher_LaunchThread(&threads[i]));
+		MCL_ASSERT_SUCC_CALL(MclThreadLauncher_LaunchThread(&threads[i]));
 	}
 	return MCL_SUCCESS;
 }

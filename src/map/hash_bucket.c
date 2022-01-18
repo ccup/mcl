@@ -2,8 +2,8 @@
 #include "mcl/assert.h"
 
 MCL_PRIVATE MclStatus MclHashBucket_RemoveNodeFromBucket(MclHashBucket* self,
-		MclHashNode *node, MclHashNodeAllocator *allocator, MclHashValueDestroy destroy) {
-	MCL_ASSERT_TRUE(MCL_LINK_NODE_IS_IN_LINK(node, link));
+	MclHashNode *node, MclHashNodeAllocator *allocator, MclHashValueDestroy destroy) {
+	if (!MCL_LINK_NODE_IS_IN_LINK(node, link)) return MCL_FAILURE;
 	MCL_LINK_REMOVE(node, link);
 	MclHashNode_Delete(node, allocator, destroy);
 	return MCL_SUCCESS;
@@ -36,8 +36,7 @@ MclStatus MclHashBucket_RemoveNode(MclHashBucket *self, MclHashNode *node, MclHa
 	MCL_ASSERT_VALID_PTR(self);
 	MCL_ASSERT_VALID_PTR(node);
 
-	MCL_ASSERT_SUCC_CALL(MclHashBucket_RemoveNodeFromBucket(self, node, allocator, destroy));
-	return MCL_SUCCESS;
+	return (MclHashBucket_RemoveNodeFromBucket(self, node, allocator, destroy));
 }
 
 MclHashNode* MclHashBucket_FindNode(const MclHashBucket *self, MclHashKey key) {

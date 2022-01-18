@@ -72,8 +72,10 @@ MclStatus MclHashMap_RemoveNode(MclHashMap *self, MclHashNode *node, MclHashValu
     MCL_ASSERT_VALID_PTR(node);
 
     MclHashBucketId bucketId = MclHashMap_GetBucketId(self, node->key);
-    MCL_ASSERT_SUCC_CALL(MclHashBucket_RemoveNode(&self->buckets[bucketId], node, self->allocator, destroy));
-    self->size--;
+    if (MCL_FAILED(MclHashBucket_RemoveNode(&self->buckets[bucketId], node, self->allocator, destroy))) {
+    	return MCL_FAILURE;
+    }
+	self->size--;
     return MCL_SUCCESS;
 }
 

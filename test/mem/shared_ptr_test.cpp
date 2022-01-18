@@ -136,10 +136,6 @@ namespace {
         auto result = new(p) Foo(id);
         return result;
 	}
-
-	void Foo_Destroy(Foo *f) {
-		if (f) MclSharedPtr_Delete(f);
-	}
 }
 
 FIXTURE(SharedPtrAutoReleaseTest) {

@@ -11,7 +11,7 @@ namespace {
     constexpr MclSize MAX_SEND_VALUE = 10000;
 
     constexpr MclSize MSG_QUEUE_SIZE = 10;
-    Msg msgBuff[MSG_QUEUE_SIZE] = {0};
+    Msg msgBuff[MSG_QUEUE_SIZE] = {{0}};
 
     MclRingBuff msgQueue = MCL_RINGBUFF(MSG_QUEUE_SIZE, sizeof(Msg), (uint8_t*)msgBuff);
 

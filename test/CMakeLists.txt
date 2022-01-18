@@ -36,6 +36,16 @@ target_link_libraries(${TEST_TARGET} PRIVATE mcl cctest_main)
 
 target_compile_features(${TEST_TARGET} PRIVATE cxx_std_17)
 
+target_compile_options(${TEST_TARGET} 
+    PRIVATE -Wall -Wextra -pedantic -Werror 
+    -Wno-gnu-zero-variadic-macro-arguments 
+    -Wno-unused-parameter 
+    -Wno-unused-variable 
+    -Wno-c99-extensions 
+    -Wno-gnu-statement-expression
+    -Wno-missing-field-initializers
+    -Wno-language-extension-token)
+
 include(CTest)
 enable_testing()
 add_test(NAME test COMMAND ${TEST_TARGET})

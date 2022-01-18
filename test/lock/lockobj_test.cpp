@@ -34,7 +34,7 @@ namespace {
             }
         }
 
-        void remove(int id) {
+        void remove(FooId id) {
             MCL_ASSERT_TRUE_VOID(id != FOO_ID_INVALID);
             MCL_LOG_DBG("FooRepo: enter remove foo of id %d", id);
             MCL_LOCK_WRITE_SCOPE(rwlock) {
@@ -48,7 +48,7 @@ namespace {
             }
         }
 
-        Foo* get(int id) {
+        Foo* get(FooId id) {
             MCL_LOG_DBG("FooRepo: enter get foo of id %d", id);
             MCL_LOCK_READ_AUTO(rwlock);
             MCL_LOG_DBG("FooRepo: begin get foo of id %d", id);
@@ -64,7 +64,7 @@ namespace {
             return NULL;
         }
 
-        const Foo* getConst(int id) {
+        const Foo* getConst(FooId id) {
             MCL_LOG_DBG("FooRepo: enter get const foo of id %d", id);
             MCL_LOCK_READ_AUTO(rwlock);
             MCL_LOG_DBG("FooRepo: begin get const foo of id %d", id);
@@ -94,7 +94,7 @@ namespace {
             return foo;
         }
 
-        int getFirstId() {
+        FooId getFirstId() {
             MCL_LOG_DBG("FooRepo: enter get first foo id");
             MCL_LOCK_READ_AUTO(rwlock);
             MCL_LOG_DBG("FooRepo: begin get first foo id");
@@ -124,7 +124,7 @@ namespace {
         }
 
     private:
-        Foo* removeById(int id) {
+        Foo* removeById(FooId id) {
             MclListNode *node = NULL;
             MclListNode *tmpNode = NULL;
             MCL_LIST_FOREACH_SAFE(this->foos, node, tmpNode) {
@@ -139,10 +139,10 @@ namespace {
 
     } fooRepo;
 
-    constexpr int MAX_ID = 10;
+    constexpr FooId MAX_ID = 10;
 
     void* FooCreateService(void*) {
-        for (int id = 0; id < MAX_ID; id++) {
+        for (FooId id = 0; id < MAX_ID; id++) {
             MCL_LOG_INFO("service begin insert foo of id %d", id);
             auto f = FooFactory<FooCreateType::LOCKOBJ>::create(id);
             MCL_ASSERT_VALID_PTR_NIL(f);
@@ -201,7 +201,7 @@ namespace {
     }
 
     void* FooVisitService2(void*) {
-        for (int i = 0; i < MAX_ID; i++)  {
+        for (FooId i = 0; i < MAX_ID; i++)  {
             MCL_LOG_INFO("service 2 begin visit foo");
             MCL_LOCK_OBJ_AUTO auto foo = fooRepo.getConst(i);
             if (!foo) {

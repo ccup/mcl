@@ -9,8 +9,8 @@ FIXTURE(MacroRepeatTest) {
 	TEST("should repeat init array items") {
 		int a[] = {MCL_MACRO_REPEAT_SIMPLE(ARRAY_SIZE_MAX, ARRAY_ITEM_INIT)};
 
-		for (int i = 0; i < MCL_ARRAY_SIZE(a); i++) {
-			ASSERT_EQ(i, a[i]);
+		for (MclSize i = 0; i < MCL_ARRAY_SIZE(a); i++) {
+			ASSERT_EQ((int)i, a[i]);
 		}
 	}
 };

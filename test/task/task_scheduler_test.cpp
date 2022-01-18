@@ -25,7 +25,7 @@ FIXTURE(TaskSchedulerTest)
 	}
 
 	void submitTask(MclTaskScheduler *scheduler, PriorityLevel priority, int index = 0) {
-		if (index >= TASK_COUNT) return;
+		if ((MclSize)index >= TASK_COUNT) return;
 		if (priority > MAX_PRIORITY) return;
         MclTaskScheduler_SubmitTask(scheduler, &demoTasks[priority][index].task, priority);
 	}

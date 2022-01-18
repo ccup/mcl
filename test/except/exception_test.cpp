@@ -10,7 +10,7 @@ namespace {
         MCL_TRY {
             MCL_THROW_IF((1 > 2), 0x1234);
             MCL_THROW_IF_FAIL(func_return_status(MCL_SUCCESS));
-            MCL_THROW_IF_FAIL_WITH_PARA(func_return_status((MclStatus)MCL_UINT32_MAX), 1, 2);
+            MCL_THROW_IF_FAIL_WITH_PARA(func_return_status((MclStatus)MCL_FAILURE), 1, 2);
             return MCL_SUCCESS;
         }
         MCL_CATCH {

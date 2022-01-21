@@ -4,6 +4,10 @@
 #include "mcl/config.h"
 #include "mcl/log/log_level.h"
 
+#ifndef MCL_CONFIG_LOG_COUNT_ENABLE
+#define MCL_CONFIG_LOG_COUNT_ENABLE 1
+#endif
+
 #ifdef MCL_CONFIG_LOG
 
 MCL_STDC_BEGIN

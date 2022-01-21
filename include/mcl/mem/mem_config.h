@@ -4,6 +4,14 @@
 #include "mcl/config.h"
 #include "mcl/stdtype.h"
 
+#ifndef MCL_CONFIG_MEM_FORCE_CLEAN
+#define MCL_CONFIG_MEM_FORCE_CLEAN 1
+#endif
+
+#ifndef MCL_CONFIG_MEM_COUNT_ENABLE
+#define MCL_CONFIG_MEM_COUNT_ENABLE 1
+#endif
+
 #ifdef MCL_CONFIG_MEM
 
 MCL_STDC_BEGIN

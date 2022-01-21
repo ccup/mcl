@@ -2,6 +2,7 @@
 #include "mcl/log/log_config.h"
 #include "mcl/log/log_level.h"
 #include "mcl/log/log_base_name.h"
+#include "mcl/log/log_counter.h"
 #include "mcl/keyword.h"
 #include <stdarg.h>
 #include <stdio.h>
@@ -53,6 +54,9 @@ void MclLog_Printf(int level, const char* levelstr, const char* file, unsigned i
 
 #ifdef MCL_THREAD_ENABLED
 	MCL_LOCK_AUTO(mclLogMutex);
+#endif
+#if MCL_CONFIG_LOG_COUNT_ENABLE
+	MclLogCounter_CountLevel(level);
 #endif
 	printf("%s", MclLogLevel_GetColorFmt(level));
     va_list va;

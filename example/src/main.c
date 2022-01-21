@@ -5,6 +5,8 @@
 #include "mcl/service/statistics/mcl_statistics.h"
 #include "mcl/thread/thread_launcher.h"
 #include "mcl/array/array_size.h"
+#include "mcl/log/log_counter.h"
+#include "mcl/mem/mem_counter.h"
 #include "mcl/time/time.h"
 #include "mcl/algo/loop.h"
 #include <stdlib.h>
@@ -158,6 +160,9 @@ MclStatus MclExample_StatisticsResult() {
 	MCL_LOG("--------------------------------------------------\n");
 	MCL_ASSERT_TRUE(statistics.unreleasedAggregatorCount == 0);
 	MCL_ASSERT_TRUE(statistics.unreleasedEntityCount == 0);
+	MCL_ASSERT_TRUE(MclLogCounter_GetFatalCount() == 0);
+	MCL_ASSERT_TRUE(MclLogCounter_GetErrorCount() == 0);
+	MCL_ASSERT_TRUE(MclMemCounter_GetMallocCount() == MclMemCounter_GetFreeCount());
 	MCL_LOG_SUCC("Mcl Example OK!");
 	return MCL_SUCCESS;
 }

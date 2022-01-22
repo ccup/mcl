@@ -2,6 +2,7 @@
 #define MCL_46F99D91864B4D238E0DC000FDEC7E31
 
 #include "mcl/keyword.h"
+#include "mcl/mem/memory.h"
 
 MCL_STDC_BEGIN
 
@@ -35,7 +36,7 @@ MCL_INLINE void MclSharedPtr_AutoFree(void *pp) {
             __VA_ARGS__                                                     \
         };                                                                  \
         void *ptr = MclSharedPtr_Create(sizeof(Type), args.destroy, args.arg); \
-        if (ptr != NULL) memcpy(ptr, &args.value, sizeof(Type));            \
+        if (ptr != NULL) MCL_MEM_COPY(ptr, &args.value, sizeof(Type));      \
         (Type*)ptr;                                                         \
     })
 

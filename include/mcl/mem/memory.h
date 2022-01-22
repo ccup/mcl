@@ -11,8 +11,8 @@ MCL_STDC_BEGIN
 MCL_INLINE MCL_MALLOC_API void* Mcl_Malloc(MclSize size) {
     void* p = MCL_MEM_MALLOC(size);
     if (p) {
-#if MCL_CONFIG_MEM_FORCE_CLEAN
-    memset(p, 0, size);
+#if MCL_CONFIG_MEM_MALLOC_CLEAN_ENABLE
+    MCL_MEM_CLEAR(p, size);
 #endif
 #if MCL_CONFIG_MEM_COUNT_ENABLE
     MclMemCounter_CountMalloc();

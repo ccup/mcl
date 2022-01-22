@@ -2,7 +2,7 @@
 #include "entity/mcl_entity.h"
 #include "mcl/mem/shared_ptr.h"
 #include "mcl/mem/allocator.h"
-#include "mcl/mem/malloc.h"
+#include "mcl/mem/memory.h"
 #include "mcl/lock/lockobj.h"
 #include "mcl/lock/atom.h"
 #include "mcl/assert.h"

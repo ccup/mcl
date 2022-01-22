@@ -1,6 +1,6 @@
 #include "mcl/defer/defer_node_allocator.h"
 #include "mcl/defer/defer_node.h"
-#include "mcl/mem/malloc.h"
+#include "mcl/mem/memory.h"
 
 MCL_PRIVATE MclDeferNode* MclDeferNodeAllocator_AllocDefault(MclDeferNodeAllocator *self) {
     return MCL_MALLOC(sizeof(MclDeferNode));

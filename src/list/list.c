@@ -1,5 +1,5 @@
 #include "mcl/list/list.h"
-#include "mcl/mem/malloc.h"
+#include "mcl/mem/memory.h"
 #include "mcl/assert.h"
 
 MCL_PRIVATE void MclList_RemoveNodeFromList(MclList* self, MclListNode *node, MclListDataDestroy destroy) {

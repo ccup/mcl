@@ -1,5 +1,5 @@
 #include "mcl/map/hash_map.h"
-#include "mcl/mem/malloc.h"
+#include "mcl/mem/memory.h"
 #include "mcl/assert.h"
 
 typedef MclSize MclHashBucketId;

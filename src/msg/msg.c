@@ -1,6 +1,6 @@
 #include "mcl/msg/msg_queue.h"
 #include "mcl/msg/msg.h"
-#include "mcl/mem/malloc.h"
+#include "mcl/mem/memory.h"
 #include "mcl/assert.h"
 
 MclStatus MclMsg_Init(MclMsg *self, MclMsgType type, MclMsgId id, MclSize bodySize, void* body) {
@@ -41,7 +41,7 @@ MclStatus MclMsg_Fill(MclMsg *self, MclSize pos, MclSize len, void *value) {
     MCL_ASSERT_VALID_PTR(value);
     MCL_ASSERT_TRUE(pos + len <= self->bodyBytes);
 
-    memcpy(self->body, value, len);
+    MCL_MEM_COPY(self->body, value, len);
     return MCL_SUCCESS;
 }
 
@@ -50,7 +50,7 @@ MclStatus MclMsg_Fetch(MclMsg *self, MclSize pos, MclSize len, void *value) {
     MCL_ASSERT_VALID_PTR(value);
     MCL_ASSERT_TRUE(pos + len <= self->bodyBytes);
 
-    memcpy(value, self->body, len);
+    MCL_MEM_COPY(value, self->body, len);
     return MCL_SUCCESS;
 }
 
@@ -66,7 +66,7 @@ MclStatus MclMsg_Copy(MclMsg *src, MclMsg *dst) {
     dst->sid = src->sid;
     dst->bodyBytes = src->bodyBytes;
     if (dst->bodyBytes > 0) {
-        memcpy(dst->body, src->body, dst->bodyBytes);
+    	MCL_MEM_COPY(dst->body, src->body, dst->bodyBytes);
     }
     return MCL_SUCCESS;
 }

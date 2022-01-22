@@ -3,7 +3,7 @@
 #include "mcl/thread/thread.h"
 #include "mcl/task/task.h"
 #include "mcl/lock/atom.h"
-#include "mcl/mem/malloc.h"
+#include "mcl/mem/memory.h"
 #include "mcl/assert.h"
 
 #define MCL_TASK_SCHEDULER_THREAD_MAX 8

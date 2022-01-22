@@ -2,7 +2,7 @@
 #include "mcl/lock/atom.h"
 #include "mcl/lock/mutex.h"
 #include "mcl/lock/cond.h"
-#include "mcl/mem/malloc.h"
+#include "mcl/mem/memory.h"
 
 MCL_TYPE(MclFuture) {
     MclMutex mutex;

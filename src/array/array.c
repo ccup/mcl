@@ -1,5 +1,5 @@
 #include "mcl/array/array.h"
-#include "mcl/mem/malloc.h"
+#include "mcl/mem/memory.h"
 #include "mcl/assert.h"
 
 MCL_PRIVATE uint8_t* MclArray_GetAddr(MclArray *self, MclArrayIndex index) {
@@ -52,7 +52,7 @@ MclStatus MclArray_Init(MclArray *self, MclSize capacity, MclSize elemBytes, uin
 
 void MclArray_Clear(MclArray *self) {
     MCL_ASSERT_VALID_PTR_VOID(self);
-    memset(self->buff, 0, MclArray_GetBuffSize(self->capacity, self->elemBytes));
+    MCL_MEM_CLEAR(self->buff, MclArray_GetBuffSize(self->capacity, self->elemBytes));
 }
 
 void* MclArray_Get(MclArray *self, MclArrayIndex index) {
@@ -67,7 +67,7 @@ MclStatus MclArray_Set(MclArray *self, MclArrayIndex index, void *value) {
     MCL_ASSERT_VALID_PTR(value);
     MCL_ASSERT_TRUE(index < self->capacity);
 
-    memcpy(MclArray_GetAddr(self, index), value, self->elemBytes);
+    MCL_MEM_COPY(MclArray_GetAddr(self, index), value, self->elemBytes);
     return MCL_SUCCESS;
 }
 
@@ -75,5 +75,5 @@ void MclArray_Reset(MclArray *self, MclArrayIndex index) {
     MCL_ASSERT_VALID_PTR_VOID(self);
     MCL_ASSERT_TRUE_VOID(index < self->capacity);
 
-    memset(MclArray_GetAddr(self, index), 0, self->elemBytes);
+    MCL_MEM_CLEAR(MclArray_GetAddr(self, index), self->elemBytes);
 }

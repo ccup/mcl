@@ -1,6 +1,6 @@
 #include "mcl/mem/shared_ptr.h"
 #include "mcl/lock/atom.h"
-#include "mcl/mem/malloc.h"
+#include "mcl/mem/memory.h"
 #include "mcl/mem/align.h"
 #include "mcl/assert.h"
 

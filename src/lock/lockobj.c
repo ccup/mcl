@@ -1,6 +1,6 @@
 #include "mcl/lock/lockobj.h"
 #include "mcl/lock/rwlock.h"
-#include "mcl/mem/malloc.h"
+#include "mcl/mem/memory.h"
 #include "mcl/mem/align.h"
 #include "mcl/assert.h"
 

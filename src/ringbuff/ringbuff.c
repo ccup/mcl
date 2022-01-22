@@ -1,5 +1,5 @@
 #include "mcl/ringbuff/ringbuff.h"
-#include "mcl/mem/malloc.h"
+#include "mcl/mem/memory.h"
 #include "mcl/mem/align.h"
 #include "mcl/assert.h"
 
@@ -95,7 +95,7 @@ MclStatus MclRingBuff_Pop(MclRingBuff *self, void *value) {
     void *result = MclArray_Get(&self->buff, MclAtom_Get(&self->head));
     MCL_ASSERT_VALID_PTR(result);
 
-    memcpy(value, result, MclArray_GetElemSize(&self->buff));
+    MCL_MEM_COPY(value, result, MclArray_GetElemSize(&self->buff));
     MclAtom_Set(&self->head, MclRingBuff_GetNextHead(self));
     return MCL_SUCCESS;
 }

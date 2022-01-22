@@ -1,6 +1,6 @@
 #include "mcl/list/list_node_allocator.h"
 #include "mcl/list/list_node.h"
-#include "mcl/mem/malloc.h"
+#include "mcl/mem/memory.h"
 
 MCL_PRIVATE MclListNode* MclListNodeAllocator_AllocDefault(MclListNodeAllocator *self) {
     return MCL_MALLOC(sizeof(MclListNode));

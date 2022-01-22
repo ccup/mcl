@@ -1,5 +1,5 @@
 #include "mcl/array/link_array.h"
-#include "mcl/mem/malloc.h"
+#include "mcl/mem/memory.h"
 #include "mcl/assert.h"
 
 static const MclArrayIndex MCL_LINK_ARRAY_INDEX_INVALID = MCL_ARRAY_INDEX_MAX;

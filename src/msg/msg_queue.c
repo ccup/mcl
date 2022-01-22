@@ -1,5 +1,5 @@
 #include "mcl/msg/msg_queue.h"
-#include "mcl/mem/malloc.h"
+#include "mcl/mem/memory.h"
 
 MclMsgQueue* MclMsgQueue_Create(MclSize capacity) {
     MCL_ASSERT_TRUE_NIL(capacity > 0);

@@ -1,7 +1,7 @@
 #include <cctest/cctest.h>
 #include "mcl/algo/sort.h"
 #include "mcl/array/array_size.h"
-#include "mcl/mem/malloc.h"
+#include "mcl/mem/memory.h"
 
 namespace {
 	struct Object {

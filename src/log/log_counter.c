@@ -3,9 +3,9 @@
 #include "mcl/keyword.h"
 
 typedef struct {
-	MclAtom fatals;
-	MclAtom errors;
-	MclAtom warns;
+	MclAtom fatal;
+	MclAtom error;
+	MclAtom warn;
 	MclAtom others;
 } MclLogCounter;
 
@@ -14,13 +14,13 @@ MCL_PRIVATE MclLogCounter counter = {0};
 void MclLogCounter_CountLevel(MclLogLevel level) {
 	switch (level) {
 	case MCL_LOG_LEVEL_FATAL:
-		MclAtom_AddFetch(&counter.fatals, 1);
+		MclAtom_AddFetch(&counter.fatal, 1);
 		break;
 	case MCL_LOG_LEVEL_ERR:
-		MclAtom_AddFetch(&counter.errors, 1);
+		MclAtom_AddFetch(&counter.error, 1);
 		break;
 	case MCL_LOG_LEVEL_WARN:
-		MclAtom_AddFetch(&counter.warns, 1);
+		MclAtom_AddFetch(&counter.warn, 1);
 		break;
 	default:
 		MclAtom_AddFetch(&counter.others, 1);
@@ -30,14 +30,14 @@ void MclLogCounter_CountLevel(MclLogLevel level) {
 }
 
 MclSize MclLogCounter_GetFatalCount() {
-	return MclAtom_Get(&counter.fatals);
+	return MclAtom_Get(&counter.fatal);
 }
 
 MclSize MclLogCounter_GetErrorCount() {
-	return MclAtom_Get(&counter.errors);
+	return MclAtom_Get(&counter.error);
 }
 
 MclSize MclLogCounter_GetWarnCount() {
-	return MclAtom_Get(&counter.warns);
+	return MclAtom_Get(&counter.warn);
 }
 

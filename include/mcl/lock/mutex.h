@@ -5,6 +5,8 @@
 #include "mcl/typedef.h"
 #include "mcl/assert.h"
 #include "mcl/macro/symbol.h"
+#include "mcl/lock/lock_config.h"
+#include "mcl/lock/lock_counter.h"
 #include <pthread.h>
 
 MCL_STDC_BEGIN
@@ -12,7 +14,7 @@ MCL_STDC_BEGIN
 typedef pthread_mutex_t MclMutex;
 typedef pthread_mutexattr_t MclMutexAttr;
 
-#define MCL_MUTEX()           PTHREAD_MUTEX_INITIALIZER
+#define MCL_MUTEX()  PTHREAD_MUTEX_INITIALIZER
 
 MCL_INLINE MclStatus MclMutex_InitAttr(MclMutexAttr *attr) {
     return pthread_mutexattr_init(attr) ? MCL_FAILURE : MCL_SUCCESS;
@@ -48,7 +50,11 @@ MCL_INLINE MclStatus MclMutex_InitRecursive(MclMutex *self) {
 MCL_INLINE MclStatus MclMutex_Lock(MclMutex *self) {
     int ret = pthread_mutex_lock(self);
     if (ret) {
-        MCL_LOG_ERR("pthread_mutex_lock fail %d!", ret);
+        MCL_LOG_FATAL("pthread_mutex_lock fail %d!", ret);
+    } else {
+#if MCL_CONFIG_LOCK_COUNT_ENABLE
+    	MclLockCounter_CountMutexLock();
+#endif
     }
     return ret ?  MCL_FAILURE : MCL_SUCCESS;
 }
@@ -56,7 +62,11 @@ MCL_INLINE MclStatus MclMutex_Lock(MclMutex *self) {
 MCL_INLINE MclStatus MclMutex_UnLock(MclMutex *self) {
     int ret = pthread_mutex_unlock(self);
     if (ret) {
-        MCL_LOG_ERR("pthread_mutex_unlock fail %d!", ret);
+        MCL_LOG_FATAL("pthread_mutex_unlock fail %d!", ret);
+    } else {
+#if MCL_CONFIG_LOCK_COUNT_ENABLE
+    	MclLockCounter_CountMutexUnlock();
+#endif
     }
     return ret ?  MCL_FAILURE : MCL_SUCCESS;
 }
@@ -98,7 +108,8 @@ MCL_INLINE bool MclLock_IsLocked(const MclAutoLock *lock) {
 MCL_RAII(MclLock_AutoUnLock) MclAutoLock MCL_SYMBOL_UNIQUE(MCL_LOCK) = MclLock_AutoLock((MclMutex*)&MUTEX)
 
 #define MCL_LOCK_SCOPE(MUTEX)           					\
-for (MCL_RAII(MclLock_AutoUnLock) MclAutoLock mclLock=MclLock_AutoLock((MclMutex*)&MUTEX); MclLock_IsLocked(&mclLock); MclLock_AutoUnLock(&mclLock))
+for (MCL_RAII(MclLock_AutoUnLock) MclAutoLock mclLock=MclLock_AutoLock((MclMutex*)&MUTEX); \
+	MclLock_IsLocked(&mclLock); MclLock_AutoUnLock(&mclLock))
 
 MCL_STDC_END
 

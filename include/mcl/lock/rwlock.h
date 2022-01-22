@@ -5,6 +5,8 @@
 #include "mcl/keyword.h"
 #include "mcl/assert.h"
 #include "mcl/macro/symbol.h"
+#include "mcl/lock/lock_config.h"
+#include "mcl/lock/lock_counter.h"
 #include <pthread.h>
 
 MCL_STDC_BEGIN
@@ -12,7 +14,7 @@ MCL_STDC_BEGIN
 typedef pthread_rwlock_t MclRwLock;
 typedef pthread_rwlockattr_t MclRwLockAttr;
 
-#define MCL_RWLOCK()            PTHREAD_RWLOCK_INITIALIZER
+#define MCL_RWLOCK()  PTHREAD_RWLOCK_INITIALIZER
 
 MCL_INLINE MclStatus MclRwLock_Init(MclRwLock *self, const MclRwLockAttr *attr) {
     return pthread_rwlock_init(self, attr) ?  MCL_FAILURE : MCL_SUCCESS;
@@ -23,7 +25,15 @@ MCL_INLINE MclStatus MclRwLock_Destroy(MclRwLock *self) {
 }
 
 MCL_INLINE MclStatus MclRwLock_RdLock(MclRwLock *self) {
-    return pthread_rwlock_rdlock(self) ?  MCL_FAILURE : MCL_SUCCESS;
+    int ret = pthread_rwlock_rdlock(self);
+    if (ret) {
+        MCL_LOG_FATAL("pthread_rwlock_rdlock fail %d!", ret);
+    } else {
+#if MCL_CONFIG_LOCK_COUNT_ENABLE
+    	MclLockCounter_CountReadLock();
+#endif
+    }
+    return ret ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
 MCL_INLINE MclStatus MclRwLock_TryRdLock(MclRwLock *self) {
@@ -31,7 +41,15 @@ MCL_INLINE MclStatus MclRwLock_TryRdLock(MclRwLock *self) {
 }
 
 MCL_INLINE MclStatus MclRwLock_WrLock(MclRwLock *self) {
-    return pthread_rwlock_wrlock(self) ?  MCL_FAILURE : MCL_SUCCESS;
+    int ret = pthread_rwlock_wrlock(self);
+    if (ret) {
+        MCL_LOG_FATAL("pthread_rwlock_wrlock fail %d!", ret);
+    } else {
+#if MCL_CONFIG_LOCK_COUNT_ENABLE
+    	MclLockCounter_CountWriteLock();
+#endif
+    }
+    return ret ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
 MCL_INLINE MclStatus MclRwLock_TryWrLock(MclRwLock *self) {
@@ -39,7 +57,15 @@ MCL_INLINE MclStatus MclRwLock_TryWrLock(MclRwLock *self) {
 }
 
 MCL_INLINE MclStatus MclRwLock_UnLock(MclRwLock *self) {
-    return pthread_rwlock_unlock(self) ?  MCL_FAILURE : MCL_SUCCESS;
+    int ret = pthread_rwlock_unlock(self);
+    if (ret) {
+        MCL_LOG_FATAL("pthread_rwlock_unlock fail %d!", ret);
+    } else {
+#if MCL_CONFIG_LOCK_COUNT_ENABLE
+    	MclLockCounter_CountRwUnlock();
+#endif
+    }
+    return ret ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////
@@ -89,10 +115,12 @@ MCL_RAII(MclRwLock_AutoUnLock) MclAutoRwLock MCL_SYMBOL_UNIQUE(MCL_RDLOCK) = Mcl
 MCL_RAII(MclRwLock_AutoUnLock) MclAutoRwLock MCL_SYMBOL_UNIQUE(MCL_WRLOCK) = MclRwLock_AutoWrLock((MclRwLock*)&RWLOCK)
 
 #define MCL_LOCK_READ_SCOPE(RWLOCK)           				\
-for (MCL_RAII(MclRwLock_AutoUnLock) MclAutoRwLock mclRdLock=MclRwLock_AutoRdLock((MclRwLock*)&RWLOCK); MclRwLock_IsLocked(&mclRdLock); MclRwLock_AutoUnLock(&mclRdLock))
+for (MCL_RAII(MclRwLock_AutoUnLock) MclAutoRwLock mclRdLock=MclRwLock_AutoRdLock((MclRwLock*)&RWLOCK); \
+	MclRwLock_IsLocked(&mclRdLock); MclRwLock_AutoUnLock(&mclRdLock))
 
 #define MCL_LOCK_WRITE_SCOPE(RWLOCK)           				\
-for (MCL_RAII(MclRwLock_AutoUnLock) MclAutoRwLock mclWrLock=MclRwLock_AutoWrLock((MclRwLock*)&RWLOCK); MclRwLock_IsLocked(&mclWrLock); MclRwLock_AutoUnLock(&mclWrLock))
+for (MCL_RAII(MclRwLock_AutoUnLock) MclAutoRwLock mclWrLock=MclRwLock_AutoWrLock((MclRwLock*)&RWLOCK); \
+	MclRwLock_IsLocked(&mclWrLock); MclRwLock_AutoUnLock(&mclWrLock))
 
 MCL_STDC_END
 

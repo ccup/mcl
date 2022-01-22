@@ -4,9 +4,10 @@
 #include "mcl/service/mcl_query_service.h"
 #include "mcl/service/statistics/mcl_statistics.h"
 #include "mcl/thread/thread_launcher.h"
-#include "mcl/array/array_size.h"
+#include "mcl/lock/lock_counter.h"
 #include "mcl/log/log_counter.h"
 #include "mcl/mem/mem_counter.h"
+#include "mcl/array/array_size.h"
 #include "mcl/time/time.h"
 #include "mcl/algo/loop.h"
 #include <stdlib.h>
@@ -155,7 +156,7 @@ MCL_PRIVATE MclThreadInfo exampleThreads[] = {
 		EXAMPLE_THREAD("ValQry" , ExampleThread_QueryValue),
 };
 
-MclStatus MclExample_StatisticsResult() {
+MclStatus MclExample_AssertResult() {
 	MclStatistics statistics = MclQueryService_QueryStatistics();
 	MCL_LOG("--------------------------------------------------\n");
 	MCL_ASSERT_TRUE(statistics.unreleasedAggregatorCount == 0);
@@ -163,6 +164,8 @@ MclStatus MclExample_StatisticsResult() {
 	MCL_ASSERT_TRUE(MclLogCounter_GetFatalCount() == 0);
 	MCL_ASSERT_TRUE(MclLogCounter_GetErrorCount() == 0);
 	MCL_ASSERT_TRUE(MclMemCounter_GetMallocCount() == MclMemCounter_GetFreeCount());
+	MCL_ASSERT_TRUE(MclLockCounter_GetMutexLockCount() == MclLockCounter_GetMutexUnlockCount());
+	MCL_ASSERT_TRUE(MclLockCounter_GetReadLockCount() +  MclLockCounter_GetWriteLockCount() == MclLockCounter_GetRwUnlockCount());
 	MCL_LOG_SUCC("Mcl Example OK!");
 	return MCL_SUCCESS;
 }
@@ -170,6 +173,6 @@ MclStatus MclExample_StatisticsResult() {
 int main() {
 	MCL_ASSERT_SUCC_CALL(MclThreadLauncher_Launch(exampleThreads, MCL_ARRAY_SIZE(exampleThreads)));
 	MclThreadLauncher_WaitDone(exampleThreads, MCL_ARRAY_SIZE(exampleThreads));
-	return MclExample_StatisticsResult();
+	return MclExample_AssertResult();
 }
 

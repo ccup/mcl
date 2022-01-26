@@ -30,7 +30,7 @@ MCL_PRIVATE MclStatus MclThreadLauncher_LaunchThread(MclThreadInfo *thread) {
 MclStatus MclThreadLauncher_Launch(MclThreadInfo *threads, MclSize threadNum) {
 	MCL_ASSERT_VALID_PTR(threads);
 
-	MCL_LOOP_FOREACH_SIZE(i, threadNum) {
+	MCL_LOOP_FOREACH_INDEX(i, threadNum) {
 		MCL_ASSERT_SUCC_CALL(MclThreadLauncher_LaunchThread(&threads[i]));
 	}
 	return MCL_SUCCESS;
@@ -39,11 +39,11 @@ MclStatus MclThreadLauncher_Launch(MclThreadInfo *threads, MclSize threadNum) {
 void MclThreadLauncher_WaitDone(MclThreadInfo  *threads, MclSize threadNum) {
 	MCL_ASSERT_VALID_PTR_VOID(threads);
 
-	MCL_LOOP_FOREACH_SIZE(i, threadNum) {
+	MCL_LOOP_FOREACH_INDEX(i, threadNum) {
 		MclThreadLauncher_StopThread(&threads[i]);
 	}
 
-	MCL_LOOP_FOREACH_SIZE(i, threadNum) {
+	MCL_LOOP_FOREACH_INDEX(i, threadNum) {
 		MclThreadLauncher_WaitThread(&threads[i]);
 	}
 }

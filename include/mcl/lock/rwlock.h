@@ -17,11 +17,19 @@ typedef pthread_rwlockattr_t MclRwLockAttr;
 #define MCL_RWLOCK()  PTHREAD_RWLOCK_INITIALIZER
 
 MCL_INLINE MclStatus MclRwLock_Init(MclRwLock *self, const MclRwLockAttr *attr) {
-    return pthread_rwlock_init(self, attr) ?  MCL_FAILURE : MCL_SUCCESS;
+    int ret = pthread_rwlock_init(self, attr);
+    if (ret) {
+        MCL_LOG_FATAL("pthread_rwlock_init fail %d!", ret);
+    }
+    return ret ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
 MCL_INLINE MclStatus MclRwLock_Destroy(MclRwLock *self) {
-    return pthread_rwlock_destroy(self) ?  MCL_FAILURE : MCL_SUCCESS;
+    int ret = pthread_rwlock_destroy(self);
+    if (ret) {
+        MCL_LOG_FATAL("MclRwLock_Destroy fail %d!", ret);
+    }
+    return ret ?  MCL_FAILURE : MCL_SUCCESS;
 }
 
 MCL_INLINE MclStatus MclRwLock_RdLock(MclRwLock *self) {

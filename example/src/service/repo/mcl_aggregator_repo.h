@@ -2,7 +2,6 @@
 #define H9409F07C_59C1_42E9_982B_51106B42024C
 
 #include "mcl/domain/aggregator/mcl_aggregator_id.h"
-//#include "mcl/domain/entity/mcl_entity_id.h"
 #include "mcl/status.h"
 
 MCL_STDC_BEGIN
@@ -31,9 +30,6 @@ MclStatus MclAggregatorRepo_Accept(MclAggregatorVisit, void*);
 
 typedef MclStatus (*MclAggregatorVisitConst)(const MclAggregator*, void*);
 MclStatus MclAggregatorRepo_AcceptConst(MclAggregatorVisitConst, void*);
-
-//void MclAggregatorRepo_FetchAggregateEntity(MclEntityId, MclAggregateEntity*);
-//void MclAggregatorRepo_FetchAggregateEntityConst(MclEntityId, MclAggregateEntityConst*);
 
 MCL_STDC_END
 

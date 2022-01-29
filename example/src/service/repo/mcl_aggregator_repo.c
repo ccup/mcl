@@ -74,12 +74,26 @@ const MclAggregator* MclAggregatorRepo_FetchConst(MclAggregatorId id) {
 	return result;
 }
 
+typedef struct {
+	MclAggregatorPred pred;
+	void *arg;
+} MclAggregatorRepoPred;
+
+MCL_PRIVATE bool MclAggregatorRepoPred_LockPred(const MclAggregator *aggregator, void *arg) {
+	MclAggregatorRepoPred *repoPred = (MclAggregatorRepoPred*)arg;
+	MCL_ASSERT_SUCC_CALL_BOOL(MclLockObj_RdLock((void*)aggregator));
+	bool result = repoPred->pred(aggregator, repoPred->arg);
+	MCL_ASSERT_SUCC_CALL_BOOL(MclLockObj_UnLock((void*)aggregator));
+	return result;
+}
+
 MclAggregator* MclAggregatorRepo_FetchBy(MclAggregatorPred pred, void *arg) {
 	MCL_ASSERT_VALID_PTR_NIL(pred);
 
 	MCL_LOCK_READ_AUTO(aggregatorRepo.rwlock);
 
-	MclAggregator *result = MclAggregatorMap_FindByPred(&aggregatorRepo.aggregators, pred, arg);
+	MclAggregatorRepoPred repoPred = {.pred = pred, .arg = arg};
+	MclAggregator *result = MclAggregatorMap_FindByPred(&aggregatorRepo.aggregators, MclAggregatorRepoPred_LockPred, &repoPred);
 	if( result) MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_WrLock(result));
 	return result;
 }
@@ -89,7 +103,8 @@ const MclAggregator* MclAggregatorRepo_FetchConstBy(MclAggregatorPred pred, void
 
 	MCL_LOCK_READ_AUTO(aggregatorRepo.rwlock);
 
-	MclAggregator *result = MclAggregatorMap_FindByPred(&aggregatorRepo.aggregators, pred, arg);
+	MclAggregatorRepoPred repoPred = {.pred = pred, .arg = arg};
+	MclAggregator *result = MclAggregatorMap_FindByPred(&aggregatorRepo.aggregators, MclAggregatorRepoPred_LockPred, &repoPred);
 	if( result) MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_RdLock(result));
 	return result;
 }
@@ -150,19 +165,3 @@ MclStatus MclAggregatorRepo_AcceptConst(MclAggregatorVisitConst visit, void *arg
 	MCL_LOCK_READ_AUTO(aggregatorRepo.rwlock);
 	return MclAggregatorMap_AcceptConst(&aggregatorRepo.aggregators, MclAggregatorRepoVisitor_VisitConst, &visitor);
 }
-//
-//void MclAggregatorRepo_FetchAggregateEntity(MclEntityId entityId, MclAggregateEntity *aggregateEntity) {
-//	MCL_ASSERT_TRUE_VOID(MclEntityId_IsValid(entityId));
-//	MCL_ASSERT_VALID_PTR_VOID(aggregateEntity);
-//
-//	MCL_LOCK_READ_AUTO(aggregatorRepo.rwlock);
-//
-//	if (aggregateEntity->aggregator == NULL) return;
-//	if (aggregateEntity->entity == NULL) {
-//		MCL_ASSERT_SUCC_CALL_VOID(MclLockObj_UnLock(aggregateEntity->aggregator));
-//	}
-//}
-//
-//void MclAggregatorRepo_FetchAggregateEntityConst(MclEntityId entityId, MclAggregateEntityConst *aggregateEntity) {
-//
-//}

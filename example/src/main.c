@@ -1,3 +1,4 @@
+#include "mcl/service/mcl_service.h"
 #include "mcl/service/mcl_config_service.h"
 #include "mcl/service/mcl_control_service.h"
 #include "mcl/service/mcl_event_service.h"
@@ -171,8 +172,13 @@ MclStatus MclExample_AssertResult() {
 }
 
 int main() {
+	MclService_Init();
+
 	MCL_ASSERT_SUCC_CALL(MclThreadLauncher_Launch(exampleThreads, MCL_ARRAY_SIZE(exampleThreads)));
 	MclThreadLauncher_WaitDone(exampleThreads, MCL_ARRAY_SIZE(exampleThreads));
-	return MclExample_AssertResult();
-}
+	MclStatus status = MclExample_AssertResult();
 
+	MclService_Destroy();
+
+	return status;
+}

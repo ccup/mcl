@@ -1,23 +1,24 @@
 #include "mcl/service/mcl_control_service.h"
 #include "mcl/domain/value/mcl_status.h"
-#include "repo/mcl_entity_repo.h"
-#include "entity/mcl_entity.h"
 #include "repo/mcl_aggregator_repo.h"
+#include "repo/mcl_entity_repo.h"
+#include "locked_unit/mcl_locked_unit.h"
+#include "aggregator/mcl_aggregator_pred.h"
 #include "aggregator/mcl_aggregator.h"
-#include "mcl/lock/lockobj.h"
+#include "entity/mcl_entity.h"
 #include "mcl/assert.h"
 
 MclStatus MclControlService_AddEntityToAggregator(MclEntityId entityId, MclAggregatorId aggregatorId) {
 	MCL_ASSERT_TRUE(MclEntityId_IsValid(entityId));
 	MCL_ASSERT_TRUE(MclEntityId_IsValid(aggregatorId));
 
-	MCL_LOCK_OBJ_AUTO MclAggregator *aggregator = MclAggregatorRepo_Fetch(aggregatorId);
+	MCL_LOCK_AGGREGATOR(aggregator, aggregatorId);
 	if (!aggregator) {
 		MCL_LOG_WARN("Control Service: not found aggregator (%u)!", aggregatorId);
 		return MCL_STATUS_AGGREGATOR_NOT_FOUND;
 	}
 
-	MCL_LOCK_OBJ_AUTO MclEntity *entity = MclEntityRepo_Fetch(entityId);
+	MCL_LOCK_ENTITY(entity, entityId);
 	if (!entity) {
 		MCL_LOG_WARN("Control Service: not found entity (%u)!", entityId);
 		return MCL_STATUS_ENTITY_NOT_FOUND;
@@ -38,9 +39,9 @@ MclStatus MclControlService_RemoveEntityFromAggregator(MclEntityId entityId, Mcl
 	MCL_ASSERT_TRUE(MclEntityId_IsValid(entityId));
 	MCL_ASSERT_TRUE(MclEntityId_IsValid(aggregatorId));
 
-	MCL_LOCK_OBJ_AUTO MclAggregator *aggregator = MclAggregatorRepo_Fetch(aggregatorId);
+	MCL_LOCK_AGGREGATOR_BY(aggregator, MclAggregatorPred_HasEntity, &entityId);
 	if (!aggregator) {
-		MCL_LOG_WARN("Control Service: not found aggregator (%u)!", aggregatorId);
+		MCL_LOG_WARN("Control Service: not found aggregator (%u) which has entity (%u)!", aggregatorId, entityId);
 		return MCL_STATUS_AGGREGATOR_NOT_FOUND;
 	}
 
@@ -58,7 +59,7 @@ MclStatus MclControlService_RemoveEntityFromAggregator(MclEntityId entityId, Mcl
 MclStatus MclControlService_DoubleEntitesInAggregator(MclAggregatorId aggregatorId) {
 	MCL_ASSERT_TRUE(MclEntityId_IsValid(aggregatorId));
 
-	MCL_LOCK_OBJ_AUTO MclAggregator *aggregator = MclAggregatorRepo_Fetch(aggregatorId);
+	MCL_LOCK_AGGREGATOR(aggregator, aggregatorId);
 	if (!aggregator) {
 		MCL_LOG_WARN("Control Service: not found aggregator (%u)!", aggregatorId);
 		return MCL_STATUS_AGGREGATOR_NOT_FOUND;
@@ -79,13 +80,13 @@ MclStatus MclControlService_UpdateEntityValue(MclEntityId entityId, MclInteger v
 	MCL_ASSERT_TRUE(MclEntityId_IsValid(entityId));
 	MCL_ASSERT_TRUE(MclInteger_IsValid(value));
 
-	MCL_LOCK_OBJ_AUTO MclEntity *entity = MclEntityRepo_Fetch(entityId);
-	if (!entity) {
+	MCL_LOCK_AGGREGATOR_ENTITY(lockedEntity, entityId);
+	if (!lockedEntity.entity) {
 		MCL_LOG_WARN("Control Service: not found entity (%u)!", entityId);
 		return MCL_STATUS_ENTITY_NOT_FOUND;
 	}
 
-	MclStatus status = MclEntity_UpdateValue(entity, value);
+	MclStatus status = MclEntity_UpdateValue(lockedEntity.entity, value);
 	MCL_ASSERT_TRUE(!MCL_FAILED(status));
 
 	if (MclStatus_IsNothingChanged(status)) {
@@ -99,13 +100,13 @@ MclStatus MclControlService_UpdateEntityValue(MclEntityId entityId, MclInteger v
 MclStatus MclControlService_DoubleEntityValue(MclEntityId entityId) {
 	MCL_ASSERT_TRUE(MclEntityId_IsValid(entityId));
 
-	MCL_LOCK_OBJ_AUTO MclEntity *entity = MclEntityRepo_Fetch(entityId);
-	if (!entity) {
+	MCL_LOCK_AGGREGATOR_ENTITY(lockedEntity, entityId);
+	if (!lockedEntity.entity) {
 		MCL_LOG_WARN("Control Service: not found entity (%u)!", entityId);
 		return MCL_STATUS_ENTITY_NOT_FOUND;
 	}
 
-	MclStatus status = MclEntity_DoubleValue(entity);
+	MclStatus status = MclEntity_DoubleValue(lockedEntity.entity);
 	MCL_ASSERT_TRUE(!MCL_FAILED(status));
 
 	if (MclStatus_IsNothingChanged(status)) {

@@ -1,12 +1,13 @@
 #include "mcl/service/mcl_config_service.h"
 #include "mcl/domain/value/mcl_status.h"
-#include "factory/mcl_entity_factory.h"
 #include "factory/mcl_aggregator_factory.h"
-#include "repo/mcl_entity_repo.h"
+#include "factory/mcl_entity_factory.h"
 #include "repo/mcl_aggregator_repo.h"
+#include "repo/mcl_entity_repo.h"
+#include "locked_unit/mcl_locked_unit.h"
+#include "aggregator/mcl_aggregator_pred.h"
 #include "aggregator/mcl_aggregator.h"
 #include "entity/mcl_entity.h"
-#include "mcl/lock/lockobj.h"
 #include "mcl/assert.h"
 
 MclStatus MclConfigService_CreateEntity(MclEntityId entityId) {
@@ -27,21 +28,13 @@ MclStatus MclConfigService_CreateEntity(MclEntityId entityId) {
 	return MCL_SUCCESS;
 }
 
-MCL_PRIVATE bool MclConfigService_IsAggregatorHasEntity(const MclAggregator *aggregator, void *arg) {
-	return MclAggregator_HasEntity(aggregator, *(MclEntityId*)arg);
-}
-
-MCL_PRIVATE void MclConfigService_RemoveEntityFromAggregator(MclEntityId entityId) {
-	MCL_LOCK_OBJ_AUTO MclAggregator *aggregator = MclAggregatorRepo_FetchBy(MclConfigService_IsAggregatorHasEntity, &entityId);
-	if (aggregator) {
-		MCL_ASSERT_SUCC_CALL_VOID(MclAggregator_RemoveEntity(aggregator, entityId));
-	}
-}
-
 MclStatus MclConfigService_DeleteEntity(MclEntityId entityId) {
 	MCL_ASSERT_TRUE(MclEntityId_IsValid(entityId));
 
-	MclConfigService_RemoveEntityFromAggregator(entityId);
+	MCL_LOCK_AGGREGATOR_BY(aggregator, MclAggregatorPred_HasEntity, &entityId);
+	if (aggregator) {
+		MCL_ASSERT_SUCC_CALL(MclAggregator_RemoveEntity(aggregator, entityId));
+	}
 
 	MclEntity *entity = MclEntityRepo_Remove(entityId);
 	if (!entity) {

@@ -59,12 +59,26 @@ const MclEntity* MclEntityRepo_FetchConst(MclEntityId id) {
 	return result;
 }
 
+typedef struct {
+	MclEntityPred pred;
+	void *arg;
+} MclEntityRepoPred;
+
+MCL_PRIVATE bool MclEntityRepoPred_LockPred(const MclEntity *entity, void *arg) {
+	MclEntityRepoPred *repoPred = (MclEntityRepoPred*)arg;
+	MCL_ASSERT_SUCC_CALL_BOOL(MclLockObj_RdLock((void*)entity));
+	bool result = repoPred->pred(entity, repoPred->arg);
+	MCL_ASSERT_SUCC_CALL_BOOL(MclLockObj_UnLock((void*)entity));
+	return result;
+}
+
 MclEntity* MclEntityRepo_FetchBy(MclEntityPred pred, void *arg) {
 	MCL_ASSERT_VALID_PTR_NIL(pred);
 
 	MCL_LOCK_READ_AUTO(entityRepo.rwlock);
 
-	MclEntity *result = MclEntityList_FindByPred(&entityRepo.entities, pred, arg);
+	MclEntityRepoPred repoPred = {.pred = pred, .arg = arg};
+	MclEntity *result = MclEntityList_FindByPred(&entityRepo.entities, MclEntityRepoPred_LockPred, &repoPred);
 	if (result) MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_WrLock(result));
 	return result;
 }
@@ -74,7 +88,8 @@ const MclEntity* MclEntityRepo_FetchConstBy(MclEntityPred pred, void *arg) {
 
 	MCL_LOCK_READ_AUTO(entityRepo.rwlock);
 
-	MclEntity *result = MclEntityList_FindByPred(&entityRepo.entities, pred, arg);
+	MclEntityRepoPred repoPred = {.pred = pred, .arg = arg};
+	MclEntity *result = MclEntityList_FindByPred(&entityRepo.entities, MclEntityRepoPred_LockPred, &repoPred);
 	if (result) MCL_ASSERT_SUCC_CALL_NIL(MclLockObj_RdLock(result));
 	return result;
 }

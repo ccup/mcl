@@ -4,9 +4,9 @@
 #include "repo/mcl_entity_repo.h"
 #include "factory/mcl_aggregator_factory.h"
 #include "factory/mcl_entity_factory.h"
+#include "locked_unit/mcl_locked_unit.h"
 #include "aggregator/mcl_aggregator.h"
 #include "entity/mcl_entity.h"
-#include "mcl/lock/lockobj.h"
 #include "mcl/assert.h"
 
 MclSize MclQueryService_QueryEntityCount() {
@@ -26,7 +26,7 @@ MclSize MclQueryService_QueryAggregatorCount() {
 MclSize MclQueryService_QueryEntityCountOfAggregator(MclAggregatorId aggregatorId) {
 	MCL_ASSERT_TRUE_NIL(MclAggregatorId_IsValid(aggregatorId));
 
-	MCL_LOCK_OBJ_AUTO const MclAggregator *aggregator = MclAggregatorRepo_FetchConst(aggregatorId);
+	MCL_LOCK_AGGREGATOR_CONST(aggregator, aggregatorId);
 	if (!aggregator) {
 		MCL_LOG_WARN("Query Service: not found aggregator (%u)!", aggregatorId);
 		return 0;
@@ -41,13 +41,13 @@ MclSize MclQueryService_QueryEntityCountOfAggregator(MclAggregatorId aggregatorI
 MclInteger MclQueryService_QueryValueOf(MclEntityId entityId) {
 	MCL_ASSERT_TRUE_NIL(MclEntityId_IsValid(entityId));
 
-	MCL_LOCK_OBJ_AUTO const MclEntity *entity = MclEntityRepo_FetchConst(entityId);
-	if (!entity) {
+	MCL_LOCK_AGGREGATOR_ENTITY_CONST(lockedEntity, entityId);
+	if (!lockedEntity.entity) {
 		MCL_LOG_WARN("Query Service: not found entity (%u)!", entityId);
 		return 0;
 	}
 
-	MclInteger result = MclEntity_GetValue(entity);
+	MclInteger result = MclEntity_GetValue(lockedEntity.entity);
 
 	MCL_LOG_SUCC("Query Service: Query value (%u) of entity (%u) OK!", result, entityId);
 	return result;
@@ -56,7 +56,7 @@ MclInteger MclQueryService_QueryValueOf(MclEntityId entityId) {
 MclInteger MclQueryService_QuerySumValueOf(MclAggregatorId aggregatorId) {
 	MCL_ASSERT_TRUE_NIL(MclAggregatorId_IsValid(aggregatorId));
 
-	MCL_LOCK_OBJ_AUTO const MclAggregator *aggregator = MclAggregatorRepo_FetchConst(aggregatorId);
+	MCL_LOCK_AGGREGATOR_CONST(aggregator, aggregatorId);
 	if (!aggregator) {
 		MCL_LOG_WARN("Query Service: not found aggregator (%u)!", aggregatorId);
 		return 0;

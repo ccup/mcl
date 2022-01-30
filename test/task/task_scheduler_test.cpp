@@ -160,9 +160,7 @@ FIXTURE(TaskSchedulerTest)
 	}
 
 	TEST("should sync execute when 0 thread configured") {
-		MclTaskScheduler *scheduler = MclTaskScheduler_Create(0, MAX_PRIORITY, NULL);
-
-		MclTaskScheduler_Start(scheduler);
+		MclTaskScheduler *scheduler = MclTaskScheduler_Create(1, MAX_PRIORITY, NULL);
 
 		submitTask(scheduler, SLOW);
 		submitTask(scheduler, URGENT);

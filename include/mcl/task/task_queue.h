@@ -17,6 +17,8 @@ void MclTaskQueue_Delete(MclTaskQueue*);
 void MclTaskQueue_Start(MclTaskQueue *self);
 void MclTaskQueue_Stop(MclTaskQueue *self);
 
+bool MclTaskQueue_IsRunning(const MclTaskQueue*);
+
 bool MclTaskQueue_IsEmpty(const MclTaskQueue*);
 
 MclStatus MclTaskQueue_AddTask(MclTaskQueue*, MclTask*, MclTaskPriority);

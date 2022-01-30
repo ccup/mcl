@@ -1,8 +1,7 @@
 #include "mcl/task/task_scheduler.h"
 #include "mcl/task/task_queue.h"
-#include "mcl/thread/thread.h"
+#include "mcl/task/thread_pool.h"
 #include "mcl/task/task.h"
-#include "mcl/lock/atom.h"
 #include "mcl/mem/memory.h"
 #include "mcl/assert.h"
 
@@ -10,96 +9,28 @@
 #define MCL_TASK_SCHEDULER_LEVEL_MAX  3
 
 MCL_TYPE(MclTaskScheduler) {
-	MclThread threads[MCL_TASK_SCHEDULER_THREAD_MAX];
-	MclSize threadCount;
-	MclAtom isRunning;
-	MclTaskQueue *taskQueue;
+	MclThreadPool *threadPool;
+	MclTaskQueue  *taskQueue;
 };
 
-MCL_PRIVATE void MclTaskScheduler_ExecuteTaskInThread(MclTaskScheduler *self) {
-    MCL_LOG_DBG("Task thread try to pop task...");
-    MclTask *task = MclTaskQueue_PopTask(self->taskQueue);
-    if (task) {
-        MCL_LOG_DBG("Task thread popped task (%u).", task->key);
-        MCL_ASSERT_SUCC_CALL_VOID(MclTask_Execute(task));
-        MclTask_Destroy(task);
-    } else {
-        MCL_LOG_WARN("Task Thread popped none task.");
-    }
-}
-
-MCL_PRIVATE void* MclTaskScheduler_ThreadExecute(void *data) {
-    MclTaskScheduler *self = (MclTaskScheduler*)data;
-    if (!self) return NULL;
-
-    MclThread tid = MclThread_GetId();
-    MCL_ASSERT_SUCC_CALL_NIL(MclThread_SetName(tid, "TaskScheduler"));
-
-    MCL_LOG_DBG("Task thread in scheduler begin!");
-
-    while (MclAtom_IsTrue(&self->isRunning)) {
-        MclTaskScheduler_ExecuteTaskInThread(self);
-    }
-    MCL_LOG_DBG("Task thread in scheduler done!");
-    return NULL;
-}
-
-MCL_PRIVATE MclStatus MclTaskScheduler_StartThreads(MclTaskScheduler *self) {
-	for (MclSize i = 0; i < self->threadCount; i++) {
-		MCL_ASSERT_SUCC_CALL(MclThread_Create(&self->threads[i], NULL, MclTaskScheduler_ThreadExecute, self));
-	}
-	return MCL_SUCCESS;
-}
-
-MCL_PRIVATE MclStatus MclTaskScheduler_JoinThreads(MclTaskScheduler *self) {
-	for (MclSize i = 0; i < self->threadCount; i++) {
-		MclThread_Join(self->threads[i], NULL);
-	}
-	return MCL_SUCCESS;
-}
-
-MCL_PRIVATE MclStatus MclTaskScheculer_Launch(MclTaskScheduler *self) {
-    MCL_LOG_DBG("Task scheduler try to launch...");
-
-    MclAtom_Set(&self->isRunning, 1);
-    MclTaskQueue_Start(self->taskQueue);
-
-    if (MCL_FAILED(MclTaskScheduler_StartThreads(self))) {
-        MCL_LOG_ERR("Task scheduler start threads failed!");
-        MclAtom_Set(&self->isRunning, 0);
-        return MCL_FAILURE;
-    }
-    MCL_LOG_DBG("Task scheduler launch OK!");
-    return MCL_SUCCESS;
-}
-
-MCL_PRIVATE MclStatus MclTaskScheduler_Quit(MclTaskScheduler *self) {
-    MCL_LOG_DBG("Task scheduler try to quit...");
-
-    MclAtom_Set(&self->isRunning, 0);
-    MclTaskQueue_Stop(self->taskQueue);
-
-    if (MCL_FAILED(MclTaskScheduler_JoinThreads(self))) {
-        MCL_LOG_ERR("Task scheduler join threads failed!");
-        MclAtom_Set(&self->isRunning, 1);
-        return MCL_FAILURE;
-    }
-    MCL_LOG_DBG("Task scheduler quit OK!");
-    return MCL_SUCCESS;
-}
-
 MCL_PRIVATE MclStatus MclTaskScheduler_Init(MclTaskScheduler *self, MclSize threadCount, MclSize priorities, MclSize *thresholds) {
-    self->taskQueue = MclTaskQueue_Create(priorities, thresholds);
-    MCL_ASSERT_VALID_PTR(self->taskQueue);
+	self->threadPool = MclThreadPool_Create("TaskScheduler", threadCount);
+	MCL_ASSERT_VALID_PTR(self->threadPool);
 
-    self->threadCount = threadCount;
-    MclAtom_Clear(&self->isRunning);
-    return MCL_SUCCESS;
-}
+	self->taskQueue = MclTaskQueue_Create(priorities, thresholds);
+	if (!self->taskQueue) {
+		MclThreadPool_Delete(self->threadPool);
+		MCL_LOG_ERR("Create task queue failed!");
+		return MCL_FAILURE;
+	}
 
-bool MclTaskScheduler_IsRunning(const MclTaskScheduler *self){
-	MCL_ASSERT_VALID_PTR_BOOL(self);
-	return MclAtom_IsTrue(&((MclTaskScheduler*)self)->isRunning);
+	if (MCL_FAILED(MclThreadPool_SubmitTaskQueue(self->threadPool, self->taskQueue))) {
+		MclTaskQueue_Delete(self->taskQueue);
+		MclThreadPool_Delete(self->threadPool);
+		MCL_LOG_ERR("Submit task queue to thread pool failed!");
+		return MCL_FAILURE;
+	}
+	return MCL_SUCCESS;
 }
 
 MclTaskScheduler* MclTaskScheduler_Create(MclSize threadCount, MclSize priorities, MclSize *thresholds) {
@@ -119,33 +50,34 @@ MclTaskScheduler* MclTaskScheduler_Create(MclSize threadCount, MclSize prioritie
 	return self;
 }
 
+MCL_PRIVATE void MclTaskScheduler_Destroy(MclTaskScheduler *self) {
+	MclThreadPool_Delete(self->threadPool);
+	MclTaskQueue_Delete(self->taskQueue);
+}
+
 void MclTaskScheduler_Delete(MclTaskScheduler *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
 
-	if (MclAtom_IsTrue(&self->isRunning)) {
-        (void) MclTaskScheduler_Quit(self);
-	}
-	MclTaskQueue_Delete(self->taskQueue);
+	MclTaskScheduler_Destroy(self);
 	MCL_FREE(self);
 
     MCL_LOG_DBG("Task scheduler delete OK!");
 }
 
+bool MclTaskScheduler_IsRunning(const MclTaskScheduler *self){
+	MCL_ASSERT_VALID_PTR_BOOL(self);
+	return MclThreadPool_IsRunning(self->threadPool);
+}
+
 MclStatus MclTaskScheduler_Start(MclTaskScheduler *self) {
 	MCL_ASSERT_VALID_PTR(self);
-
-	if (MclAtom_IsTrue(&self->isRunning)) return MCL_SUCCESS;
-
-    MCL_ASSERT_SUCC_CALL(MclTaskScheculer_Launch(self));
+    MCL_ASSERT_SUCC_CALL(MclThreadPool_Start(self->threadPool));
 	return MCL_SUCCESS;
 }
 
 MclStatus MclTaskScheduler_Stop(MclTaskScheduler *self) {
 	MCL_ASSERT_VALID_PTR(self);
-
-	if (!MclAtom_IsTrue(&self->isRunning)) return MCL_SUCCESS;
-
-	MCL_ASSERT_SUCC_CALL(MclTaskScheduler_Quit(self));
+	MCL_ASSERT_SUCC_CALL(MclThreadPool_Stop(self->threadPool));
     return MCL_SUCCESS;
 }
 
@@ -173,29 +105,10 @@ MclStatus MclTaskScheduler_RemoveTask(MclTaskScheduler *self, MclTaskKey key, Mc
 
 void MclTaskScheduler_LocalExecute(MclTaskScheduler *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
-	MCL_ASSERT_VALID_PTR_VOID(self->taskQueue);
-
-    MCL_LOG_DBG("Task thread execute in local begin!");
-
-	while (!MclTaskQueue_IsEmpty(self->taskQueue)) {
-        MclTaskScheduler_ExecuteTaskInThread(self);
-	}
-	MCL_LOG_DBG("Task thread executed in local done!");
+	MclThreadPool_LocalExecute(self->threadPool);
 }
 
 void MclTaskScheduler_WaitDone(MclTaskScheduler *self) {
     MCL_ASSERT_VALID_PTR_VOID(self);
-    MCL_ASSERT_VALID_PTR_VOID(self->taskQueue);
-    MCL_ASSERT_TRUE_VOID(MclAtom_IsTrue(&self->isRunning));
-
-    MCL_LOG_DBG("Task scheduler wait begin.");
-
-    while (!MclTaskQueue_IsEmpty(self->taskQueue)) {
-        if (self->threadCount == 0) {
-            MclTaskScheduler_ExecuteTaskInThread(self);
-        } else {
-            MclThread_Yield();
-        }
-    }
-    MCL_LOG_DBG("Task scheduler wait done!");
+    MclThreadPool_WaitDone(self->threadPool);
 }

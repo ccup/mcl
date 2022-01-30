@@ -13,19 +13,23 @@ typedef pthread_attr_t MclThreadAttr;
 MCL_INLINE MclStatus MclThread_Create(MclThread *self, const MclThreadAttr *attr, void *(*func)(void*), void *args) {
     int ret = pthread_create(self, attr, func, args);
     if (ret) {
-        MCL_LOG_ERR("pthread_create fail %d!", ret);
+        MCL_LOG_FATAL("pthread_create fail %d!", ret);
     }
 	return ret ? MCL_FAILURE : MCL_SUCCESS;
 }
 
 MCL_INLINE MclStatus MclThread_Detach(MclThread self) {
-	return pthread_detach(self) ? MCL_FAILURE : MCL_SUCCESS;
+	int ret = pthread_detach(self);
+    if (ret) {
+        MCL_LOG_FATAL("MclThread_Detach fail %d!", ret);
+    }
+	return ret ? MCL_FAILURE : MCL_SUCCESS;
 }
 
 MCL_INLINE MclStatus MclThread_Join(MclThread self, void **ext) {
     int ret = pthread_join(self, ext);
     if (ret) {
-        MCL_LOG_ERR("pthread_join fail %d!", ret);
+    	MCL_LOG_FATAL("pthread_join fail %d!", ret);
     }
     return ret ? MCL_FAILURE : MCL_SUCCESS;
 }

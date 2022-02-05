@@ -22,7 +22,6 @@ MCL_PRIVATE void MclThreadPool_ExecuteTask(MclTaskQueue *taskQueue) {
         MCL_ASSERT_SUCC_CALL_VOID(MclTask_Execute(task));
         MclTask_Destroy(task);
     } else {
-        MCL_LOG_WARN("Task Thread popped none task.");
         MclThread_Yield();
     }
 }

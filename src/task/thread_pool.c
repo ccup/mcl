@@ -23,6 +23,7 @@ MCL_PRIVATE void MclThreadPool_ExecuteTask(MclTaskQueue *taskQueue) {
         MclTask_Destroy(task);
     } else {
         MCL_LOG_WARN("Task Thread popped none task.");
+        MclThread_Yield();
     }
 }
 
@@ -105,12 +106,13 @@ MclThreadPool* MclThreadPool_Create(const char *name, MclSize threadCount) {
 
 void MclThreadPool_Delete(MclThreadPool *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
-	MCL_ASSERT_VALID_PTR_VOID(self->taskQueue);
 
-	if (MclTaskQueue_IsRunning(self->taskQueue)) {
-        (void) MclThreadPool_Quit(self);
+	if (self->taskQueue) {
+		if (MclTaskQueue_IsRunning(self->taskQueue)) {
+			(void) MclThreadPool_Quit(self);
+		}
+	//	MclTaskQueue_Delete(self->taskQueue); // TODO : should delete out or by args?
 	}
-//	MclTaskQueue_Delete(self->taskQueue); // TODO : should delete out or by args?
     MCL_LOG_DBG("%s delete OK!", self->name);
 	MCL_FREE(self);
 }

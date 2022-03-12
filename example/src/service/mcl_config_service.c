@@ -50,14 +50,14 @@ MclStatus MclConfigService_DeleteEntity(MclEntityId entityId) {
 MclStatus MclConfigService_CreateAggregator(MclAggregatorId aggregatorId) {
 	MCL_ASSERT_TRUE(MclAggregatorId_IsValid(aggregatorId));
 
-	MclAggregator *aggregator = MclAggregatorFactory_CreateLockObj(aggregatorId, NULL);
+	MclAggregator *aggregator = MclAggregatorFactory_Create(aggregatorId, NULL);
 	if (!aggregator) {
 		MCL_LOG_WARN("Config Service: not found aggregator (%u)!", aggregatorId);
 		return MCL_STATUS_AGGREGATOR_NOT_FOUND;
 	}
 
 	if (MCL_FAILED(MclAggregatorRepo_Insert(aggregator))) {
-		MclAggregatorFactory_DeleteLockObj(aggregator);
+		MclAggregatorFactory_Delete(aggregator);
 		MCL_LOG_ERR("Config Service: Insert aggregator (%u) to repo failed!", aggregatorId);
 		return MCL_FAILURE;
 	}
@@ -74,7 +74,7 @@ MclStatus MclConfigService_DeleteAggregator(MclAggregatorId aggregatorId) {
 		return MCL_STATUS_AGGREGATOR_NOT_FOUND;
 	}
 
-	MclAggregatorFactory_DeleteLockObj(aggregator);
+	MclAggregatorFactory_Delete(aggregator);
 	MCL_LOG_SUCC("Config Service: Delete aggregator (%u) OK!", aggregatorId);
 	return MCL_SUCCESS;
 }

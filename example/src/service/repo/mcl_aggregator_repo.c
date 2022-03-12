@@ -26,7 +26,7 @@ void MclAggregatorRepo_Init() {
 }
 
 void MclAggregatorRepo_Destroy() {
-	MclAggregatorMap_Destroy(&aggregatorRepo.aggregators, MclAggregatorFactory_DeleteLockObj);
+	MclAggregatorMap_Destroy(&aggregatorRepo.aggregators, MclAggregatorFactory_Delete);
 	MCL_ASSERT_SUCC_CALL_VOID(MclRwLock_Destroy(&aggregatorRepo.rwlock));
 }
 
@@ -41,7 +41,7 @@ MclStatus MclAggregatorRepo_Insert(MclAggregator *aggregator) {
 
 	MCL_ASSERT_VALID_PTR(result);
 	if(result != aggregator) {
-		MclAggregatorFactory_DeleteLockObj(result);
+		MclAggregatorFactory_Delete(result);
 		MCL_LOG_WARN("Replace aggregator of key (%u)!", MclAggregator_GetId(aggregator));
 	}
 	return MCL_SUCCESS;

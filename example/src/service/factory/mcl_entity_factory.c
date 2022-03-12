@@ -77,9 +77,7 @@ MclEntity* MclEntityFactory_Create(MclEntityId id, void *cfg) {
 
 void MclEntityFactory_Delete(MclEntity *entity) {
 	MCL_ASSERT_VALID_PTR_VOID(entity);
-
 	MclFactoryAllocator_Delete(&factory.allocator, entity);
-
 	MclAtom_SubFetch(&factory.count, 1);
 }
 

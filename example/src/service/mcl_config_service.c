@@ -13,14 +13,14 @@
 MclStatus MclConfigService_CreateEntity(MclEntityId entityId) {
 	MCL_ASSERT_TRUE(MclEntityId_IsValid(entityId));
 
-	MclEntity *entity = MclEntityFactory_CreateLockObj(entityId, NULL);
+	MclEntity *entity = MclEntityFactory_Create(entityId, NULL);
 	if (!entity) {
 		MCL_LOG_WARN("Config Service: not found entity (%u)!", entityId);
 		return MCL_STATUS_ENTITY_NOT_FOUND;
 	}
 
 	if (MCL_FAILED(MclEntityRepo_Insert(entity))) {
-		MclEntityFactory_DeleteLockObj(entity);
+		MclEntityFactory_Delete(entity);
 		MCL_LOG_ERR("Config Service: Insert entity (%u) to repo failed!", entityId);
 		return MCL_FAILURE;
 	}
@@ -42,7 +42,7 @@ MclStatus MclConfigService_DeleteEntity(MclEntityId entityId) {
 		return MCL_STATUS_ENTITY_NOT_FOUND;
 	}
 
-	MclEntityFactory_DeleteLockObj(entity);
+	MclEntityFactory_Delete(entity);
 	MCL_LOG_SUCC("Config Service: Delete entity (%u) OK!", entityId);
 	return MCL_SUCCESS;
 }

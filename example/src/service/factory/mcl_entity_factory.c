@@ -1,92 +1,12 @@
 #include "factory/mcl_entity_factory.h"
+#include "allocator/mcl_allocator.h"
 #include "entity/private/mcl_entity_private.h"
 #include "entity/mcl_entity.h"
-#include "mcl/mem/shared_ptr.h"
 #include "mcl/mem/allocator.h"
-#include "mcl/mem/memory.h"
-#include "mcl/lock/lockobj.h"
 #include "mcl/lock/atom.h"
 #include "mcl/assert.h"
 
 ///////////////////////////////////////////////////////////
-MCL_PRIVATE MclAtom entityCount = 0;
-
-MclSize MclEntityFactory_GetUnreleasedCount() {
-	return entityCount;
-}
-
-///////////////////////////////////////////////////////////
-MclEntity* MclEntityFactory_Create(MclEntityId id, void *cfg) {
-	MclEntity *self = MCL_MALLOC(sizeof(MclEntity));
-	MCL_ASSERT_VALID_PTR_NIL(self);
-
-	if (MCL_FAILED(MclEntity_Init(self, id, cfg))) {
-		MCL_LOG_ERR("Initialize entity (%u) failed!", id);
-		MCL_FREE(self);
-		return NULL;
-	}
-
-	MclAtom_AddFetch(&entityCount, 1);
-	return self;
-}
-
-void MclEntityFactory_Delete(MclEntity *self) {
-	MCL_ASSERT_VALID_PTR_VOID(self);
-
-	MclEntity_Destroy(self);
-	MCL_FREE(self);
-
-	MclAtom_SubFetch(&entityCount, 1);
-}
-
-///////////////////////////////////////////////////////////
-MCL_PRIVATE void MclEntityFactory_DestroyEntity(void *obj, void *arg) {
-	MclEntity_Destroy((MclEntity*)obj);
-}
-
-MclEntity* MclEntityFactory_CreateSharedPtr(MclEntityId id, void *cfg) {
-	MclEntity *self = MclSharedPtr_Create(sizeof(MclEntity), MclEntityFactory_DestroyEntity, NULL);
-	MCL_ASSERT_VALID_PTR_NIL(self);
-
-	if (MCL_FAILED(MclEntity_Init(self, id, cfg))) {
-		MCL_LOG_ERR("Initialize shared ptr (%u) of entity failed!", id);
-		MCL_FREE(self);
-		return NULL;
-	}
-
-	MclAtom_AddFetch(&entityCount, 1);
-	return self;
-}
-
-void MclEntityFactory_DeleteSharedPtr(MclEntity *self) {
-	MCL_ASSERT_VALID_PTR_VOID(self);
-
-	MclSharedPtr_Delete(self);
-	MclAtom_SubFetch(&entityCount, 1);
-}
-
-///////////////////////////////////////////////////////////
-MclEntity* MclEntityFactory_CreateLockObj(MclEntityId id, void *cfg) {
-	MclEntity *self = (MclEntity*)MclLockObj_Create(sizeof(MclEntity));
-	MCL_ASSERT_VALID_PTR_NIL(self);
-
-	if (MCL_FAILED(MclEntity_Init(self, id, cfg))) {
-		MCL_LOG_ERR("Initialize lock entity (%u) failed!", id);
-		MclLockObj_Delete(self, NULL, NULL);
-		return NULL;
-	}
-	MclAtom_AddFetch(&entityCount, 1);
-	return self;
-}
-
-void MclEntityFactory_DeleteLockObj(MclEntity *self) {
-	MCL_ASSERT_VALID_PTR_VOID(self);
-
-	MclLockObj_Delete(self, MclEntityFactory_DestroyEntity, NULL);
-	MclAtom_SubFetch(&entityCount, 1);
-}
-
-/////////////////////////////////////////////////////////
 MCL_PRIVATE const MclSize MCL_ENTITY_CAPACITY = 16;
 
 MCL_ALLOCATOR_TYPE_DEF(MclEntityAllocator, MclEntity, MCL_ENTITY_CAPACITY);
@@ -98,23 +18,72 @@ MCL_CTOR void MclEntityAllocator_Ctor() {
 	MCL_LOG_SUCC("Entity allocator init OK!");
 }
 
-MclEntity* MclEntityFactory_CreateStatic(MclEntityId id, void *cfg) {
-	MclEntity* self = MCL_ALLOCATOR_ALLOC(MclEntityAllocator, entityAllocator);
-	MCL_ASSERT_VALID_PTR_NIL(self);
+MCL_PRIVATE void* MclEntityFactory_PoolAlloc(MclFactoryAllocator *allocator, MclSize size) {
+	MclEntityAllocator *poolAllocator = (MclEntityAllocator*)(allocator->ctxt);
+	return MclEntityAllocator_Alloc(poolAllocator);
+}
 
-	if (MCL_FAILED(MclEntity_Init(self, id, cfg))) {
-		MCL_LOG_ERR("Initialize static entity (%u) failed!", id);
-		MclEntityAllocator_Free(&entityAllocator, self);
+MCL_PRIVATE void MclEntityFactory_PoolFree(MclFactoryAllocator *allocator, void *obj) {
+	MclEntityAllocator *poolAllocator = (MclEntityAllocator*)(allocator->ctxt);
+	MclEntityAllocator_Free(poolAllocator, (MclEntity*)obj);
+}
+
+void MclEntityFactory_InitPoolAllocator(MclFactoryAllocator *allocator) {
+	allocator->alloc = MclEntityFactory_PoolAlloc;
+	allocator->free = MclEntityFactory_PoolFree;
+	allocator->ctxt = &entityAllocator;
+}
+
+///////////////////////////////////////////////////////////
+typedef struct {
+	MclFactoryAllocator allocator;
+	MclAtom count;
+} MclEntityFactory;
+
+MCL_PRIVATE MclEntityFactory factory;
+
+MCL_PRIVATE void MclEntityFactory_DestroyEntity(void *obj, void *arg) {
+	MclEntity_Destroy((MclEntity*)obj);
+}
+
+MCL_PRIVATE void MclEntityFactory_InitAllocator(MclFactoryAllocator *allocator, MclAllocatorType type) {
+	if (type == MCL_ALLOCATOR_POOL) {
+		MclEntityFactory_InitPoolAllocator(allocator);
+	}
+
+	allocator->destroyObj = MclEntityFactory_DestroyEntity;
+	allocator->ctxt = NULL;
+	MclFactoryAllocator_Init(allocator, type);
+}
+
+void MclEntityFactory_Init(MclAllocatorType type) {
+	MclEntityFactory_InitAllocator(&factory.allocator, type);
+	MclAtom_Clear(&factory.count);
+}
+
+MclEntity* MclEntityFactory_Create(MclEntityId id, void *cfg) {
+	MclEntity *entity = MclFactoryAllocator_Create(&factory.allocator, sizeof(MclEntity));
+	MCL_ASSERT_VALID_PTR_NIL(entity);
+
+	if (MCL_FAILED(MclEntity_Init(entity, id, cfg))) {
+		MCL_LOG_ERR("Initialize entity (%u) failed!", id);
+		MclFactoryAllocator_Delete(&factory.allocator, entity);
 		return NULL;
 	}
 
-	MclAtom_AddFetch(&entityCount, 1);
-	return self;
+	MclAtom_AddFetch(&factory.count, 1);
+	return entity;
 }
 
-void MclEntityFactory_DeleteStatic(MclEntity *self) {
-	MCL_ASSERT_VALID_PTR_VOID(self);
+void MclEntityFactory_Delete(MclEntity *entity) {
+	MCL_ASSERT_VALID_PTR_VOID(entity);
 
-	MCL_ALLOCATOR_FREE(MclEntityAllocator, entityAllocator, self);
-	MclAtom_SubFetch(&entityCount, 1);
+	MclFactoryAllocator_Delete(&factory.allocator, entity);
+
+	MclAtom_SubFetch(&factory.count, 1);
+}
+
+
+MclSize MclEntityFactory_GetUnreleasedCount() {
+	return factory.count;
 }

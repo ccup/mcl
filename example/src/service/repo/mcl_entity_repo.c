@@ -20,7 +20,7 @@ void MclEntityRepo_Init() {
 }
 
 void MclEntityRepo_Destroy() {
-	MclEntityList_Destroy(&entityRepo.entities, MclEntityFactory_DeleteLockObj);
+	MclEntityList_Destroy(&entityRepo.entities, MclEntityFactory_Delete);
 	MCL_ASSERT_SUCC_CALL_VOID(MclRwLock_Destroy(&entityRepo.rwlock));
 }
 

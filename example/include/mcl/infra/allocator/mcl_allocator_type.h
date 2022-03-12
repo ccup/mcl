@@ -1,14 +1,20 @@
 #ifndef HC9B249D8_F049_49D4_8BF8_01C928C54C14
 #define HC9B249D8_F049_49D4_8BF8_01C928C54C14
 
-#include "mcl/stdc.h"
+#include "mcl/keyword.h"
 
 MCL_STDC_BEGIN
 
 typedef enum {
 	MCL_ALLOCATOR_HEAP,
+	MCL_ALLOCATOR_LOCK_OBJ,
+	MCL_ALLOCATOR_SHARED_PTR,
 	MCL_ALLOCATOR_POOL,
 } MclAllocatorType;
+
+MCL_INLINE bool MclAllocatorType_IsValid(MclAllocatorType self) {
+	return self <= MCL_ALLOCATOR_POOL;
+}
 
 MCL_STDC_END
 

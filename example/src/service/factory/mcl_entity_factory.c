@@ -13,11 +13,6 @@ MCL_ALLOCATOR_TYPE_DEF(MclEntityAllocator, MclEntity, MCL_ENTITY_CAPACITY);
 
 MCL_PRIVATE MclEntityAllocator entityAllocator;
 
-MCL_CTOR void MclEntityAllocator_Ctor() {
-	MCL_ALLOCATOR_INIT(MclEntityAllocator, entityAllocator);
-	MCL_LOG_SUCC("Entity allocator init OK!");
-}
-
 MCL_PRIVATE void* MclEntityFactory_PoolAlloc(MclFactoryAllocator *allocator, MclSize size) {
 	MclEntityAllocator *poolAllocator = (MclEntityAllocator*)(allocator->ctxt);
 	return MclEntityAllocator_Alloc(poolAllocator);
@@ -29,6 +24,8 @@ MCL_PRIVATE void MclEntityFactory_PoolFree(MclFactoryAllocator *allocator, void 
 }
 
 void MclEntityFactory_InitPoolAllocator(MclFactoryAllocator *allocator) {
+	MCL_ALLOCATOR_INIT(MclEntityAllocator, entityAllocator);
+
 	allocator->alloc = MclEntityFactory_PoolAlloc;
 	allocator->free = MclEntityFactory_PoolFree;
 	allocator->ctxt = &entityAllocator;

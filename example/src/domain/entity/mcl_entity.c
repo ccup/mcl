@@ -1,19 +1,6 @@
 #include "entity/mcl_entity.h"
+#include "entity/private/mcl_entity_private.h"
 #include "mcl/assert.h"
-
-MCL_TYPE(MclEntity) {
-	MclEntityId id;
-	MclInteger value;
-	MclAggregatorId aggregatorId;
-};
-
-const MclSize MCL_ENTITY_SIZE = sizeof(MclEntity);
-
-MCL_PRIVATE const MclSize DOUBLE_TIME = 2;
-
-MCL_PRIVATE bool MclEntity_IsOverflowByTime(const MclEntity *self, MclSize time) {
-	return  ((uint64_t)self->value) * time > MCL_INTEGER_MAX;
-}
 
 MclStatus MclEntity_Init(MclEntity *self, MclEntityId id, void *cfg) {
 	self->id = id;
@@ -64,12 +51,14 @@ MclStatus MclEntity_UpdateValue(MclEntity *self, MclInteger value) {
 	return MCL_SUCCESS;
 }
 
+MCL_PRIVATE const MclSize DOUBLE_TIME = 2;
+
 MclStatus MclEntity_DoubleValue(MclEntity *self) {
 	MCL_ASSERT_VALID_PTR(self);
 
 	if (self->value == 0) return MCL_STATUS_NOTHING_CHANGED;
 
-	if (MclEntity_IsOverflowByTime(self, DOUBLE_TIME)) return MCL_FAILURE;
+	if (MclEntityPrivate_IsOverflow(self, DOUBLE_TIME)) return MCL_FAILURE;
 
 	self->value *= DOUBLE_TIME;
 	return MCL_SUCCESS;

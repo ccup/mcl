@@ -13,14 +13,8 @@ MclSize MclAggregatorFactory_GetUnreleasedCount();
 MclAggregator* MclAggregatorFactory_Create(MclAggregatorId, void *cfg);
 void MclAggregatorFactory_Delete(MclAggregator*);
 
-MclAggregator* MclAggregatorFactory_CreateSharedPtr(MclAggregatorId, void *cfg);
-void MclAggregatorFactory_DeleteSharedPtr(MclAggregator*);
-
 MclAggregator* MclAggregatorFactory_CreateLockObj(MclAggregatorId, void *cfg);
 void MclAggregatorFactory_DeleteLockObj(MclAggregator*);
-
-MclAggregator* MclAggregatorFactory_CreateStatic(MclAggregatorId, void *cfg);
-void MclAggregatorFactory_DeleteStatic(MclAggregator*);
 
 MCL_STDC_END
 

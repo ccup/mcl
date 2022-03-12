@@ -1,4 +1,5 @@
 #include "factory/mcl_entity_factory.h"
+#include "entity/private/mcl_entity_private.h"
 #include "entity/mcl_entity.h"
 #include "mcl/mem/shared_ptr.h"
 #include "mcl/mem/allocator.h"
@@ -16,7 +17,7 @@ MclSize MclEntityFactory_GetUnreleasedCount() {
 
 ///////////////////////////////////////////////////////////
 MclEntity* MclEntityFactory_Create(MclEntityId id, void *cfg) {
-	MclEntity *self = MCL_MALLOC(MCL_ENTITY_SIZE);
+	MclEntity *self = MCL_MALLOC(sizeof(MclEntity));
 	MCL_ASSERT_VALID_PTR_NIL(self);
 
 	if (MCL_FAILED(MclEntity_Init(self, id, cfg))) {
@@ -44,7 +45,7 @@ MCL_PRIVATE void MclEntityFactory_DestroyEntity(void *obj, void *arg) {
 }
 
 MclEntity* MclEntityFactory_CreateSharedPtr(MclEntityId id, void *cfg) {
-	MclEntity *self = MclSharedPtr_Create(MCL_ENTITY_SIZE, MclEntityFactory_DestroyEntity, NULL);
+	MclEntity *self = MclSharedPtr_Create(sizeof(MclEntity), MclEntityFactory_DestroyEntity, NULL);
 	MCL_ASSERT_VALID_PTR_NIL(self);
 
 	if (MCL_FAILED(MclEntity_Init(self, id, cfg))) {
@@ -66,7 +67,7 @@ void MclEntityFactory_DeleteSharedPtr(MclEntity *self) {
 
 ///////////////////////////////////////////////////////////
 MclEntity* MclEntityFactory_CreateLockObj(MclEntityId id, void *cfg) {
-	MclEntity *self = (MclEntity*)MclLockObj_Create(MCL_ENTITY_SIZE);
+	MclEntity *self = (MclEntity*)MclLockObj_Create(sizeof(MclEntity));
 	MCL_ASSERT_VALID_PTR_NIL(self);
 
 	if (MCL_FAILED(MclEntity_Init(self, id, cfg))) {
@@ -86,42 +87,34 @@ void MclEntityFactory_DeleteLockObj(MclEntity *self) {
 }
 
 /////////////////////////////////////////////////////////
-//#define MCL_ENTITY_MEM_SIZE  8
-//MCL_PRIVATE const MclSize MCL_ENTITY_CAPACITY = 16;
-//
-//MCL_ALLOCATOR_TYPE_DEF(MclEntityAllocator, MclEntity, MCL_ENTITY_CAPACITY);
-//
-//MCL_PRIVATE MclEntityAllocator entityAllocator;
-//
-//MCL_CTOR void MclEntityAllocator_Ctor() {
-//	if (MCL_ENTITY_MEM_SIZE < MCL_ENTITY_SIZE) {
-//		MCL_LOG_FATAL("Size (%u) of entity memory in allocator is less than actual size (%lu)!"
-//				, MCL_ENTITY_MEM_SIZE, MCL_ENTITY_SIZE);
-//	}
-//	MCL_ALLOCATOR_INIT(MclEntityAllocator, entityAllocator);
-//	MCL_LOG_SUCC("Entity allocator init OK!");
-//}
-//
-//MclEntity* MclEntityFactory_CreateStatic(MclEntityId id, void *cfg) {
-//	if (MCL_ENTITY_MEM_SIZE < MCL_ENTITY_SIZE) return NULL;
-//
-//	MclEntity* self = MCL_ALLOCATOR_ALLOC(MclEntityAllocator, entityAllocator);
-//	MCL_ASSERT_VALID_PTR_NIL(self);
-//
-//	if (MCL_FAILED(MclEntity_Init(self, id, cfg))) {
-//		MCL_LOG_ERR("Initialize static entity (%u) failed!", id);
-//		MclEntityAllocator_Free(&entityAllocator, self);
-//		return NULL;
-//	}
-//
-//	MclAtom_Add(&entityCount, 1);
-//	return self;
-//
-//}
-//
-//void MclEntityFactory_DeleteStatic(MclEntity *self) {
-//	MCL_ASSERT_VALID_PTR_VOID(self);
-//
-//	MCL_ALLOCATOR_FREE(MclEntityAllocator, entityAllocator, self);
-//	MclAtom_Sub(&entityCount, 1);
-//}
+MCL_PRIVATE const MclSize MCL_ENTITY_CAPACITY = 16;
+
+MCL_ALLOCATOR_TYPE_DEF(MclEntityAllocator, MclEntity, MCL_ENTITY_CAPACITY);
+
+MCL_PRIVATE MclEntityAllocator entityAllocator;
+
+MCL_CTOR void MclEntityAllocator_Ctor() {
+	MCL_ALLOCATOR_INIT(MclEntityAllocator, entityAllocator);
+	MCL_LOG_SUCC("Entity allocator init OK!");
+}
+
+MclEntity* MclEntityFactory_CreateStatic(MclEntityId id, void *cfg) {
+	MclEntity* self = MCL_ALLOCATOR_ALLOC(MclEntityAllocator, entityAllocator);
+	MCL_ASSERT_VALID_PTR_NIL(self);
+
+	if (MCL_FAILED(MclEntity_Init(self, id, cfg))) {
+		MCL_LOG_ERR("Initialize static entity (%u) failed!", id);
+		MclEntityAllocator_Free(&entityAllocator, self);
+		return NULL;
+	}
+
+	MclAtom_AddFetch(&entityCount, 1);
+	return self;
+}
+
+void MclEntityFactory_DeleteStatic(MclEntity *self) {
+	MCL_ASSERT_VALID_PTR_VOID(self);
+
+	MCL_ALLOCATOR_FREE(MclEntityAllocator, entityAllocator, self);
+	MclAtom_SubFetch(&entityCount, 1);
+}

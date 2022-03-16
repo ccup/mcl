@@ -1,12 +1,12 @@
 #include "mcl/log/log_counter.h"
-#include "mcl/lock/atom.h"
+#include "mcl/lock/atomic.h"
 #include "mcl/keyword.h"
 
 typedef struct {
-	MclAtom fatal;
-	MclAtom error;
-	MclAtom warn;
-	MclAtom others;
+	MclAtomic fatal;
+	MclAtomic error;
+	MclAtomic warn;
+	MclAtomic others;
 } MclLogCounter;
 
 MCL_PRIVATE MclLogCounter counter = {0};
@@ -14,30 +14,30 @@ MCL_PRIVATE MclLogCounter counter = {0};
 void MclLogCounter_CountLevel(MclLogLevel level) {
 	switch (level) {
 	case MCL_LOG_LEVEL_FATAL:
-		MclAtom_AddFetch(&counter.fatal, 1);
+		MclAtomic_AddFetch(&counter.fatal, 1);
 		break;
 	case MCL_LOG_LEVEL_ERR:
-		MclAtom_AddFetch(&counter.error, 1);
+		MclAtomic_AddFetch(&counter.error, 1);
 		break;
 	case MCL_LOG_LEVEL_WARN:
-		MclAtom_AddFetch(&counter.warn, 1);
+		MclAtomic_AddFetch(&counter.warn, 1);
 		break;
 	default:
-		MclAtom_AddFetch(&counter.others, 1);
+		MclAtomic_AddFetch(&counter.others, 1);
 		break;
 	}
 	return;
 }
 
 MclSize MclLogCounter_GetFatalCount() {
-	return MclAtom_Get(&counter.fatal);
+	return MclAtomic_Get(&counter.fatal);
 }
 
 MclSize MclLogCounter_GetErrorCount() {
-	return MclAtom_Get(&counter.error);
+	return MclAtomic_Get(&counter.error);
 }
 
 MclSize MclLogCounter_GetWarnCount() {
-	return MclAtom_Get(&counter.warn);
+	return MclAtomic_Get(&counter.warn);
 }
 

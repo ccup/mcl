@@ -1,6 +1,6 @@
 #include <cctest/cctest.h>
 #include "mcl/msg/msg_queue.h"
-#include "mcl/lock/atom.h"
+#include "mcl/lock/atomic.h"
 #include "mcl/thread/thread.h"
 
 namespace {
@@ -10,8 +10,8 @@ namespace {
     MclMsgQueue mq = MCL_MSG_QUEUE(msgBuff, MSG_QUEUE_CAPACITY);
 
     constexpr uint16_t TRY_COUNT = 10000;
-    MclAtom SENT_COUNT = 0;
-    MclAtom RECV_COUNT = 0;
+    MclAtomic SENT_COUNT = 0;
+    MclAtomic RECV_COUNT = 0;
 
     uint16_t value = 0xcd;
     uint16_t outValue = 0;
@@ -20,7 +20,7 @@ namespace {
         for (uint16_t i = 0; i < TRY_COUNT; i++) {
             MclMsg msg = MCL_MSG(0, i, sizeof(value), &value);
             if (!MCL_FAILED(MclMsgQueue_Send(&mq, &msg))) {
-                MclAtom_AddFetch(&SENT_COUNT, 1);
+                MclAtomic_AddFetch(&SENT_COUNT, 1);
             }
             MclThread_Yield();
         }
@@ -31,7 +31,7 @@ namespace {
         for (uint16_t i = 0; i < TRY_COUNT; i++) {
             MclMsg msg = MCL_MSG(0, 0, sizeof(outValue), &outValue);
             if (!MCL_FAILED(MclMsgQueue_Recv(&mq, &msg))) {
-                MclAtom_AddFetch(&RECV_COUNT, 1);
+                MclAtomic_AddFetch(&RECV_COUNT, 1);
             }
             MclThread_Yield();
         }
@@ -41,8 +41,8 @@ namespace {
 
 FIXTURE(MsgQueueThreadTest) {
     BEFORE {
-        MclAtom_Clear(&SENT_COUNT);
-        MclAtom_Clear(&RECV_COUNT);
+        MclAtomic_Clear(&SENT_COUNT);
+        MclAtomic_Clear(&RECV_COUNT);
     }
 
     TEST("should execute correct in multi threads") {

@@ -1,15 +1,15 @@
 #include <cctest/cctest.h>
-#include "mcl/lock/atom.h"
+#include "mcl/lock/atomic.h"
 #include "mcl/thread/thread.h"
 
 namespace {
-    MclAtom sum = 0;
+    MclAtomic sum = 0;
 
     constexpr int PATCH_COUNT = 100000;
 
     void* add(void *) {
         for (int i = 0; i < PATCH_COUNT; i++) {
-            MclAtom_AddFetch(&sum, 1);
+            MclAtomic_AddFetch(&sum, 1);
             MclThread_Yield();
         }
         return NULL;
@@ -17,7 +17,7 @@ namespace {
 
     void* sub(void*) {
         for (int i = 0; i < PATCH_COUNT; i++) {
-            MclAtom_SubFetch(&sum, 1);
+            MclAtomic_SubFetch(&sum, 1);
             MclThread_Yield();
         }
         return NULL;
@@ -28,11 +28,11 @@ FIXTURE(AtomTest) {
     constexpr static int THREAD_COUNT{10};
 
     AFTER {
-        MclAtom_Set(&sum, 0);
+        MclAtomic_Set(&sum, 0);
     };
 
     TEST("should add to expect value when use atom variable") {
-        MclAtom_Clear(&sum);
+        MclAtomic_Clear(&sum);
 
         MclThread threads[THREAD_COUNT];
 
@@ -48,7 +48,7 @@ FIXTURE(AtomTest) {
     }
 
     TEST("should sub to expect value when use atom variable") {
-        MclAtom_Set(&sum, PATCH_COUNT * THREAD_COUNT);
+        MclAtomic_Set(&sum, PATCH_COUNT * THREAD_COUNT);
 
         MclThread threads[THREAD_COUNT];
 

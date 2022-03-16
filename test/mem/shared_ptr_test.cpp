@@ -1,6 +1,6 @@
 #include <cctest/cctest.h>
 #include "mcl/mem/shared_ptr.h"
-#include "mcl/lock/atom.h"
+#include "mcl/lock/atomic.h"
 #include "mcl/assert.h"
 
 namespace {
@@ -105,15 +105,15 @@ FIXTURE(SharedPtrDestructTest) {
 
 namespace {
 	struct Foo {
-		static MclAtom FOO_COUNT;
+		static MclAtomic FOO_COUNT;
 
 		Foo(int id = 0)
 		: id {id} {
-			MclAtom_AddFetch(&FOO_COUNT, 1);
+			MclAtomic_AddFetch(&FOO_COUNT, 1);
 		}
 
 		~Foo() {
-			MclAtom_SubFetch(&FOO_COUNT, 1);
+			MclAtomic_SubFetch(&FOO_COUNT, 1);
 		}
 
 		int getId() const {
@@ -123,7 +123,7 @@ namespace {
 		int id {0};
 	};
 
-	MclAtom Foo::FOO_COUNT = 0;
+	MclAtomic Foo::FOO_COUNT = 0;
 
 	void Foo_Destroy(void *p, void *arg) {
 		auto foo = (Foo*)p;
@@ -140,7 +140,7 @@ namespace {
 
 FIXTURE(SharedPtrAutoReleaseTest) {
     BEFORE {
-    	MclAtom_Clear(&Foo::FOO_COUNT);
+    	MclAtomic_Clear(&Foo::FOO_COUNT);
     }
 
     AFTER {

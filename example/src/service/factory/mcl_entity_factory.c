@@ -3,7 +3,7 @@
 #include "entity/private/mcl_entity_private.h"
 #include "entity/mcl_entity.h"
 #include "mcl/mem/allocator.h"
-#include "mcl/lock/atom.h"
+#include "mcl/lock/atomic.h"
 #include "mcl/assert.h"
 
 ///////////////////////////////////////////////////////////
@@ -34,7 +34,7 @@ void MclEntityFactory_InitPoolAllocator(MclFactoryAllocator *allocator) {
 ///////////////////////////////////////////////////////////
 typedef struct {
 	MclFactoryAllocator allocator;
-	MclAtom count;
+	MclAtomic count;
 } MclEntityFactory;
 
 MCL_PRIVATE MclEntityFactory factory;
@@ -55,7 +55,7 @@ MCL_PRIVATE void MclEntityFactory_InitAllocator(MclFactoryAllocator *allocator, 
 
 void MclEntityFactory_Init(MclAllocatorType type) {
 	MclEntityFactory_InitAllocator(&factory.allocator, type);
-	MclAtom_Clear(&factory.count);
+	MclAtomic_Clear(&factory.count);
 }
 
 MclEntity* MclEntityFactory_Create(MclEntityId id, void *cfg) {
@@ -68,14 +68,14 @@ MclEntity* MclEntityFactory_Create(MclEntityId id, void *cfg) {
 		return NULL;
 	}
 
-	MclAtom_AddFetch(&factory.count, 1);
+	MclAtomic_AddFetch(&factory.count, 1);
 	return entity;
 }
 
 void MclEntityFactory_Delete(MclEntity *entity) {
 	MCL_ASSERT_VALID_PTR_VOID(entity);
 	MclFactoryAllocator_Delete(&factory.allocator, entity);
-	MclAtom_SubFetch(&factory.count, 1);
+	MclAtomic_SubFetch(&factory.count, 1);
 }
 
 

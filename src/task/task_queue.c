@@ -1,6 +1,6 @@
 #include "mcl/task/task_queue.h"
 #include "mcl/lock/cond.h"
-#include "mcl/lock/atom.h"
+#include "mcl/lock/atomic.h"
 #include "mcl/task/task.h"
 #include "mcl/list/list.h"
 #include "mcl/list/list_node_allocator.h"
@@ -60,7 +60,7 @@ MCL_PRIVATE MclTask* TaskQueue_Pop(TaskQueue *queue) {
 
 ///////////////////////////////////////////////////////////
 MCL_TYPE(MclTaskQueue) {
-	MclAtom  isRunning;
+	MclAtomic  isRunning;
 	MclMutex mutex;
 	MclCond   cond;
 	MclSize queueCount;
@@ -75,7 +75,7 @@ MCL_PRIVATE bool MclTaskQueue_IsEmptyImpl(const MclTaskQueue *self) {
 }
 
 MCL_PRIVATE void MclTaskQueue_WaitReady(MclTaskQueue *self) {
-    if (MclAtom_IsTrue(&self->isRunning) && MclTaskQueue_IsEmptyImpl(self)) {
+    if (MclAtomic_IsTrue(&self->isRunning) && MclTaskQueue_IsEmptyImpl(self)) {
         MclCond_Wait(&self->cond, &self->mutex);
     }
 }
@@ -100,7 +100,7 @@ MCL_PRIVATE void MclTaskQueue_DestroyQueues(MclTaskQueue *self) {
 }
 
 MCL_PRIVATE void  MclTaskQueue_Destroy(MclTaskQueue *self) {
-    MclAtom_Clear(&self->isRunning);
+    MclAtomic_Clear(&self->isRunning);
     MclTaskQueue_DestroyQueues(self);
     MCL_PEEK_SUCC_CALL(MclMutex_Destroy(&self->mutex));
     MCL_PEEK_SUCC_CALL(MclCond_Destroy(&self->cond));
@@ -125,7 +125,7 @@ MCL_PRIVATE MclStatus MclTaskQueue_Init(MclTaskQueue *self, MclSize priorities, 
 		return MCL_FAILURE;
 	}
     MclTaskQueue_InitQueues(self, priorities, thresholds);
-    MclAtom_Clear(&self->isRunning);
+    MclAtomic_Clear(&self->isRunning);
     return MCL_SUCCESS;
 }
 
@@ -145,24 +145,24 @@ MclTaskQueue* MclTaskQueue_Create(MclSize priorities, MclSize *thresholds) {
 /* IMPORTANT: SHOULD INVOKE AFTER ALL CONSUMER THREADS STOPPED!!! */
 void MclTaskQueue_Delete(MclTaskQueue *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
-	MCL_ASSERT_TRUE_VOID(!MclAtom_IsTrue(&self->isRunning));
+	MCL_ASSERT_TRUE_VOID(!MclAtomic_IsTrue(&self->isRunning));
 
     MclTaskQueue_Destroy(self);
 	MCL_FREE(self);
 }
 
 void MclTaskQueue_Start(MclTaskQueue *self) {
-    MclAtom_Set(&self->isRunning, 1);
+    MclAtomic_Set(&self->isRunning, 1);
 }
 
 void MclTaskQueue_Stop(MclTaskQueue *self) {
 	MCL_ASSERT_VALID_PTR_VOID(self);
-    MclAtom_Set(&self->isRunning, 0);
+    MclAtomic_Set(&self->isRunning, 0);
     MclCond_Broadcast(&self->cond);
 }
 
 bool MclTaskQueue_IsRunning(const MclTaskQueue *self) {
-	return MclAtom_IsTrue((MclAtom*)(&self->isRunning));
+	return MclAtomic_IsTrue((MclAtomic*)(&self->isRunning));
 }
 
 bool MclTaskQueue_IsEmpty(const MclTaskQueue *self) {

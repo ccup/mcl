@@ -1,5 +1,5 @@
 #include "mcl/lock/future.h"
-#include "mcl/lock/atom.h"
+#include "mcl/lock/atomic.h"
 #include "mcl/lock/mutex.h"
 #include "mcl/lock/cond.h"
 #include "mcl/mem/memory.h"
@@ -7,7 +7,7 @@
 MCL_TYPE(MclFuture) {
     MclMutex mutex;
     MclCond cond;
-    MclAtom isReady;
+    MclAtomic isReady;
     MclStatus status;
     void *value;
 };
@@ -22,7 +22,7 @@ MCL_PRIVATE MclStatus MclFuture_Init(MclFuture *self) {
         (void)MclMutex_Destroy(&self->mutex);
         return MCL_FAILURE;
     }
-    MclAtom_Clear(&self->isReady);
+    MclAtomic_Clear(&self->isReady);
     self->status = MCL_UNINITIALIZED;
     self->value = NULL;
     return MCL_SUCCESS;
@@ -31,7 +31,7 @@ MCL_PRIVATE MclStatus MclFuture_Init(MclFuture *self) {
 MCL_PRIVATE void MclFuture_Destroy(MclFuture *self) {
     MCL_PEEK_SUCC_CALL(MclMutex_Destroy(&self->mutex));
     MCL_PEEK_SUCC_CALL(MclCond_Destroy(&self->cond));
-    MclAtom_Clear(&self->isReady);
+    MclAtomic_Clear(&self->isReady);
 }
 
 MclFuture* MclFuture_Create() {
@@ -53,25 +53,25 @@ void MclFuture_Delete(MclFuture *self) {
 }
 
 void MclFuture_Stop(MclFuture *self) {
-    if (MclAtom_IsTrue(&self->isReady)) return;
+    if (MclAtomic_IsTrue(&self->isReady)) return;
 
     MCL_LOCK_AUTO(self->mutex);
-    MclAtom_Set(&self->isReady, 1);
+    MclAtomic_Set(&self->isReady, 1);
     self->status = MCL_STATUS_DONE;
     MclCond_Broadcast(&self->cond);
 }
 
 bool MclFuture_IsReady(const MclFuture *self) {
-    return MclAtom_IsTrue(&((MclFuture*)self)->isReady);
+    return MclAtomic_IsTrue(&((MclFuture*)self)->isReady);
 }
 
 void MclFuture_Set(MclFuture *self, MclStatus status, void *value) {
     MCL_ASSERT_VALID_PTR_VOID(self);
-    MCL_ASSERT_TRUE_VOID(!MclAtom_IsTrue(&self->isReady));
+    MCL_ASSERT_TRUE_VOID(!MclAtomic_IsTrue(&self->isReady));
 
     MCL_LOCK_AUTO(self->mutex);
 
-    MclAtom_Set(&self->isReady, 1);
+    MclAtomic_Set(&self->isReady, 1);
     self->status = status;
     self->value = value;
     MclCond_Signal(&self->cond);
@@ -81,7 +81,7 @@ void MclFuture_Get(MclFuture *self, MclStatus *status, void **value) {
     MCL_ASSERT_VALID_PTR_VOID(self);
 
     MCL_LOCK_AUTO(self->mutex);
-    while (!MclAtom_IsTrue(&self->isReady)) {
+    while (!MclAtomic_IsTrue(&self->isReady)) {
         MclCond_Wait(&self->cond, &self->mutex);
     }
     *status = self->status;

@@ -1,13 +1,13 @@
 #include "factory/mcl_aggregator_factory.h"
 #include "allocator/mcl_allocator.h"
 #include "aggregator/mcl_aggregator.h"
-#include "mcl/lock/atom.h"
+#include "mcl/lock/atomic.h"
 #include "mcl/assert.h"
 
 ///////////////////////////////////////////////////////////
 typedef struct {
 	MclFactoryAllocator allocator;
-	MclAtom count;
+	MclAtomic count;
 } MclAggregatorFactory;
 
 MCL_PRIVATE MclAggregatorFactory factory;
@@ -26,7 +26,7 @@ MCL_PRIVATE void MclAggregatorFactory_InitAllocator(MclFactoryAllocator *allocat
 
 void MclAggregatorFactory_Init(MclAllocatorType type) {
 	MclAggregatorFactory_InitAllocator(&factory.allocator, type);
-	MclAtom_Clear(&factory.count);
+	MclAtomic_Clear(&factory.count);
 }
 
 MclAggregator* MclAggregatorFactory_Create(MclAggregatorId id, void *cfg) {
@@ -39,14 +39,14 @@ MclAggregator* MclAggregatorFactory_Create(MclAggregatorId id, void *cfg) {
 		return NULL;
 	}
 
-	MclAtom_AddFetch(&factory.count, 1);
+	MclAtomic_AddFetch(&factory.count, 1);
 	return aggregator;
 }
 
 void MclAggregatorFactory_Delete(MclAggregator *aggregator) {
 	MCL_ASSERT_VALID_PTR_VOID(aggregator);
 	MclFactoryAllocator_Delete(&factory.allocator, aggregator);
-	MclAtom_SubFetch(&factory.count, 1);
+	MclAtomic_SubFetch(&factory.count, 1);
 }
 
 MclSize MclAggregatorFactory_GetUnreleasedCount() {

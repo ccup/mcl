@@ -222,7 +222,7 @@ namespace {
 
 FIXTURE(LockObjTest) {
     BEFORE {
-        MclAtom_Clear(&Foo::FOO_COUNT);
+        MclAtomic_Clear(&Foo::FOO_COUNT);
     }
 
     AFTER {

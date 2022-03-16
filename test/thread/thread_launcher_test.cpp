@@ -1,7 +1,7 @@
 #include <cctest/cctest.h>
 #include "mcl/thread/thread_launcher.h"
 #include "mcl/array/array_size.h"
-#include "mcl/lock/atom.h"
+#include "mcl/lock/atomic.h"
 
 namespace {
 	struct ThreadCtxt {
@@ -9,15 +9,15 @@ namespace {
 		MclSize decreaseMax;
 		MclSize increaseCount;
 		MclSize decreaseCount;
-		MclAtom result;
-		MclAtom stop;
+		MclAtomic result;
+		MclAtomic stop;
 	};
 
 	void increase(void *ctxt) {
 		ThreadCtxt *threadCtxt = (ThreadCtxt*)ctxt;
 		for (MclSize i = 0; (i < threadCtxt->increaseMax); i++) {
-			if (MclAtom_IsTrue(&threadCtxt->stop)) return;
-			MclAtom_AddFetch(&threadCtxt->result, 1);
+			if (MclAtomic_IsTrue(&threadCtxt->stop)) return;
+			MclAtomic_AddFetch(&threadCtxt->result, 1);
 			threadCtxt->increaseCount++;
 			MclThread_Yield();
 		}
@@ -26,8 +26,8 @@ namespace {
 	void decrease(void *ctxt) {
 		ThreadCtxt *threadCtxt = (ThreadCtxt*)ctxt;
 		for (MclSize i = 0; (i < threadCtxt->decreaseMax); i++) {
-			if (MclAtom_IsTrue(&threadCtxt->stop)) return;
-			MclAtom_SubFetch(&threadCtxt->result, 1);
+			if (MclAtomic_IsTrue(&threadCtxt->stop)) return;
+			MclAtomic_SubFetch(&threadCtxt->result, 1);
 			threadCtxt->decreaseCount++;
 			MclThread_Yield();
 		}
@@ -35,7 +35,7 @@ namespace {
 
 	void stop(void *ctxt) {
 		ThreadCtxt *threadCtxt = (ThreadCtxt*)ctxt;
-		MclAtom_Set(&threadCtxt->stop, 1);
+		MclAtomic_Set(&threadCtxt->stop, 1);
 	}
 }
 

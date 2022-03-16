@@ -1,5 +1,5 @@
 #include "mcl/mem/shared_ptr.h"
-#include "mcl/lock/atom.h"
+#include "mcl/lock/atomic.h"
 #include "mcl/mem/memory.h"
 #include "mcl/mem/align.h"
 #include "mcl/assert.h"
@@ -8,7 +8,7 @@ typedef struct {
     uint64_t sentinel;
     MclSharedPtrDestroy destroy;
     void* destroyArg;
-    MclAtom refCount;
+    MclAtomic refCount;
     void* ptr;
 } MclSharedPtr;
 
@@ -31,7 +31,7 @@ MCL_PRIVATE void MclSharedPtr_Init(MclSharedPtr *self, MclSharedPtrDestroy destr
     self->sentinel = MCL_SHARED_PTR_SENTINEL;
     self->destroy = destroy;
     self->destroyArg = arg;
-    MclAtom_Set(&self->refCount, 1);
+    MclAtomic_Set(&self->refCount, 1);
     self->ptr = (uint8_t*)self + MclSharedPtr_HeaderSize();
 }
 
@@ -51,7 +51,7 @@ void  MclSharedPtr_Delete(void *ptr) {
     MclSharedPtr *self = MclSharedPtr_GetSelf(ptr);
     MCL_ASSERT_VALID_PTR_VOID(self);
 
-    if (MclAtom_SubFetch(&self->refCount, 1)) return;
+    if (MclAtomic_SubFetch(&self->refCount, 1)) return;
 
     if(self->destroy) self->destroy(ptr, self->destroyArg);
     MCL_FREE(self);
@@ -63,6 +63,6 @@ void* MclSharedPtr_Ref(void *ptr) {
     MclSharedPtr *self = MclSharedPtr_GetSelf(ptr);
     MCL_ASSERT_VALID_PTR_NIL(self);
 
-    (void)MclAtom_AddFetch(&self->refCount, 1);
+    (void)MclAtomic_AddFetch(&self->refCount, 1);
     return ptr;
 }
